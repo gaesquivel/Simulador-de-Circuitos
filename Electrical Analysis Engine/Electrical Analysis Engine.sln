@@ -1,0 +1,31 @@
+﻿
+Microsoft Visual Studio Solution File, Format Version 12.00
+# Visual Studio Express 2013 for Windows Desktop
+VisualStudioVersion = 12.0.30110.0
+MinimumVisualStudioVersion = 10.0.40219.1
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Electrical Analysis Engine Testing", "Electrical Analysis Engine Testing\Electrical Analysis Engine Testing.csproj", "{08A80120-D201-4AAE-A838-816587DB3650}"
+	ProjectSection(ProjectDependencies) = postProject
+		{C5A99E1A-8024-4101-9E21-9E90E1CDA058} = {C5A99E1A-8024-4101-9E21-9E90E1CDA058}
+	EndProjectSection
+EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Electrical Analysis Engine Library", "Electrical Analysis Engine Library\Electrical Analysis Engine Library.csproj", "{C5A99E1A-8024-4101-9E21-9E90E1CDA058}"
+EndProject
+Global
+	GlobalSection(SolutionConfigurationPlatforms) = preSolution
+		Debug|Any CPU = Debug|Any CPU
+		Release|Any CPU = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(ProjectConfigurationPlatforms) = postSolution
+		{08A80120-D201-4AAE-A838-816587DB3650}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{08A80120-D201-4AAE-A838-816587DB3650}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{08A80120-D201-4AAE-A838-816587DB3650}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{08A80120-D201-4AAE-A838-816587DB3650}.Release|Any CPU.Build.0 = Release|Any CPU
+		{C5A99E1A-8024-4101-9E21-9E90E1CDA058}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{C5A99E1A-8024-4101-9E21-9E90E1CDA058}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{C5A99E1A-8024-4101-9E21-9E90E1CDA058}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{C5A99E1A-8024-4101-9E21-9E90E1CDA058}.Release|Any CPU.Build.0 = Release|Any CPU
+	EndGlobalSection
+	GlobalSection(SolutionProperties) = preSolution
+		HideSolutionNode = FALSE
+	EndGlobalSection
+EndGlobal
