@@ -10,25 +10,18 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
-using ElectricalAnalysis;
 
 namespace Circuit_Simulation_Integrated_Interface
 {
-   /// <summary>
-   /// Interaction logic for MainWindow.xaml
-   /// </summary>
-   public partial class MainWindow : Window
-   {
-       Item item1;
-
-      public MainWindow()
-      {
-         InitializeComponent();
-
-         item1 = new Item();
-         propiedades.SelectedObject = item1;
-      }
-   }
+    /// <summary>
+    /// Lógica de interacción para Window1.xaml
+    /// </summary>
+    public partial class Window1 : Window
+    {
+        public Window1()
+        {
+            InitializeComponent();
+        }
+    }
 }
