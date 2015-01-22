@@ -11,7 +11,14 @@ namespace ElectricalAnalysis_Test
    {
       static void Main(string[] args)
       {
-         
+          Resistor r1 = new Resistor();
+          //r1.Nodes[0].
+          Circuit circuito1 = new Circuit();
+          circuito1.Components.Add(r1);
+
+
+
+          Console.ReadKey();
       }
    }
 }
