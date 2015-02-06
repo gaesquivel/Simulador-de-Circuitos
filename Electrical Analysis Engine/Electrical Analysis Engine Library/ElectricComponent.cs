@@ -21,15 +21,35 @@ namespace ElectricalAnalysis
         /// </summary>
         public List<Node> Nodes { get; protected set; }
 
-        public ElectricComponent():base()   
-        {
-            Nodes = new List<Node>();
-            Name = "Component" + ID.ToString();
+        //public ElectricComponent(string name = null, string value)
+        //    : base()
+        //{
+        //    this.ElectricComponent(name, 0);
+        //}
 
+        public ElectricComponent()
+            : base()
+        { 
+            Nodes = new List<Node>();
             Nodes.Add(new Node());
             Nodes.Add(new Node());
         }
 
+        protected void Initialize(string name = null, string value = null)
+        { 
+            if (string.IsNullOrEmpty(name))
+                Name = "Component" + ID.ToString();
+            else
+                Name = name;
+
+            if (string.IsNullOrEmpty(value))
+                Value = 0;
+            else
+            {
+                Value = StringUtils.DecodeString(value);
+
+            }
+        }
 
 
     }

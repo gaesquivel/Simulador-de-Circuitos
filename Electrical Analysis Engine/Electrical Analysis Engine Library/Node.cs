@@ -11,11 +11,34 @@ namespace ElectricalAnalysis
     {
 
         public Complex Voltage { get; internal set; }
+        public bool IsReference { get; set; }
+        public List<ElectricComponent> Components { get; protected set; }
+        
+        /// <summary>
+        /// indica si el nodo esta conectado directamente a un geenrador de tension
+        /// </summary>
+        public bool IsVoltageConnected
+        {
+            get {
+                foreach (var item in Components)
+                {
+                    if (item is VoltageGenerator)
+                        return true;
+                }
+                return false;
+            }
+        }
+
+
         //Circuit parent
-        public Node()
+        public Node(string name = null)
             : base()
         {
-            Name = "Node" + ID.ToString();
+            Components = new List<ElectricComponent>();
+            if (string.IsNullOrEmpty(name))
+                Name = "Node" + ID.ToString();
+            else
+                Name = name;
             //Parent = parent;
         }
 

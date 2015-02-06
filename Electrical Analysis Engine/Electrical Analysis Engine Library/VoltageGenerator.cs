@@ -9,6 +9,19 @@ namespace ElectricalAnalysis
     public class VoltageGenerator:Generator
     {
 
+        public VoltageGenerator()
+            : base()
+        {
+            Initialize("V" + ID.ToString());
+            Expresion = "V";
+            Value = 1000;
+        }
+
+        public VoltageGenerator(string name, string value):base()
+        {
+            Initialize(name, value);
+        }
+
 
 
     }
