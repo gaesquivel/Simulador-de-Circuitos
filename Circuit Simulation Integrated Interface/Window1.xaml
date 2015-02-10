@@ -3,7 +3,9 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:s="clr-namespace:DiagramDesigner"
         xmlns:c="clr-namespace:DiagramDesigner.Controls"
-        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" mc:Ignorable="d" x:Class="DiagramDesigner.Window1"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+        mc:Ignorable="d" x:Class="DiagramDesigner.Window1"
         WindowStartupLocation="CenterScreen"
         Title="Sim circuit engine"
         Height="476.866" Width="1000">

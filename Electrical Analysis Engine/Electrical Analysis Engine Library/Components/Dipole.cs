@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElectricalAnalysis
+namespace ElectricalAnalysis.Components
 {
-    public class PasiveComponent:ElectricComponent
+    public abstract class Dipole:ElectricComponent
     {
-
 
     }
 }

@@ -5,7 +5,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Numerics;
 
-namespace ElectricalAnalysis
+namespace ElectricalAnalysis.Components
 {
     public class Node: Item
     {
@@ -15,7 +15,7 @@ namespace ElectricalAnalysis
         public List<ElectricComponent> Components { get; protected set; }
         
         /// <summary>
-        /// indica si el nodo esta conectado directamente a un geenrador de tension
+        /// indica si el nodo esta conectado directamente a un generador de tension
         /// </summary>
         public bool IsVoltageConnected
         {

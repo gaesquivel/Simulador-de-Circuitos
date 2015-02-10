@@ -6,7 +6,10 @@ using System.Threading.Tasks;
 
 namespace ElectricalAnalysis
 {
-    public abstract class Generator:ElectricComponent
+    public class DCAnalysis: Analysis
     {
+
+
+
     }
 }

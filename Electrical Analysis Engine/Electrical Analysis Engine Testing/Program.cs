@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using ElectricalAnalysis;
+using ElectricalAnalysis.Components;
 using MathNet.Numerics.LinearAlgebra.Complex32;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra;
@@ -27,7 +28,7 @@ namespace ElectricalAnalysis_Test
             //Console.Write(x.ToString());
 
             Circuit cir = new Circuit();
-            cir.ReadCircuit("testdc.net");
+            cir.ReadCircuit("testidc.net");
             cir.Solve();
 
             Console.Write(cir.StaticVector.ToString());

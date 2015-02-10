@@ -8,7 +8,7 @@ using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra;
 //using MathNet.Numerics.LinearAlgebra.Double;
 
-namespace ElectricalAnalysis
+namespace ElectricalAnalysis.Components
 {
     public class Circuit:Item
     {
@@ -29,6 +29,11 @@ namespace ElectricalAnalysis
             Nodes = new Dictionary<string,Node>();
         }
 
+        /// <summary>
+        /// Read a netlist file (.net) containing componentsdescription y nodes
+        /// A Circuit object with components y nodes will be created 
+        /// </summary>
+        /// <param name="CircuitName"></param>
         public void ReadCircuit(string CircuitName)
         {
             //Circuit cir = new Circuit();
@@ -69,6 +74,10 @@ namespace ElectricalAnalysis
                             else
                                 //aun sin resolver para otros generadores
                                 comp = new CurrentGenerator(comp1[1], elemn[4]);
+
+                            break;
+                        case "L":
+                            comp = new Inductor(comp1[1], elemn[3]);
 
                             break;
                         default:
@@ -135,10 +144,22 @@ namespace ElectricalAnalysis
 
             foreach (var nodo in nodos)
             {
-                //busco generador de tension
-                if (nodo.IsVoltageConnected)
+                fila = nodos.IndexOf(nodo);
+
+                //busco generador de tension o inductor
+                bool IsVoltageConnected = false;
+                foreach (var item in Components)
                 {
-                    //ecuacion modificada de teorema de nodos
+                    if (item is VoltageGenerator || item is Inductor)
+                    {
+                        IsVoltageConnected = true;
+                        break;
+                    }
+                }
+
+                if (IsVoltageConnected)
+                {
+                    #region ecuacion modificada de teorema de nodos
                     foreach (var compo in nodo.Components)
                     {
                         if (compo is VoltageGenerator)
@@ -161,11 +182,11 @@ namespace ElectricalAnalysis
                             }
                         }
                     }
-
+                    #endregion
                 }
                 else
                 {
-                    //ecuacion propia del teorema de nodos
+                    #region ecuacion propia del teorema de nodos
                     foreach (var compo in nodo.Components)
                     {
                         if (compo is PasiveComponent)
@@ -182,17 +203,26 @@ namespace ElectricalAnalysis
                             //nodo referencia no se suma
                             if (columna >= 0)
                                 A[fila, columna] -= (1 / compo.Value);
-    
-                            
+                        }
+                        if (compo is CurrentGenerator)
+                        {
+                            if (compo.Nodes[0] == nodo)
+                                v[fila] -= compo.Value;
+                            else
+                                v[fila] += compo.Value;
                         }
                     }
-                   
+                    #endregion
                 }
-
-                fila++;
             }
 
             var x = A.Solve(v);
+
+            foreach (var nodo in nodos)
+            {
+                fila = nodos.IndexOf(nodo);
+                nodo.Voltage = v[fila];
+            }
 
             StaticMatrix = A;
             StaticVector = v;

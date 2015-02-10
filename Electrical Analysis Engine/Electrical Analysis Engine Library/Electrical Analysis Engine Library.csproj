@@ -48,27 +48,32 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Capacitor.cs" />
-    <Compile Include="Circuit.cs">
+    <Compile Include="ACAnalysis.cs" />
+    <Compile Include="Analysis.cs" />
+    <Compile Include="Components\branch.cs" />
+    <Compile Include="Components\Capacitor.cs" />
+    <Compile Include="Components\Circuit.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="CurrentGenerator.cs" />
-    <Compile Include="ElectricComponent.cs" />
-    <Compile Include="Generator.cs" />
-    <Compile Include="Inductor.cs" />
-    <Compile Include="Item.cs" />
-    <Compile Include="Node.cs" />
-    <Compile Include="PasiveComponent.cs" />
+    <Compile Include="Components\CurrentGenerator.cs" />
+    <Compile Include="Components\Dipole.cs" />
+    <Compile Include="Components\ElectricComponent.cs" />
+    <Compile Include="Components\Generator.cs" />
+    <Compile Include="Components\Inductor.cs" />
+    <Compile Include="Components\Item.cs" />
+    <Compile Include="Components\Node.cs" />
+    <Compile Include="Components\PasiveComponent.cs" />
+    <Compile Include="DCAnalysis.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Resistor.cs" />
+    <Compile Include="Components\Resistor.cs" />
     <Compile Include="StringUtils.cs" />
-    <Compile Include="VoltageGenerator.cs" />
+    <Compile Include="Components\VoltageGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="ClassDiagram1.cd" />
+    <None Include="Components\ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />

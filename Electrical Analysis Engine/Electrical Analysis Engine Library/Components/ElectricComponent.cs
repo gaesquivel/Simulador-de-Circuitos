@@ -5,12 +5,37 @@ using System.Numerics;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElectricalAnalysis
+namespace ElectricalAnalysis.Components
 {
-    public class ElectricComponent:Item
+    public abstract class ElectricComponent:Item
     {
 
-        public Complex Current { get; internal set; }
+        public double Temperature { get; set; }
+        public abstract Complex Impedance(double W);
+        
+
+        /// <summary>
+        /// Valor de la corriente de continua
+        /// </summary>
+        public Complex Current { 
+            get
+            {
+                if (this is Capacitor)
+                    return 0;
+                if (this is Resistor)
+                        return new Complex((Nodes[0].Voltage.Real - Nodes[1].Voltage.Real) / Value, 0);
+                if (this is CurrentGenerator)
+                    return Value;
+
+                if (this is Inductor)
+                    return 0;
+                if (this is VoltageGenerator)
+                {
+                    
+                }
+                return Complex.Zero;
+            } 
+            internal set; }
 
         //Expresion R, L, C
         public string Expresion { get; set; }   //model?
@@ -21,11 +46,7 @@ namespace ElectricalAnalysis
         /// </summary>
         public List<Node> Nodes { get; protected set; }
 
-        //public ElectricComponent(string name = null, string value)
-        //    : base()
-        //{
-        //    this.ElectricComponent(name, 0);
-        //}
+     
 
         public ElectricComponent()
             : base()
@@ -47,7 +68,6 @@ namespace ElectricalAnalysis
             else
             {
                 Value = StringUtils.DecodeString(value);
-
             }
         }
 

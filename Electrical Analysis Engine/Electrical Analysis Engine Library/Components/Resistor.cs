@@ -3,14 +3,11 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace ElectricalAnalysis
+namespace ElectricalAnalysis.Components
 {
     public class Resistor:PasiveComponent
     {
-        private string p1;
-        private string p2;
-
-
+       
         public Resistor()
             : base()
         {
