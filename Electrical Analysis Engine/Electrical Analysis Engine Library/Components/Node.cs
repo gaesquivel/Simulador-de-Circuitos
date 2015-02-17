@@ -3,16 +3,53 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
-using System.Numerics;
+//using System.Numerics;
+using MathNet.Numerics;
 
 namespace ElectricalAnalysis.Components
 {
     public class Node: Item
     {
+        public enum NodeType { 
+            /// <summary>
+            /// this node was not analyze yet
+            /// </summary>
+            Unknow,
+            /// <summary>
+            /// This node is aislated from the circuit
+            /// </summary>
+            BreakNode, 
+            /// <summary>
+            /// This node is connected to an floating component,
+            /// a component linked by only one node to the circuit
+            /// </summary>
+            FloatingNode, 
+            /// <summary>
+            /// This node is part of branch
+            /// </summary>
+            InternalBranchNode, 
+            /// <summary>
+            /// Node where can apply Norton Theorem
+            /// </summary>
+            MultibranchCurrentNode,
+            /// <summary>
+            /// Node where the voltage is well known
+            /// </summary>
+            VoltageFixedNode,
+            /// <summary>
+            /// Node where voltage es directly dependent of 
+            /// other floating node
+            /// </summary>
+            VoltageLinkedNode
 
-        public Complex Voltage { get; internal set; }
+        }
+
+        public NodeType TypeOfNode { get; set; }
+
+
+        public Complex32 Voltage { get; internal set; }
         public bool IsReference { get; set; }
-        public List<ElectricComponent> Components { get; protected set; }
+        public List<Dipole> Components { get; protected set; }
         
         /// <summary>
         /// indica si el nodo esta conectado directamente a un generador de tension
@@ -34,7 +71,7 @@ namespace ElectricalAnalysis.Components
         public Node(string name = null)
             : base()
         {
-            Components = new List<ElectricComponent>();
+            Components = new List<Dipole>();
             if (string.IsNullOrEmpty(name))
                 Name = "Node" + ID.ToString();
             else
@@ -42,6 +79,12 @@ namespace ElectricalAnalysis.Components
             //Parent = parent;
         }
 
-        
+        public Dipole OtherComponent(Dipole compo)
+        {
+            if (compo == Components[0])
+                return Components[1];
+            else
+                return Components[0];
+        }
     }
 }

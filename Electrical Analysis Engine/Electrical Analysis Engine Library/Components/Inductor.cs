@@ -1,17 +1,13 @@
-﻿using System;
+﻿using MathNet.Numerics;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace ElectricalAnalysis.Components
 {
-    public class Inductor:PasiveComponent
+    public class Inductor : ElectricComponent, PasiveComponent
     {
-
-        public override System.Numerics.Complex Impedance(double W)
-        {
-            return new System.Numerics.Complex(0, W * Value);
-        }
 
         public Inductor()
             : base()
@@ -29,5 +25,10 @@ namespace ElectricalAnalysis.Components
 
         }
 
+
+        public override Complex32 Impedance(double W)
+        {
+            return new Complex32(0, (float)(W * Value));
+        }
     }
 }

@@ -5,9 +5,11 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElectricalAnalysis.Components
+namespace ElectricalAnalysis.Analysis.Solver
 {
-    public interface Generator
+    public interface CircuitSolver
     {
+
+        bool Solve(Circuit cir, BasicAnalysis ana);
     }
 }

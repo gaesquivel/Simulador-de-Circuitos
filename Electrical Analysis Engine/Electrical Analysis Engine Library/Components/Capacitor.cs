@@ -6,7 +6,7 @@ using System.Text;
 
 namespace ElectricalAnalysis.Components
 {
-    public class Capacitor:PasiveComponent
+    public class Capacitor: ElectricComponent, PasiveComponent
     {
         public Capacitor()
             : base()
@@ -27,7 +27,7 @@ namespace ElectricalAnalysis.Components
         public override Complex32 Impedance(double W)
         {
             if (W>0)
-                return new Complex32(0, 1 / W * Value);
+                return new Complex32(0, (float)(1 / W * Value));
             return Complex32.NaN;
         }
     }

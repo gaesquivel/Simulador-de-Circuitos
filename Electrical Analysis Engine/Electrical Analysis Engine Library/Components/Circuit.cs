@@ -6,16 +6,19 @@ using System.Text;
 using System.Threading.Tasks;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra;
+//using ElectricalAnalysis.Analysis;
 //using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace ElectricalAnalysis.Components
 {
-    public class Circuit:Item
+    public class Circuit:Item, ICloneable
     {
 
-        public List<ElectricComponent> Components { get; protected set; }
+        public List<BasicAnalysis> Setup { get; protected set; }
+        public List<Dipole> Components { get; protected set; }
         public Dictionary<string,Node> Nodes { get; protected set; }
         public Boolean HasErrors { get; protected set; }
+        public Node Reference { get; set; }
 
         public Vector<double> StaticResult;
         public Vector<double> StaticVector;
@@ -25,8 +28,10 @@ namespace ElectricalAnalysis.Components
             : base()
         {
             Name = "Circuit" + ID.ToString();
-            Components = new List<ElectricComponent>();
+            Components = new List<Dipole>();
             Nodes = new Dictionary<string,Node>();
+            Setup = new List<BasicAnalysis>();
+            Setup.Add(new DCAnalysis());
         }
 
         /// <summary>
@@ -36,7 +41,6 @@ namespace ElectricalAnalysis.Components
         /// <param name="CircuitName"></param>
         public void ReadCircuit(string CircuitName)
         {
-            //Circuit cir = new Circuit();
             if (!File.Exists(CircuitName))
             {
                 HasErrors = true;
@@ -98,8 +102,10 @@ namespace ElectricalAnalysis.Components
                     comp.Nodes.Add(n);
                     n.Components.Add(comp);
                     if (n.Name == "0")
+                    {   
                         n.IsReference = true;
-
+                        Reference = n;
+                    }
                     //agrego el segundo nodo
                     if (!Nodes.ContainsKey(elemn[2]))
                     {
@@ -130,107 +136,28 @@ namespace ElectricalAnalysis.Components
         public string Solve()
         { 
             string file = "";
-            int fila = 0, columna = 0;
-            List<Node> nodos = new List<Node>();
 
-            foreach (var item in Nodes.Values)
+            foreach (var item in Setup)
             {
-                if (!item.IsReference)
-                    nodos.Add(item);
+                item.Solver.Solve(this, item);
             }
-
-            var v = Vector<double>.Build.Dense(Nodes.Count - 1);
-            var A = Matrix<double>.Build.DenseOfArray(new double[Nodes.Count - 1,Nodes.Count - 1]);
-
-            foreach (var nodo in nodos)
-            {
-                fila = nodos.IndexOf(nodo);
-
-                //busco generador de tension o inductor
-                bool IsVoltageConnected = false;
-                foreach (var item in Components)
-                {
-                    if (item is VoltageGenerator || item is Inductor)
-                    {
-                        IsVoltageConnected = true;
-                        break;
-                    }
-                }
-
-                if (IsVoltageConnected)
-                {
-                    #region ecuacion modificada de teorema de nodos
-                    foreach (var compo in nodo.Components)
-                    {
-                        if (compo is VoltageGenerator)
-                        {
-                            if (compo.Nodes[0] == nodo)
-                                v[fila] += compo.Value;
-                            else
-                                v[fila] -= compo.Value;
-
-                            foreach (var item in compo.Nodes)
-                            {
-                                if (!item.IsReference)
-                                {
-                                    columna = nodos.IndexOf(item);
-                                    if (item == nodo)
-                                        A[fila, columna] = 1;
-                                    else
-                                        A[fila, columna] = -1;
-                                }
-                            }
-                        }
-                    }
-                    #endregion
-                }
-                else
-                {
-                    #region ecuacion propia del teorema de nodos
-                    foreach (var compo in nodo.Components)
-                    {
-                        if (compo is PasiveComponent)
-                        {
-                            columna = nodos.IndexOf(nodo);
-
-                            A[fila, columna] += (1 / compo.Value);
-
-                            if (nodo == compo.Nodes[0])
-                                columna = nodos.IndexOf(compo.Nodes[1]);
-                            else //if (nodo == compo.Nodes[1])
-                                columna = nodos.IndexOf(compo.Nodes[0]);
-                            
-                            //nodo referencia no se suma
-                            if (columna >= 0)
-                                A[fila, columna] -= (1 / compo.Value);
-                        }
-                        if (compo is CurrentGenerator)
-                        {
-                            if (compo.Nodes[0] == nodo)
-                                v[fila] -= compo.Value;
-                            else
-                                v[fila] += compo.Value;
-                        }
-                    }
-                    #endregion
-                }
-            }
-
-            var x = A.Solve(v);
-
-            foreach (var nodo in nodos)
-            {
-                fila = nodos.IndexOf(nodo);
-                nodo.Voltage = v[fila];
-            }
-
-            StaticMatrix = A;
-            StaticVector = v;
-            StaticResult = x;
 
             return file;
         }
 
 
+
+        public object Clone()
+        {
+            Circuit cir = new Circuit();
+            foreach (var node in Nodes)
+            {
+                cir.Nodes.Add(node.Key, node.Value);
+            }
+            cir.Components.AddRange(Components);
+            cir.Reference = Reference;
+
+            return cir;
+        }
     }
 }

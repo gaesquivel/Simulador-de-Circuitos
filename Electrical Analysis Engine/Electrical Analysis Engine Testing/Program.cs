@@ -8,6 +8,7 @@ using ElectricalAnalysis.Components;
 using MathNet.Numerics.LinearAlgebra.Complex32;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra;
+using ElectricalAnalysis.Analysis.Solver;
 //using Matrix = MathNet.Numerics.LinearAlgebra.Complex.DenseMatrix;
 
 namespace ElectricalAnalysis_Test
@@ -17,24 +18,22 @@ namespace ElectricalAnalysis_Test
         static void Main(string[] args)
         {
            
-            
-            //var A = Matrix<double>.Build.DenseOfArray(new double[,] {
-            //    { 0.25, 1, 1 },
-            //    { 0, 1, -1 },
-            //    { 0, 0, 1 }
-            //});
-            //var b = Vector<double>.Build.Dense(new double[] { 0, 10, -5 });
-            //var x = A.Solve(b);
-            //Console.Write(x.ToString());
-
             Circuit cir = new Circuit();
-            cir.ReadCircuit("testidc.net");
-            cir.Solve();
+            cir.ReadCircuit("testdc.net");
+            DCSolver solver = new DCSolver();
+            Circuit cir2 = (Circuit)cir.Clone();
+            DCSolver.Optimize(cir2);
+            cir2.Solve();
 
-            Console.Write(cir.StaticVector.ToString());
-            Console.Write(cir.StaticMatrix.ToString());
-            //Console.Write(cir.Nodes.Keys.ToString());
-            Console.Write(cir.StaticResult.ToString());
+            foreach (var item in cir2.Nodes)
+            {
+                Console.Write(item.Key + " " + item.Value.Voltage.ToString() + "V\r\n");
+            }
+
+            Console.Write(cir2.StaticVector.ToString());
+            Console.Write(cir2.StaticMatrix.ToString());
+            //Console.Write(cir2.Nodes.Keys.ToString());
+            Console.Write(cir2.StaticResult.ToString());
 
 
             Console.ReadKey();

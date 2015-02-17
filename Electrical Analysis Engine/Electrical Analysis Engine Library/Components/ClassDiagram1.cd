@@ -3,93 +3,112 @@
   <Class Name="ElectricalAnalysis.Components.Circuit" Collapsed="true">
     <Position X="1" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAgBAAQAAQAAIAAAAAIAAAIAAAAAAAIAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAgBAAQCAQAAIAAAAAIAAAIAAAAAAAIAAAAAAAAAAA=</HashCode>
       <FileName>Components\Circuit.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="ElectricalAnalysis.Item" Collapsed="true">
     <Position X="4" Y="1.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAEAAAAAAAAgAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAEAAAAAAAggAAAAAAAAAQAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Components\Item.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="ElectricalAnalysis.Components.ElectricComponent" Collapsed="true">
-    <Position X="6.25" Y="2.5" Width="2" />
+    <Position X="6.25" Y="3.75" Width="2" />
     <TypeIdentifier>
-      <HashCode>AAAgAAAAAAAAAQAAAACAAAAAAAAAQAAAAAAgAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAQAAAAAEAAAAAAAAQAAAAAAgAAAEAAA=</HashCode>
       <FileName>Components\ElectricComponent.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="ElectricalAnalysis.Components.Node" Collapsed="true">
     <Position X="3.25" Y="2.5" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAIAAgAEAAAAAAAAAAAAAAAAgAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAIAAgAEAAAAAAAAACAAAAAAgAAAAAAA=</HashCode>
       <FileName>Components\Node.cs</FileName>
     </TypeIdentifier>
   </Class>
-  <Class Name="ElectricalAnalysis.Components.Generator" Collapsed="true">
-    <Position X="3.5" Y="5.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Components\Generator.cs</FileName>
-    </TypeIdentifier>
-  </Class>
   <Class Name="ElectricalAnalysis.Components.VoltageGenerator" Collapsed="true">
-    <Position X="2.5" Y="7" Width="1.5" />
+    <Position X="2" Y="5.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAgAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Components\VoltageGenerator.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
   <Class Name="ElectricalAnalysis.Components.CurrentGenerator" Collapsed="true">
-    <Position X="4.5" Y="7" Width="1.5" />
+    <Position X="4.25" Y="5.25" Width="1.5" />
     <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <HashCode>AAAAAAAAAAAAAAAAAACEAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Components\CurrentGenerator.cs</FileName>
     </TypeIdentifier>
+    <Lollipop Position="0.2" />
   </Class>
-  <Class Name="ElectricalAnalysis.Components.PasiveComponent" Collapsed="true">
-    <Position X="9.5" Y="5.5" Width="1.5" />
+  <Class Name="ElectricalAnalysis.Components.Resistor" Collapsed="true">
+    <Position X="8.75" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAACEAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Components\Resistor.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ElectricalAnalysis.Components.Branch" Collapsed="true">
+    <Position X="15.75" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAACAAA=</HashCode>
+      <FileName>Components\branch.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ElectricalAnalysis.Components.Capacitor" Collapsed="true">
+    <Position X="6.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Components\Capacitor.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ElectricalAnalysis.Components.Inductor" Collapsed="true">
+    <Position X="11" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAEAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Components\Inductor.cs</FileName>
+    </TypeIdentifier>
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="ElectricalAnalysis.Components.ParallelBlock" Collapsed="true">
+    <Position X="13.5" Y="5.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
+      <FileName>Components\ParallelBlock.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ElectricalAnalysis.Components.Block" Collapsed="true">
+    <Position X="14.5" Y="3.75" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAAAAAAAAAAAIAAAAAAAAAAAAAAAAAIAAAAAAAAAAA=</HashCode>
+      <FileName>Components\Block.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ElectricalAnalysis.Components.Dipole" Collapsed="true">
+    <Position X="8" Y="2.5" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>AAAgAAAAAAAAAAAAgACAIIAAgAAAAAAAAAAAEAAAAAA=</HashCode>
+      <FileName>Components\Dipole.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Interface Name="ElectricalAnalysis.Components.PasiveComponent" Collapsed="true">
+    <Position X="10" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
       <FileName>Components\PasiveComponent.cs</FileName>
     </TypeIdentifier>
-  </Class>
-  <Class Name="ElectricalAnalysis.Components.Resistor" Collapsed="true">
-    <Position X="7.5" Y="7" Width="1.5" />
+  </Interface>
+  <Interface Name="ElectricalAnalysis.Components.Generator" Collapsed="true">
+    <Position X="12" Y="0.5" Width="1.5" />
     <TypeIdentifier>
       <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Components\Resistor.cs</FileName>
+      <FileName>Components\Generator.cs</FileName>
     </TypeIdentifier>
-  </Class>
-  <Class Name="ElectricalAnalysis.Inductor" Collapsed="true">
-    <Position X="9.25" Y="7" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Components\Inductor.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="ElectricalAnalysis.Capacitor" Collapsed="true">
-    <Position X="11.25" Y="7" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Components\Capacitor.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="ElectricalAnalysis.Components.Dipole" Collapsed="true">
-    <Position X="6.5" Y="4" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAAA=</HashCode>
-      <FileName>Components\Dipole.cs</FileName>
-    </TypeIdentifier>
-  </Class>
-  <Class Name="ElectricalAnalysis.Components.Branch" Collapsed="true">
-    <Position X="6.5" Y="5.5" Width="1.5" />
-    <TypeIdentifier>
-      <HashCode>AAAAAAAAAAAAAAAAAAAAAAAAAAAAAAQAAAAAAAAAAAA=</HashCode>
-      <FileName>Components\branch.cs</FileName>
-    </TypeIdentifier>
-  </Class>
+  </Interface>
   <Font Name="Segoe UI" Size="9" />
 </ClassDiagram>

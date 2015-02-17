@@ -4,11 +4,10 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElectricalAnalysis
+namespace ElectricalAnalysis.Data
 {
-    public class DCAnalysis: Analysis
+    public class DCData:SimulationData
     {
-
 
 
     }

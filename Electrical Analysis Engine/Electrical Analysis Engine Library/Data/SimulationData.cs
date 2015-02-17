@@ -4,10 +4,12 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 
-namespace ElectricalAnalysis
+namespace ElectricalAnalysis.Data
 {
-    public abstract class Analysis
+    public abstract class SimulationData: Item
     {
+
+
 
 
     }

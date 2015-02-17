@@ -6,7 +6,7 @@ using System.Threading.Tasks;
 
 namespace ElectricalAnalysis.Components
 {
-    public abstract class PasiveComponent:Dipole
+    public interface PasiveComponent
     {
 
 
