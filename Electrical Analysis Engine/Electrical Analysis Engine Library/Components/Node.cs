@@ -40,8 +40,16 @@ namespace ElectricalAnalysis.Components
             /// Node where voltage es directly dependent of 
             /// other floating node
             /// </summary>
-            VoltageLinkedNode
-
+            VoltageLinkedNode,
+            /// <summary>
+            /// In this node voltage can be calculated by 
+            /// voltage pasive divider ecuation
+            /// </summary>
+            VoltageDivideNode,
+            ///// <summary>
+            ///// In this case the voltage can be calculated eas
+            ///// </summary>
+            //VoltageDivideKnownNode
         }
 
         public NodeType TypeOfNode { get; set; }
@@ -85,6 +93,19 @@ namespace ElectricalAnalysis.Components
                 return Components[1];
             else
                 return Components[0];
+        }
+
+        /// <summary>
+        /// Node Voltage is well known for some reason (or not)
+        /// </summary>
+        public bool IsVoltageKnowed
+        {
+            get
+            {
+                if (TypeOfNode == NodeType.VoltageFixedNode || IsReference)
+                    return true;
+                return false;
+            }
         }
     }
 }

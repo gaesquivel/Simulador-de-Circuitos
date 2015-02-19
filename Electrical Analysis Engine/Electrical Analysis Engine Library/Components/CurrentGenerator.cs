@@ -35,7 +35,7 @@ namespace ElectricalAnalysis.Components
             Initialize(name, value);
         }
 
-        public override Complex32 Impedance(double W)
+        public override Complex32 Impedance(Complex32 ?W)
         {
             return Complex32.PositiveInfinity;
         }

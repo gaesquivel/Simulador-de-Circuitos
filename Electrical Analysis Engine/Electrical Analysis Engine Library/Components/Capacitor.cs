@@ -12,7 +12,6 @@ namespace ElectricalAnalysis.Components
             : base()
         {
             Initialize("C" + ID.ToString());
-            //Name = "C" + ID.ToString();
             Expresion = "C";
             Value = 1E-6;
         }
@@ -24,11 +23,13 @@ namespace ElectricalAnalysis.Components
 
         }
 
-        public override Complex32 Impedance(double W)
+        public override Complex32 Impedance(Complex32? W = null)
         {
-            if (W>0)
-                return new Complex32(0, (float)(1 / W * Value));
-            return Complex32.NaN;
+            if (W == null || W.Value.IsZero())
+                return Complex32.PositiveInfinity;
+            // 1/jWC
+            // 1/SC
+            return (W.Value * new Complex32((float)Value,0)).Reciprocal();
         }
     }
 }

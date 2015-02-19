@@ -55,6 +55,9 @@
   <ItemGroup>
     <None Include="App.config" />
     <None Include="packages.config" />
+    <None Include="RCcharge.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="testdc.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

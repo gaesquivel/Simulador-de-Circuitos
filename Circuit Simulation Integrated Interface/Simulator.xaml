@@ -51,24 +51,24 @@
                     <xcad:LayoutAnchorablePane DockWidth="200">
                         <xcad:LayoutAnchorable ContentId="properties" Title="Properties" CanHide="False" CanClose="False"
                                             AutoHideWidth="240"
-                                         IconSource="../Images/preferences.png">
+                                         IconSource="Images/preferences.png">
                             <xctk:PropertyGrid NameColumnWidth="110"
                         SelectedObject="{Binding ElementName=_layoutRoot, Path=LastFocusedDocument.Content}"/>
                         </xcad:LayoutAnchorable>
                     </xcad:LayoutAnchorablePane>
                     <xcad:LayoutDocumentPaneGroup >
                         <xcad:LayoutDocumentPane>
-                            <xcad:LayoutDocument ContentId="document1" Title="Document 1" IconSource="../Images/document.png" >
+                            <xcad:LayoutDocument ContentId="document1" Title="Document 1" IconSource="Images/document.png" >
                                 <Button Content="Document 1 Content" HorizontalAlignment="Center" VerticalAlignment="Center"/>
                             </xcad:LayoutDocument>
-                            <xcad:LayoutDocument ContentId="document2" Title="Document 2" IconSource="../Images/document.png">
+                            <xcad:LayoutDocument ContentId="document2" Title="Document 2" IconSource="Images/document.png">
                                 <TextBox Text="Document 2 Content" AcceptsReturn="True"/>
                             </xcad:LayoutDocument>
                         </xcad:LayoutDocumentPane>
                     </xcad:LayoutDocumentPaneGroup >
                     <xcad:LayoutAnchorablePaneGroup DockWidth="125">
                         <xcad:LayoutAnchorablePane>
-                            <xcad:LayoutAnchorable ContentId="alarms" Title="Alarms" IconSource="../Images/alarmclock.png" >
+                            <xcad:LayoutAnchorable ContentId="alarms" Title="Alarms" IconSource="Images/alarmclock.png" >
                                 <ListBox>
                                     <s:String>Alarm 1</s:String>
                                     <s:String>Alarm 2</s:String>
@@ -94,10 +94,10 @@
                 <xcad:LayoutRoot.LeftSide>
                     <xcad:LayoutAnchorSide>
                         <xcad:LayoutAnchorGroup>
-                            <xcad:LayoutAnchorable Title="Agenda" ContentId="agenda" IconSource="../Images/address_book.png">
+                            <xcad:LayoutAnchorable Title="Agenda" ContentId="agenda" IconSource="Images/address_book.png">
                                 <TextBlock Text="Agenda Content" Margin="10" FontSize="18" FontWeight="Black" TextWrapping="Wrap"/>
                             </xcad:LayoutAnchorable>
-                            <xcad:LayoutAnchorable Title="Contacts" ContentId="contacts" IconSource="../Images/edit.png" >
+                            <xcad:LayoutAnchorable Title="Contacts" ContentId="contacts" IconSource="Images/edit.png" >
                                 <TextBlock Text="Contacts Content" Margin="10" FontSize="18" FontWeight="Black" TextWrapping="Wrap"/>
                             </xcad:LayoutAnchorable>
                         </xcad:LayoutAnchorGroup>

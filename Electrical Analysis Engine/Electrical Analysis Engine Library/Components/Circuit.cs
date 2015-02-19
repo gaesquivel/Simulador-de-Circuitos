@@ -6,8 +6,6 @@ using System.Text;
 using System.Threading.Tasks;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra;
-//using ElectricalAnalysis.Analysis;
-//using MathNet.Numerics.LinearAlgebra.Double;
 
 namespace ElectricalAnalysis.Components
 {
@@ -20,9 +18,9 @@ namespace ElectricalAnalysis.Components
         public Boolean HasErrors { get; protected set; }
         public Node Reference { get; set; }
 
-        public Vector<double> StaticResult;
-        public Vector<double> StaticVector;
-        public Matrix<double> StaticMatrix;
+        //public Vector<double> StaticResult;
+        //public Vector<double> StaticVector;
+        //public Matrix<double> StaticMatrix;
 
         public Circuit()
             : base()
@@ -62,7 +60,7 @@ namespace ElectricalAnalysis.Components
 
                     //R_R1         $N_0002 $N_0001  1k
                     string[] elemn = item.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                    ElectricComponent comp;
+                    ElectricComponent comp = null;
                     string[] comp1 = elemn[0].Split("_".ToCharArray());
                     switch (comp1[0].ToUpper())
                     {
@@ -70,7 +68,18 @@ namespace ElectricalAnalysis.Components
                             comp = new Resistor(comp1[1], elemn[3]);
                             break;
                         case "V":
-                            comp = new VoltageGenerator(comp1[1], elemn[3]);
+                            if (elemn.Length == 4)
+                                comp = new VoltageGenerator(comp1[1], elemn[3]);
+                            else if (elemn.Length == 7 || elemn.Length == 8)
+                            {
+                                ACVoltageGenerator ac =  new ACVoltageGenerator(comp1[1], elemn[4]);
+                                if (elemn.Length == 8)
+                                    ac.ACVoltage = new Complex32((float)StringUtils.DecodeString(elemn[6]), 
+                                                                (float)StringUtils.DecodeString(elemn[6]));
+                                else
+                                    ac.ACVoltage = new Complex32((float)StringUtils.DecodeString(elemn[6]), 0);
+                                comp = (ACVoltageGenerator)ac;
+                            }
                             break;
                         case "I":
                             if (elemn[3] == "DC")
@@ -84,6 +93,11 @@ namespace ElectricalAnalysis.Components
                             comp = new Inductor(comp1[1], elemn[3]);
 
                             break;
+                        case "C":
+                            comp = new Capacitor(comp1[1], elemn[3]);
+
+                            break;
+
                         default:
                             throw new Exception();
                     }

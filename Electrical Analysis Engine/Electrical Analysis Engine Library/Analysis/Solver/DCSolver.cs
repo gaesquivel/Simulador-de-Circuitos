@@ -21,7 +21,7 @@ namespace ElectricalAnalysis.Analysis.Solver
             br.Nodes.Clear();
             //solo es valido si el circuito fue optimizado, y los paralelos
             //se reemplazaron por bloques paralelo
-            while (nodo.Components.Count == 2)
+            while (nodo.Components.Count == 2 && cir.Reference != nodo)
             {
                 br.Components.Add(compo);
                 br.InternalNodes.Add(nodo);
@@ -45,24 +45,31 @@ namespace ElectricalAnalysis.Analysis.Solver
             nodo = compo.OtherNode(nodo);
             while (nodo != initialNode)
             {
-                if (compo is VoltageGenerator)
+                if (nodo.TypeOfNode == Node.NodeType.VoltageFixedNode)
                 {
-
+                    // nothing, node was calculated
+                }
+                else if (compo is VoltageGenerator)
+                {
                     if (nodo.TypeOfNode == Node.NodeType.Unknow)
                     {
                         nodo.TypeOfNode = Node.NodeType.VoltageLinkedNode;
                     }
-                    else if (nodo.TypeOfNode == Node.NodeType.VoltageFixedNode)
-                    { }
                     else
                         throw new NotImplementedException();
+                }
+                else if (compo is PasiveComponent)
+                { 
+                    if (nodo.TypeOfNode == Node.NodeType.Unknow)
+                        nodo.TypeOfNode = Node.NodeType.VoltageDivideNode;
+                    else
+                        throw new NotImplementedException();
+
                 }
                 else
                 {
                     if (nodo.TypeOfNode == Node.NodeType.Unknow)
                         nodo.TypeOfNode = Node.NodeType.InternalBranchNode;
-                    else if (nodo.TypeOfNode == Node.NodeType.VoltageFixedNode)
-                    { }
                     else
                         throw new NotImplementedException();
                 }
@@ -144,16 +151,16 @@ namespace ElectricalAnalysis.Analysis.Solver
             #endregion
 
             #region identifico la tierra
-            Node tierra = null;
-            foreach (var item in cir.Nodes.Values)
-            {
-                if (item.IsReference)
-                {
-                    tierra = item;
-                    cir.Reference = tierra;
-                    break;
-                }
-            }
+            Node tierra = cir.Reference;
+            //foreach (var item in cir.Nodes.Values)
+            //{
+            //    if (item.IsReference)
+            //    {
+            //        tierra = item;
+            //        cir.Reference = tierra;
+            //        break;
+            //    }
+            //}
             #endregion
 
             #region arranco desde tierra he identifico los nodos de tension fija, 
@@ -163,6 +170,12 @@ namespace ElectricalAnalysis.Analysis.Solver
             componenttoearh.AddRange(tierra.Components);
             foreach (var compo in componenttoearh)
             {
+                foreach (var rama in ramas)
+	            {
+                    if (rama.Components.Contains(compo))
+                        goto end;
+		 
+	            }
                 //los nodos de tension fija 
                 if (compo is VoltageGenerator)
                 {
@@ -170,7 +183,6 @@ namespace ElectricalAnalysis.Analysis.Solver
                     other.TypeOfNode = Node.NodeType.VoltageFixedNode;
                     other.Voltage = compo.Voltage;
                 }
- 
                 //desde tierra los nodos son:
                 //a: pertenecen a una rama. hay que levantar dicha rama...
                 //b: son nodos normales flotantes (se aplica teorema de nodo)
@@ -178,6 +190,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                 //si no forma parte de una rama, la rama de 1 elemento se desecha
                 ValidateBranch(yaanalizados, nodosnormales, ramas, tierra, compo, br);
            }
+        end: ;
             #endregion
 
             #region Analizo las ramas faltantes desde los nodos normales encontrados
@@ -204,10 +217,10 @@ namespace ElectricalAnalysis.Analysis.Solver
 
             cir.Components.AddRange(ramas);
 
-            foreach (var rama in ramas)
-            {
-                AddComponentNodes(cir, rama);
-            }
+            //foreach (var rama in ramas)
+            //{
+            //    AddComponentNodes(cir, rama);
+            //}
            
             return true;
         }
@@ -222,7 +235,7 @@ namespace ElectricalAnalysis.Analysis.Solver
         /// <param name="nodo"></param>
         /// <param name="compo"></param>
         /// <param name="br"></param>
-        private static void ValidateBranch(List<Dipole> yaanalizados, List<Node> nodosnormales, 
+        protected static void ValidateBranch(List<Dipole> yaanalizados, List<Node> nodosnormales, 
                                             List<Branch> ramas, Node nodo, Dipole compo, Branch br)
         {
             if (br.Components.Count <= 1)
@@ -246,7 +259,7 @@ namespace ElectricalAnalysis.Analysis.Solver
             }
         }
 
-        private static void AddComponentNodes(Circuit ciroptimizado, Dipole rama)
+        protected static void AddComponentNodes(Circuit ciroptimizado, Dipole rama)
         {
             if (!ciroptimizado.Nodes.ContainsValue(rama.Nodes[0]))
                 ciroptimizado.Nodes.Add(rama.Nodes[0].Name, rama.Nodes[0]);
@@ -286,9 +299,8 @@ namespace ElectricalAnalysis.Analysis.Solver
         //        rama1.Nodes.Add(nodex);
         //}
 
-        public bool Solve(Circuit cir, BasicAnalysis ana)
+        public virtual bool Solve(Circuit cir, BasicAnalysis ana)
         {
-            string file = "";
             int fila = 0, columna = 0;
             List<Node> nodos = new List<Node>();
 
@@ -321,10 +333,19 @@ namespace ElectricalAnalysis.Analysis.Solver
                     {
                         if (rama is Branch || rama is PasiveComponent)
                         {
-                            v[fila] += rama.NortonCurrent(nodo);
-                            A[fila, columna] += 1 / rama.Impedance(0.0).Real;
+                            v[fila] += rama.NortonCurrent(nodo).Real;
+                            A[fila, columna] += 1 / rama.Impedance().Real;
                         }
                     }
+                }
+                else if (nodo.TypeOfNode == Node.NodeType.VoltageDivideNode)
+                {
+                    Complex32 v1, v2, z1, z2;
+                    v1 = nodo.Components[0].Nodes[0].Voltage;
+                    v2 = nodo.Components[1].Nodes[0].Voltage;
+                    z1 = nodo.Components[0].Impedance();
+                    z2 = nodo.Components[1].Impedance();
+                    nodo.Voltage = z2 * (v1 - v2) / (z1 + z2);
                 }
                 else if (nodo.TypeOfNode == Node.NodeType.VoltageLinkedNode)
                 {
@@ -351,9 +372,9 @@ namespace ElectricalAnalysis.Analysis.Solver
                 nodo.Voltage = new Complex32((float)x[fila], 0);
             }
 
-            cir.StaticMatrix = A;
-            cir.StaticVector = v;
-            cir.StaticResult = x;
+            //cir.StaticMatrix = A;
+            //cir.StaticVector = v;
+            //cir.StaticResult = x;
             return true;
         }
     }

@@ -49,10 +49,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analysis\ACAnalysis.cs" />
-    <Compile Include="Analysis\ACSweepSolver.cs" />
+    <Compile Include="Analysis\TransientSolver.cs" />
     <Compile Include="Analysis\BasicAnalysis.cs" />
+    <Compile Include="Analysis\Solver\ACSweepSolver.cs" />
     <Compile Include="Analysis\Solver\CircuitSolver.cs" />
     <Compile Include="Analysis\Solver\DCSolver.cs" />
+    <Compile Include="Components\ACVoltageGenerator.cs" />
     <Compile Include="Components\Block.cs" />
     <Compile Include="Components\branch.cs" />
     <Compile Include="Components\Capacitor.cs" />

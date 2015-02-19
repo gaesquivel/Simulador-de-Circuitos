@@ -23,10 +23,10 @@ namespace ElectricalAnalysis.Components
             }
         }
 
-        public virtual Double NortonCurrent(Node referenceNode) {
+        public virtual Complex32 NortonCurrent(Node referenceNode, Complex32 ?W = null) {
             return 0;
         }
-        public virtual Double TheveninVoltage(Node referenceNode)
+        public virtual Complex32 TheveninVoltage(Node referenceNode, Complex32? W = null)
         {
             return 0;
         }
@@ -84,10 +84,10 @@ namespace ElectricalAnalysis.Components
         }
 
 
-        public virtual Complex32 Impedance(double W = 0)
-        {
-            return Complex32.Zero;
-        }
+        //public virtual Complex32 Impedance(double W = 0)
+        //{
+        //    return Complex32.Zero;
+        //}
 
         public virtual Complex32 Impedance(Complex32? W = null)
         {

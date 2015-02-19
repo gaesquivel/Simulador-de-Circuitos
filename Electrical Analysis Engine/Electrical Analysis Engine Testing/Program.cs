@@ -19,21 +19,40 @@ namespace ElectricalAnalysis_Test
         {
            
             Circuit cir = new Circuit();
-            cir.ReadCircuit("testdc.net");
-            DCSolver solver = new DCSolver();
+            //cir.ReadCircuit("testdc.net");
+            cir.ReadCircuit("RCcharge.net");
+            //DCSolver solver = new DCSolver();
+           // ACSweepSolver solver = new ACSweepSolver();
             Circuit cir2 = (Circuit)cir.Clone();
-            DCSolver.Optimize(cir2);
+            cir2.Setup.RemoveAt(0);
+            ACAnalysis ac = new ACAnalysis();
+            cir2.Setup.Add(ac);
+            //DCSolver.Optimize(cir2);
+            ACSweepSolver.Optimize(cir2);
             cir2.Solve();
 
-            foreach (var item in cir2.Nodes)
+            //ACAnalysis ac = (ACAnalysis)cir2.Setup[0];
+            ACSweepSolver sol = (ACSweepSolver)ac.Solver;
+            foreach (var res in sol.Results)
             {
-                Console.Write(item.Key + " " + item.Value.Voltage.ToString() + "V\r\n");
+                Console.Write(res.Key.ToString() + "rad/seg");
+                foreach (var nodo in res.Value)
+                {
+                    if (nodo.Key == "$N_0001")
+                        Console.Write(nodo.Key + " " + nodo.Value.ToString() + "V\r\n");
+                }
+                
             }
 
-            Console.Write(cir2.StaticVector.ToString());
-            Console.Write(cir2.StaticMatrix.ToString());
+            //foreach (var item in cir2.Nodes)
+            //{
+            //    Console.Write(item.Key + " " + item.Value.Voltage.ToString() + "V\r\n");
+            //}
+
+            //Console.Write(cir2.StaticVector.ToString());
+            //Console.Write(cir2.StaticMatrix.ToString());
             //Console.Write(cir2.Nodes.Keys.ToString());
-            Console.Write(cir2.StaticResult.ToString());
+            //Console.Write(cir2.StaticResult.ToString());
 
 
             Console.ReadKey();

@@ -2,12 +2,17 @@
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:sparrow="http://sparrowtoolkit.codeplex.com/wpf"
-        xmlns:local="clr-namespace:Wpfchart"
+        xmlns:local="clr-namespace:Simcircuit"
         Title="Window1" Height="300" Width="600">
     <Grid>
-        <sparrow:SparrowChart Margin="0, 10, 10,0">
+        <Grid.RowDefinitions>
+            <RowDefinition Height="33*"/>
+            <RowDefinition Height="236*"/>
+        </Grid.RowDefinitions>
+        <Button Click="Button_Click" />
+        <sparrow:SparrowChart Margin="0, 10, 10,0" Grid.Row="1">
             <sparrow:SparrowChart.DataContext>
-                <local:ViewModel/>
+                <local:BodeViewModel x:Name="model"/>
             </sparrow:SparrowChart.DataContext>
             <sparrow:SparrowChart.XAxis>
                 <sparrow:LinearXAxis/>

@@ -5,7 +5,7 @@ using System.Text;
 
 namespace ElectricalAnalysis.Analysis.Solver
 {
-    public class ACSweepSolver: CircuitSolver
+    public class TransientSolver: CircuitSolver
     {
 
         public bool Solve(Components.Circuit cir, BasicAnalysis ana)

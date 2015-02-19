@@ -40,10 +40,10 @@ namespace ElectricalAnalysis.Components
             return new Complex32((float)Value, 0);
         }
 
-        public override Complex32 Impedance(double W = 0)
-        {
-            return new Complex32((float)Value, 0);
-        }
+        //public override Complex32 Impedance(double W = 0)
+        //{
+        //    return new Complex32((float)Value, 0);
+        //}
 
     }
 }

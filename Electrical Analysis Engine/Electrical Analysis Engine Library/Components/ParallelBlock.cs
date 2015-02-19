@@ -14,6 +14,8 @@ namespace ElectricalAnalysis.Components
     public class ParallelBlock:Block
     {
 
+
+
         public override Complex32 Voltage
         {
             get
@@ -38,7 +40,7 @@ namespace ElectricalAnalysis.Components
         {
             get
             {
-                return Voltage / Impedance((double)0);
+                return Voltage / Impedance();
             }
             internal set
             {
@@ -57,21 +59,21 @@ namespace ElectricalAnalysis.Components
 
 
 
-        public override Complex32 Impedance(double W = 0)
-        {
-            Complex32 Y = Complex32.Zero;
-            Complex32 Z2 = Complex32.Zero;
+        //public override Complex32 Impedance(double W = 0)
+        //{
+        //    Complex32 Y = Complex32.Zero;
+        //    Complex32 Z2 = Complex32.Zero;
 
-            foreach (var item in Components)
-            {
-                Z2 = item.Impedance(W);
-                if (Z2.IsZero())
-                    return Complex32.PositiveInfinity;
-                Y += 1 / Z2;
-            }
+        //    foreach (var item in Components)
+        //    {
+        //        Z2 = item.Impedance(W);
+        //        if (Z2.IsZero())
+        //            return Complex32.PositiveInfinity;
+        //        Y += 1 / Z2;
+        //    }
 
-            return 1 / Y;
-        }
+        //    return 1 / Y;
+        //}
 
 
         public override Complex32 Impedance(Complex32 ?W = null)

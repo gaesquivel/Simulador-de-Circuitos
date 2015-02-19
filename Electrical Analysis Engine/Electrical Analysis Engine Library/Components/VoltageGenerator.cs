@@ -23,11 +23,11 @@ namespace ElectricalAnalysis.Components
             }
         }
 
-        public override double TheveninVoltage(Node referenceNode)
+        public override Complex32 TheveninVoltage(Node referenceNode, Complex32? W = null)
         {
             if (referenceNode == Nodes[0])
-                return Value;
-            return -Value;
+                return new Complex32((float) Value, 0);
+            return new Complex32((float)-Value, 0);
         }
 
 
