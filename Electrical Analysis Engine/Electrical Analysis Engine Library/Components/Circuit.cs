@@ -9,7 +9,7 @@ using MathNet.Numerics.LinearAlgebra;
 
 namespace ElectricalAnalysis.Components
 {
-    public class Circuit:Item, ICloneable
+    public class Circuit:Item, ICloneable, ComponentContainer
     {
 
         public List<BasicAnalysis> Setup { get; protected set; }
@@ -17,6 +17,8 @@ namespace ElectricalAnalysis.Components
         public Dictionary<string,Node> Nodes { get; protected set; }
         public Boolean HasErrors { get; protected set; }
         public Node Reference { get; set; }
+
+        public double CircuitTime { get; set; }
 
         //public Vector<double> StaticResult;
         //public Vector<double> StaticVector;
@@ -65,14 +67,14 @@ namespace ElectricalAnalysis.Components
                     switch (comp1[0].ToUpper())
                     {
                         case "R":
-                            comp = new Resistor(comp1[1], elemn[3]);
+                            comp = new Resistor(this, comp1[1], elemn[3]);
                             break;
                         case "V":
                             if (elemn.Length == 4)
-                                comp = new VoltageGenerator(comp1[1], elemn[3]);
+                                comp = new VoltageGenerator(this, comp1[1], elemn[3]);
                             else if (elemn.Length == 7 || elemn.Length == 8)
                             {
-                                ACVoltageGenerator ac =  new ACVoltageGenerator(comp1[1], elemn[4]);
+                                ACVoltageGenerator ac = new ACVoltageGenerator(this, comp1[1], elemn[4]);
                                 if (elemn.Length == 8)
                                     ac.ACVoltage = new Complex32((float)StringUtils.DecodeString(elemn[6]), 
                                                                 (float)StringUtils.DecodeString(elemn[6]));
@@ -83,18 +85,18 @@ namespace ElectricalAnalysis.Components
                             break;
                         case "I":
                             if (elemn[3] == "DC")
-                                comp = new CurrentGenerator(comp1[1], elemn[4]);
+                                comp = new CurrentGenerator(this, comp1[1], elemn[4]);
                             else
                                 //aun sin resolver para otros generadores
-                                comp = new CurrentGenerator(comp1[1], elemn[4]);
+                                comp = new CurrentGenerator(this, comp1[1], elemn[4]);
 
                             break;
                         case "L":
-                            comp = new Inductor(comp1[1], elemn[3]);
+                            comp = new Inductor(this, comp1[1], elemn[3]);
 
                             break;
                         case "C":
-                            comp = new Capacitor(comp1[1], elemn[3]);
+                            comp = new Capacitor(this, comp1[1], elemn[3]);
 
                             break;
 
@@ -117,7 +119,7 @@ namespace ElectricalAnalysis.Components
                     n.Components.Add(comp);
                     if (n.Name == "0")
                     {   
-                        n.IsReference = true;
+                        //n.IsReference = true;
                         Reference = n;
                     }
                     //agrego el segundo nodo
@@ -132,8 +134,8 @@ namespace ElectricalAnalysis.Components
                     comp.Nodes.Add(n);
                     n.Components.Add(comp);
                    
-                    if (n.Name == "0")
-                        n.IsReference = true;
+                    //if (n.Name == "0")
+                    //    n.IsReference = true;
 
                     Components.Add(comp);
                 }
@@ -159,7 +161,17 @@ namespace ElectricalAnalysis.Components
             return file;
         }
 
-
+        public void Reset()
+        {
+            foreach (var item in Components)
+            {
+                item.Reset();
+            }
+            foreach (var item in Nodes.Values)
+            {
+                item.Reset();
+            }
+        }
 
         public object Clone()
         {

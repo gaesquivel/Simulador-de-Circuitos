@@ -103,7 +103,7 @@ namespace ElectricalAnalysis.Components
 
         public List<Node> InternalNodes { get; protected set; }
 
-        public Branch()
+        public Branch(ComponentContainer owner):base(owner)
         {
             InternalNodes = new List<Node>();
         }

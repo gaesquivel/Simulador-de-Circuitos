@@ -6,7 +6,7 @@ using System.Text;
 using System.Threading.Tasks;
 using System.Windows;
 
-namespace Wpfchart
+namespace DataVisualizer
 {
     // Create a ViewModel
     public class ViewModel

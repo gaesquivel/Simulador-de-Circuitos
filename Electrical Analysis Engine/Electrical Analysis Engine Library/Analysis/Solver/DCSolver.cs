@@ -14,7 +14,7 @@ namespace ElectricalAnalysis.Analysis.Solver
 
         protected static Branch FindBranch(Circuit cir, Node initialNode, Dipole Component)
         {
-            Branch br = new Branch();
+            Branch br = new Branch(cir);
             Dipole compo = Component;
             Node nodo = Component.OtherNode(initialNode);
             
@@ -123,7 +123,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                     {
                         if (para == null)
                         {
-                            para = new ParallelBlock(comp1, comp2);
+                            para = new ParallelBlock(cir, comp1, comp2);
                             paralelos.Add(para);
                             yaanalizados.Add(comp1);
                             yaanalizados.Add(comp2);

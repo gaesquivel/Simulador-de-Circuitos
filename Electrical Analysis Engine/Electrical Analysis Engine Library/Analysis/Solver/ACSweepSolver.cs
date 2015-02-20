@@ -37,18 +37,21 @@ namespace ElectricalAnalysis.Analysis.Solver
             }
 
             ACAnalysis analis = ana as ACAnalysis;
-            double w, wi, wf, deltaw, wx;
+            double w, wi, wf, deltaw, wx, pow = 1;
 
             wi = StringUtils.DecodeString(analis.StartFrequency);
-            wf = 1E5;//StringUtils.DecodeString(analis.EndFrequency);
+            wf = StringUtils.DecodeString(analis.EndFrequency);
+            //wf = 1E5;//StringUtils.DecodeString(analis.EndFrequency);
             w = wi;
             int i = (int)Math.Log10(wi) + 1;
             wx = Math.Pow(10, i);
             if (analis.ScanType == ACAnalysis.ACAnalysisScan.Linear)
                 deltaw = (wf - wi) / analis.Points;
             else
-                deltaw = (wx - wi) / analis.Points;
-
+            {
+                deltaw = 1.0d / analis.Points;
+                pow = Math.Pow(10, deltaw);
+            }
 
             while (w < wf)
             {
@@ -142,15 +145,16 @@ namespace ElectricalAnalysis.Analysis.Solver
                     w += deltaw;
                 else
                 {
+                    w = w * pow;
                     if (w > 0.95 * wx)
                     {
                         i++;
                         wi = wx;
                         wx = Math.Pow(10, i);
-                        deltaw = (wx - wi) / analis.Points;
+                        //pow = 1 / analis.Points;
+                        w = wi;
                     }
                     //deltaw = (wx - wi);
-                    w = w * Math.Pow(10, deltaw/analis.Points);
                 }
             }
 

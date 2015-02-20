@@ -11,7 +11,7 @@ using System.Threading.Tasks;
 using System.Windows;
 //using ElectricalAnalysis.Analysis.
 
-namespace Simcircuit
+namespace DataVisualizer
 {
     public class BodeViewModel
     {
@@ -49,7 +49,7 @@ namespace Simcircuit
                     {
                         if (nodo.Key == "$N_0001")
                             //Console.Write(nodo.Key + " " + nodo.Value.ToString() + "V\r\n");
-                            this.Collection.Add(new Point(nodo.Value.Magnitude, res.Key));
+                            this.Collection.Add(new Point(res.Key, nodo.Value.Real));
                     }
                 }
             }

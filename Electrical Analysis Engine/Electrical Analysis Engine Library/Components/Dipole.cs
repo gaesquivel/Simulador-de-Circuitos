@@ -11,6 +11,7 @@ namespace ElectricalAnalysis.Components
     {
 
         protected Complex32 current, voltage;
+        public ComponentContainer Owner { get; set; }
 
         public bool IsConnectedToEarth
         {
@@ -68,12 +69,13 @@ namespace ElectricalAnalysis.Components
         public List<Node> Nodes { get; protected set; }
         public int ReferenceNode { get; set; }
 
-        public Dipole()
+        public Dipole(ComponentContainer owner)
             : base()
         {
             Nodes = new List<Node>();
             Nodes.Add(new Node());
             Nodes.Add(new Node());
+            Owner = owner;
         }
         
         public Node OtherNode(Node thisnode)
@@ -94,7 +96,11 @@ namespace ElectricalAnalysis.Components
             return Complex32.Zero;
         }
 
-
+        public virtual void Reset()
+        {
+            Voltage = Complex32.Zero;
+            Current = Complex32.Zero;
+        }
 
     }
 }

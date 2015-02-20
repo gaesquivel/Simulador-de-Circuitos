@@ -1,5 +1,5 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
-<Project ToolsVersion="12.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+<Project ToolsVersion="4.0" DefaultTargets="Build" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
   <Import Project="$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props" Condition="Exists('$(MSBuildExtensionsPath)\$(MSBuildToolsVersion)\Microsoft.Common.props')" />
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
@@ -34,9 +34,6 @@
     <Reference Include="MathNet.Numerics">
       <HintPath>..\packages\MathNet.Numerics.3.5.0\lib\net40\MathNet.Numerics.dll</HintPath>
     </Reference>
-    <Reference Include="PotatoMathica Solver Engine Library">
-      <HintPath>..\..\PotatoMathica Solver Engine\PotatoMathica Solver Engine Library\bin\Debug\PotatoMathica Solver Engine Library.dll</HintPath>
-    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Numerics" />
@@ -49,11 +46,12 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analysis\ACAnalysis.cs" />
-    <Compile Include="Analysis\TransientSolver.cs" />
+    <Compile Include="Analysis\Solver\TransientSolver.cs" />
     <Compile Include="Analysis\BasicAnalysis.cs" />
     <Compile Include="Analysis\Solver\ACSweepSolver.cs" />
     <Compile Include="Analysis\Solver\CircuitSolver.cs" />
     <Compile Include="Analysis\Solver\DCSolver.cs" />
+    <Compile Include="Analysis\TransientAnalysis.cs" />
     <Compile Include="Components\ACVoltageGenerator.cs" />
     <Compile Include="Components\Block.cs" />
     <Compile Include="Components\branch.cs" />
@@ -61,6 +59,7 @@
     <Compile Include="Components\Circuit.cs">
       <SubType>Code</SubType>
     </Compile>
+    <Compile Include="Components\ComponentContainer.cs" />
     <Compile Include="Components\CurrentGenerator.cs" />
     <Compile Include="Components\Dipole.cs" />
     <Compile Include="Components\ElectricComponent.cs" />

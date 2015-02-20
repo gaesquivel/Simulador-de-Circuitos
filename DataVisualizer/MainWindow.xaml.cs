@@ -10,16 +10,17 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
+using System.Windows.Navigation;
 using System.Windows.Shapes;
 
-namespace Simcircuit
+namespace DataVisualizer
 {
     /// <summary>
-    /// Lógica de interacción para Simulator.xaml
+    /// Lógica de interacción para MainWindow.xaml
     /// </summary>
-    public partial class Simulator : Window
+    public partial class MainWindow : Window
     {
-        public Simulator()
+        public MainWindow()
         {
             InitializeComponent();
         }

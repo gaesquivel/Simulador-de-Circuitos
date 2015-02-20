@@ -54,6 +54,7 @@ namespace ElectricalAnalysis.Components
 
         public NodeType TypeOfNode { get; set; }
 
+        public ComponentContainer Owner { get; set; }
 
         public Complex32 Voltage { get; internal set; }
         public bool IsReference { get; set; }
@@ -106,6 +107,11 @@ namespace ElectricalAnalysis.Components
                     return true;
                 return false;
             }
+        }
+
+        public void Reset()
+        {
+            Voltage = Complex32.Zero;
         }
     }
 }

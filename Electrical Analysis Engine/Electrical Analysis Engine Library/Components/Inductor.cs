@@ -9,8 +9,8 @@ namespace ElectricalAnalysis.Components
     public class Inductor : ElectricComponent, PasiveComponent
     {
 
-        public Inductor()
-            : base()
+        public Inductor(ComponentContainer owner)
+            : base(owner)
         {
             Initialize("L" + ID.ToString(), "1m");
             //Name = "L" + ID.ToString();
@@ -18,8 +18,8 @@ namespace ElectricalAnalysis.Components
             //Value = 1E-4;
         }
 
-        public Inductor(string name, string value)
-            : base()
+        public Inductor(ComponentContainer owner, string name, string value)
+            : base(owner)
         {
             Initialize(name, value);
 

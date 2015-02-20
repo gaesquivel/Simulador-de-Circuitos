@@ -22,7 +22,8 @@ namespace ElectricalAnalysis
         /// <returns></returns>
         public static double DecodeString(string measure)
         {
-            var re = new Regex(@"(?i)(?<value>-?[\d.]+)\s*(?<multiplier>[kgtmunp]?)\s*(?<unit>[avw]*)");
+            //|
+            var re = new Regex(@"(?i)(?<value>-?[\d.]+)\s*(?<multiplier>(meg)|[kgtmunp]?)\s*(?<unit>[avw]*)");
             var conversionFactors = new Dictionary<string, double> {
                                 { "", 1 }, 
                                 { "k", 1E3 }, 
@@ -32,7 +33,8 @@ namespace ElectricalAnalysis
                                 { "m", 1E-3 }, 
                                 { "u", 1E-6 }, 
                                 { "n", 1E-9 }, 
-                                { "p", 1E-12 } };
+                                { "p", 1E-12 } 
+            };
 
             var m = re.Match(measure);
 

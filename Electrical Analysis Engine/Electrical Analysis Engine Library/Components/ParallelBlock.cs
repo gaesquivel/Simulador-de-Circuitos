@@ -49,7 +49,7 @@ namespace ElectricalAnalysis.Components
         }
 
 
-        public ParallelBlock(Dipole comp1, Dipole comp2)
+        public ParallelBlock(ComponentContainer owner, Dipole comp1, Dipole comp2):base(owner)
         {
             Components.Add(comp1);
             Components.Add(comp2);

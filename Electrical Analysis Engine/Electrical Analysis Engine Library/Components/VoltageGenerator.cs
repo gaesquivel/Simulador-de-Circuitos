@@ -31,15 +31,15 @@ namespace ElectricalAnalysis.Components
         }
 
 
-        public VoltageGenerator()
-            : base()
+        public VoltageGenerator(ComponentContainer owner)
+            : base(owner)
         {
             Initialize("V" + ID.ToString());
             Expresion = "V";
             Value = 10;
         }
 
-        public VoltageGenerator(string name, string value):base()
+        public VoltageGenerator(ComponentContainer owner, string name, string value):base(owner)
         {
             Initialize(name, value);
         }

@@ -20,8 +20,8 @@ namespace ElectricalAnalysis.Components
             }
         }
 
-        public Resistor()
-            : base()
+        public Resistor(ComponentContainer owner)
+            : base(owner)
         {
             Initialize("R" + ID.ToString());
             //Name = "R" + ID.ToString();
@@ -29,7 +29,7 @@ namespace ElectricalAnalysis.Components
             Value = 1000;
         }
 
-        public Resistor(string name, string value):base()
+        public Resistor(ComponentContainer owner, string name, string value):base(owner)
         {
             Initialize(name, value);
 

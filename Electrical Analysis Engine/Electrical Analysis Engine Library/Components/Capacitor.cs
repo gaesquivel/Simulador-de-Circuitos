@@ -8,16 +8,16 @@ namespace ElectricalAnalysis.Components
 {
     public class Capacitor: ElectricComponent, PasiveComponent
     {
-        public Capacitor()
-            : base()
+        public Capacitor(ComponentContainer owner)
+            : base(owner)
         {
             Initialize("C" + ID.ToString());
             Expresion = "C";
             Value = 1E-6;
         }
 
-        public Capacitor(string name, string value)
-            : base()
+        public Capacitor(ComponentContainer owner, string name, string value)
+            : base(owner)
         {
             Initialize(name, value);
 

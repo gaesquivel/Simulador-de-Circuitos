@@ -5,6 +5,8 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Simcircuit", "Simcircuit.cs
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Electrical Analysis Engine Library", "..\Electrical Analysis Engine\Electrical Analysis Engine Library\Electrical Analysis Engine Library.csproj", "{C5A99E1A-8024-4101-9E21-9E90E1CDA058}"
 EndProject
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "DataVisualizer", "..\DataVisualizer\DataVisualizer.csproj", "{EA924FF5-0259-40F6-A778-98DA4E2446D4}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -19,6 +21,10 @@ Global
 		{C5A99E1A-8024-4101-9E21-9E90E1CDA058}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{C5A99E1A-8024-4101-9E21-9E90E1CDA058}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{C5A99E1A-8024-4101-9E21-9E90E1CDA058}.Release|Any CPU.Build.0 = Release|Any CPU
+		{EA924FF5-0259-40F6-A778-98DA4E2446D4}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{EA924FF5-0259-40F6-A778-98DA4E2446D4}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{EA924FF5-0259-40F6-A778-98DA4E2446D4}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{EA924FF5-0259-40F6-A778-98DA4E2446D4}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE

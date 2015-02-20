@@ -21,16 +21,16 @@ namespace ElectricalAnalysis.Components
             }
         }
 
-        public CurrentGenerator()
-            : base()
+        public CurrentGenerator(ComponentContainer owner)
+            : base(owner)
         {
             Initialize("I" + ID.ToString());
             Expresion = "I";
             Value = 1E-3;
         }
 
-        public CurrentGenerator(string name, string value)
-            : base()
+        public CurrentGenerator(ComponentContainer owner, string name, string value)
+            : base(owner)
         {
             Initialize(name, value);
         }

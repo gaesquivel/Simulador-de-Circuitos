@@ -18,10 +18,10 @@ namespace ElectricalAnalysis.Components
         public double Temperature { get; set; }
 
 
-     
 
-        public ElectricComponent()
-            : base()
+
+        public ElectricComponent(ComponentContainer owner)
+            : base(owner)
         { 
         }
 
