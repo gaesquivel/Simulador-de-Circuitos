@@ -118,8 +118,8 @@ namespace ElectricalAnalysis.Components
                     comp.Nodes.Add(n);
                     n.Components.Add(comp);
                     if (n.Name == "0")
-                    {   
-                        //n.IsReference = true;
+                    {
+                        n.IsReference = true;
                         Reference = n;
                     }
                     //agrego el segundo nodo

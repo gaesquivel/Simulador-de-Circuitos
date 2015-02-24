@@ -9,6 +9,7 @@ using MathNet.Numerics.LinearAlgebra.Complex32;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra;
 using ElectricalAnalysis.Analysis.Solver;
+using ElectricalAnalysis.Analysis;
 //using Matrix = MathNet.Numerics.LinearAlgebra.Complex.DenseMatrix;
 
 namespace ElectricalAnalysis_Test
@@ -17,42 +18,52 @@ namespace ElectricalAnalysis_Test
    {
         static void Main(string[] args)
         {
-           
+            int i = 3;
             Circuit cir = new Circuit();
-            //cir.ReadCircuit("testdc.net");
-            cir.ReadCircuit("RCcharge.net");
-            //DCSolver solver = new DCSolver();
-           // ACSweepSolver solver = new ACSweepSolver();
-            Circuit cir2 = (Circuit)cir.Clone();
-            cir2.Setup.RemoveAt(0);
-            ACAnalysis ac = new ACAnalysis();
-            cir2.Setup.Add(ac);
-            //DCSolver.Optimize(cir2);
-            ACSweepSolver.Optimize(cir2);
-            cir2.Solve();
+            Circuit cir2 ;
 
-            //ACAnalysis ac = (ACAnalysis)cir2.Setup[0];
-            ACSweepSolver sol = (ACSweepSolver)ac.Solver;
-            foreach (var res in sol.Results)
+            switch (i)
             {
-                Console.Write(res.Key.ToString() + "rad/seg");
-                foreach (var nodo in res.Value)
-                {
-                    if (nodo.Key == "$N_0001")
-                        Console.Write(nodo.Key + " " + nodo.Value.ToString() + "V\r\n");
-                }
-                
+                case 0:
+
+            //cir.ReadCircuit("testdc.net");
+            //DCSolver solver = new DCSolver();
+            //DCSolver.Optimize(cir2);
+
+                    break;
+                case 1:
+                    cir.ReadCircuit("RCcharge.net");
+                    cir2 = (Circuit)cir.Clone();
+                    cir2.Setup.RemoveAt(0);
+                    ACAnalysis ac = new ACAnalysis();
+                    cir2.Setup.Add(ac);
+                    ACSweepSolver.Optimize(cir2);
+                    cir2.Solve();
+
+                    ACSweepSolver sol = (ACSweepSolver)ac.Solver;
+
+                    break;
+
+                case 3:
+                    cir.ReadCircuit("RCcharge.net");
+                    cir2 = (Circuit)cir.Clone();
+                    cir2.Setup.RemoveAt(0);
+                    ComplexPlainAnalysis ac1 = new ComplexPlainAnalysis();
+                    cir2.Setup.Add(ac1);
+                    ACSweepSolver.Optimize(cir2);
+                    cir2.Solve();
+                    ComplexPlainSolver sol1 = (ComplexPlainSolver)ac1.Solver;
+
+
+                    break;
+
+
+                default:
+                    break;
             }
 
-            //foreach (var item in cir2.Nodes)
-            //{
-            //    Console.Write(item.Key + " " + item.Value.Voltage.ToString() + "V\r\n");
-            //}
-
-            //Console.Write(cir2.StaticVector.ToString());
-            //Console.Write(cir2.StaticMatrix.ToString());
-            //Console.Write(cir2.Nodes.Keys.ToString());
-            //Console.Write(cir2.StaticResult.ToString());
+      
+       
 
 
             Console.ReadKey();

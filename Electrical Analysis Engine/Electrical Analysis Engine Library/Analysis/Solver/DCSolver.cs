@@ -152,15 +152,15 @@ namespace ElectricalAnalysis.Analysis.Solver
 
             #region identifico la tierra
             Node tierra = cir.Reference;
-            //foreach (var item in cir.Nodes.Values)
-            //{
-            //    if (item.IsReference)
-            //    {
-            //        tierra = item;
-            //        cir.Reference = tierra;
-            //        break;
-            //    }
-            //}
+            foreach (var item in cir.Nodes.Values)
+            {
+                if (item.IsReference)
+                {
+                    tierra = item;
+                    cir.Reference = tierra;
+                    break;
+                }
+            }
             #endregion
 
             #region arranco desde tierra he identifico los nodos de tension fija, 
@@ -267,49 +267,20 @@ namespace ElectricalAnalysis.Analysis.Solver
                 ciroptimizado.Nodes.Add(rama.Nodes[1].Name, rama.Nodes[1]);
         }
 
-        //private static Branch CreateBranch(Node nodo, List<Dipole> yaanalizados)
-        //{
-        //    Branch rama;
-        //    rama = new Branch();
-        //    //este nodo pertenece a 1 rama
-        //    rama.InternalNodes.Add(nodo);
-
-        //    //agrego los componentes del nodo a la rama
-        //    foreach (var compo in nodo.Components)
-        //    {
-        //        rama.Components.Add(compo);
-        //        yaanalizados.Remove(compo);
-
-
-        //        foreach (var nodo1 in compo.Nodes)
-        //        {
-        //            if (nodo1.TypeOfNode != Node.NodeType.InternalBranchNode)
-        //                rama.Nodes.Add(nodo1);
-        //        }
-        //    }
-        //    return rama;
-        //}
-
-        //private static void AddNodeToBranch(Node nodo, Branch rama1)
-        //{
-        //    Node nodex = nodo.Components[1].Nodes[0];
-        //    if (nodex == nodo)
-        //        nodex = nodo.Components[1].Nodes[1];
-        //    if (nodex.TypeOfNode != Node.NodeType.InternalBranchNode)
-        //        rama1.Nodes.Add(nodex);
-        //}
 
         public virtual bool Solve(Circuit cir, BasicAnalysis ana)
         {
             int fila = 0, columna = 0;
             List<Node> nodos = new List<Node>();
 
-            foreach (var nodo in cir.Nodes.Values)
-            {
-                //creo una lista de nodos sin el nodo referencia
-                if (!nodo.IsReference)
-                    nodos.Add(nodo);
-            }
+            nodos.AddRange(cir.Nodes.Values);
+            nodos.Remove(cir.Reference);
+            //foreach (var nodo in cir.Nodes.Values)
+            //{
+            //    //creo una lista de nodos sin el nodo referencia
+            //    if (!nodo.IsReference)
+            //        nodos.Add(nodo);
+            //}
 
             List<Node> nodosnorton = new List<Node>();
 
@@ -324,6 +295,7 @@ namespace ElectricalAnalysis.Analysis.Solver
             var v = Vector<double>.Build.Dense(nodosnorton.Count);
             var A = Matrix<double>.Build.DenseOfArray(new double[nodosnorton.Count, nodosnorton.Count]);
 
+            #region Calculo de tensiones de nodos
             foreach (var nodo in nodosnorton)
             {
                 columna = fila = nodosnorton.IndexOf(nodo);
@@ -340,12 +312,33 @@ namespace ElectricalAnalysis.Analysis.Solver
                 }
                 else if (nodo.TypeOfNode == Node.NodeType.VoltageDivideNode)
                 {
-                    Complex32 v1, v2, z1, z2;
-                    v1 = nodo.Components[0].Nodes[0].Voltage;
-                    v2 = nodo.Components[1].Nodes[0].Voltage;
-                    z1 = nodo.Components[0].Impedance();
-                    z2 = nodo.Components[1].Impedance();
-                    nodo.Voltage = z2 * (v1 - v2) / (z1 + z2);
+                    Dipole compo1 = nodo.Components[0];
+                    Dipole compo2 = nodo.Components[1];
+                    Node nodo1 = compo1.OtherNode(nodo);
+                    Node nodo2 = compo2.OtherNode(nodo);
+                    Complex32  z1, z2;
+                    double v1, v2;
+                    v1 = nodo1.Voltage.Real;
+                    v2 = nodo2.Voltage.Real;
+                    z1 = compo1.Impedance();
+                    z2 = compo2.Impedance();
+
+                    if (nodo1.IsVoltageKnowed)
+                        v[fila] += v1 * z1.Real;
+                    else
+                    {
+                        columna = nodosnorton.IndexOf(nodo1);
+                        A[fila, columna] -= v1 * z1.Real;
+                    }
+                    if (nodo2.IsVoltageKnowed)
+                        v[fila] += v2 * z2.Real;
+                    else
+                    {
+                        columna = nodosnorton.IndexOf(nodo2);
+                        A[fila, columna] -= v2 * z2.Real;
+                    }
+                    columna = nodosnorton.IndexOf(nodo);
+                    A[fila, columna] += (z1 + z2).Real;
                 }
                 else if (nodo.TypeOfNode == Node.NodeType.VoltageLinkedNode)
                 {
@@ -365,6 +358,9 @@ namespace ElectricalAnalysis.Analysis.Solver
           
 
             var x = A.Solve(v);
+            #endregion
+
+            #region almacenamiento temporal
 
             foreach (var nodo in nodosnorton)
             {
@@ -372,9 +368,9 @@ namespace ElectricalAnalysis.Analysis.Solver
                 nodo.Voltage = new Complex32((float)x[fila], 0);
             }
 
-            //cir.StaticMatrix = A;
-            //cir.StaticVector = v;
-            //cir.StaticResult = x;
+            #endregion
+            
+
             return true;
         }
     }
