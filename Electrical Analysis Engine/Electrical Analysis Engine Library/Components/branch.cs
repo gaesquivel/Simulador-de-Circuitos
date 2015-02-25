@@ -66,21 +66,21 @@ namespace ElectricalAnalysis.Components
         {
             get
             {
-                voltage = Complex32.Zero;
+                Complex32 voltage = Complex32.Zero;
                 foreach (var item in Components)
                 {
                     voltage += item.Voltage;
                 }
                 return voltage;
             }
-            set
-            {
-                base.Voltage = value;
-            }
+            //set
+            //{
+            //    base.Voltage = value;
+            //}
         }
 
 
-        public override Complex32 Current
+        public override Complex32 current
         {
             get
             {
@@ -88,15 +88,15 @@ namespace ElectricalAnalysis.Components
                 {
                     if (item is CurrentGenerator)
                     {
-                        return item.Current;
+                        return item.current;
                     }
                 }
 
-                return base.Current;
+                return _current;
             }
             internal set
             {
-                base.Current = value;
+                _current = value;
             }
         }
 

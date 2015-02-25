@@ -29,14 +29,14 @@ namespace ElectricalAnalysis.Components
                 }
                 return base.Voltage;
             }
-            set
-            {
-                base.Voltage = value;
-            }
+            //set
+            //{
+            //    base.Voltage = value;
+            //}
         }
 
 
-        public override Complex32 Current
+        public override Complex32 current
         {
             get
             {
@@ -44,7 +44,7 @@ namespace ElectricalAnalysis.Components
             }
             internal set
             {
-                base.Current = value;
+                _current = value;
             }
         }
 

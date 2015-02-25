@@ -85,6 +85,8 @@ namespace ComplexPlainVisualizer
 
         private Model3D CreateModel()
         {
+           // if (Points ==null)
+
             var plotModel = new Model3DGroup();
 
             int rows = Points.GetUpperBound(0) + 1;

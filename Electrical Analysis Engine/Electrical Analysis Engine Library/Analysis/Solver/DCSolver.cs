@@ -11,6 +11,8 @@ namespace ElectricalAnalysis.Analysis.Solver
 {
     public class DCSolver: CircuitSolver
     {
+        Circuit circuit;
+
 
         protected static Branch FindBranch(Circuit cir, Node initialNode, Dipole Component)
         {
@@ -152,15 +154,17 @@ namespace ElectricalAnalysis.Analysis.Solver
 
             #region identifico la tierra
             Node tierra = cir.Reference;
-            foreach (var item in cir.Nodes.Values)
-            {
-                if (item.IsReference)
+        
+            if (tierra == null)
+                foreach (var item in cir.Nodes.Values)
                 {
-                    tierra = item;
-                    cir.Reference = tierra;
-                    break;
+                    if (item.IsReference)
+                    {
+                        tierra = item;
+                        cir.Reference = tierra;
+                        break;
+                    }
                 }
-            }
             #endregion
 
             #region arranco desde tierra he identifico los nodos de tension fija, 
@@ -251,11 +255,16 @@ namespace ElectricalAnalysis.Analysis.Solver
             }
             else
             {
+                //rama valida
                 ramas.Add(br);
                 Node other = br.OtherNode(nodo);
                 if (!nodosnormales.Contains(other))
                     nodosnormales.Add(other);
                 yaanalizados.AddRange(br.Components);
+                foreach (var comp in br.Components)
+                {
+                    comp.Owner = br;
+                }
             }
         }
 
@@ -272,15 +281,24 @@ namespace ElectricalAnalysis.Analysis.Solver
         {
             int fila = 0, columna = 0;
             List<Node> nodos = new List<Node>();
+            circuit = cir;
 
-            nodos.AddRange(cir.Nodes.Values);
-            nodos.Remove(cir.Reference);
-            //foreach (var nodo in cir.Nodes.Values)
-            //{
-            //    //creo una lista de nodos sin el nodo referencia
-            //    if (!nodo.IsReference)
-            //        nodos.Add(nodo);
-            //}
+            if (cir.Reference == null)
+            {
+                foreach (var nodo in cir.Nodes.Values)
+                {
+                    //creo una lista de nodos sin el nodo referencia
+                    if (!nodo.IsReference)
+                        nodos.Add(nodo);
+                } 
+            }
+            else
+            {
+                nodos.AddRange(cir.Nodes.Values);
+                nodos.Remove(cir.Reference);
+
+            }
+           
 
             List<Node> nodosnorton = new List<Node>();
 
@@ -349,13 +367,10 @@ namespace ElectricalAnalysis.Analysis.Solver
                     A[fila, columna] = 1;
                     columna = nodosnorton.IndexOf(compo.OtherNode(nodo));
                     A[fila, columna] = -1;
-
-
                 }
                 else
                     throw new NotImplementedException();
             }
-          
 
             var x = A.Solve(v);
             #endregion
@@ -370,8 +385,128 @@ namespace ElectricalAnalysis.Analysis.Solver
 
             #endregion
             
+            //calculo las corrientes:
+            CalculateCurrents(cir);
+
 
             return true;
+        }
+
+        private static void CalculateCurrents(ComponentContainer cir)
+        {
+
+            foreach (var comp in cir.Components)
+            {
+                if (comp is Capacitor)
+                    continue;
+
+                //la corriente en las resistencias se calcula directamente en ellas: es ley de Ohm:V/R
+                if (comp is Resistor || comp is CurrentGenerator)
+                {
+                    if (cir is Branch)
+                    {
+                        //if ()
+                        Node nodo = comp.Nodes[0];
+                        ((Branch)cir).current = comp.Current(nodo);
+                    }
+                    continue;
+                }
+                //{
+                //    comp.Current = comp.Voltage / comp.Impedance();
+                //}
+
+                //en los Generadores de tension hay qe calcular la corriente en 1 u ambos nodos
+                if (comp is VoltageGenerator)
+                {
+                    foreach (var nodo in comp.Nodes)
+                    {
+                        Dipole comp2 = nodo.OtherComponent(comp);
+                        //si tiene solo un resistor en serie es automatico el valor de corriente
+                        if (nodo.Components.Count == 2 && (comp2 is Resistor || comp2 is CurrentGenerator))
+                        {
+                            //Node nodo2 = com
+                            comp.current = comp2.Current(nodo);
+                        
+                            if (cir is Branch)
+                                ((Branch)cir).current = comp.Current(nodo);
+                            goto out1;
+                        }
+                    }
+                    //si no tiene solo una resistencias en serie
+                    //se aplica 2da de Kirchoff para el supernodo
+                    throw new NotImplementedException();
+                    foreach (var nodo in comp.Nodes)
+                    {
+                        Complex32 i;
+                        foreach (var comp2 in nodo.Components)
+                        {
+
+                        }
+                    }
+                }
+
+                else if (comp is Branch)
+                {
+                    CalculateCurrents((Branch)comp);
+                    continue;
+                }
+
+                else if (comp is ParallelBlock)
+                {
+                    CalculateCurrents((Branch)comp);
+                    continue;
+                }
+
+            out1: ;
+            }
+        }
+
+
+        public virtual void ExportToCSV(string FileName)
+        {
+            //se guarda las tensiones
+            //     N1  N2 .... Nn 
+            //    5   15      2             Volts
+
+
+            // las corrientes
+            //  Comp1   Comp2   Comp3...
+            //    1       2       -1        Amperes
+            //List<List<string>> todos = new List<List<string>>();
+            using (var writer = new CsvFileWriter(FileName))
+            {
+                List<string> results = new List<string>();
+                foreach (var node in circuit.Nodes)
+                {
+                    results.Add(node.Key.ToString());
+                }
+                writer.WriteRow(results);
+                results.Clear();
+
+                foreach (var node in circuit.Nodes)
+                {
+                    results.Add(node.Value.Voltage.ToString());
+                }
+                writer.WriteRow(results);
+                results.Clear();
+
+                ScanComponentBlockCurrents(results, circuit);
+                writer.WriteRow(results);
+
+            }
+       
+        
+        }
+
+        private void ScanComponentBlockCurrents(List<string> results, ComponentContainer container)
+        {
+            foreach (var compo in container.Components)
+            {
+                if (compo is Block)
+                    ScanComponentBlockCurrents(results, (ComponentContainer)compo);
+                else
+                    results.Add(compo.current.ToString());
+            }
         }
     }
 }

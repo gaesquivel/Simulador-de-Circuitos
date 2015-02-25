@@ -9,6 +9,8 @@ namespace ElectricalAnalysis.Components
     public class Inductor : ElectricComponent, PasiveComponent
     {
 
+
+
         public Inductor(ComponentContainer owner)
             : base(owner)
         {

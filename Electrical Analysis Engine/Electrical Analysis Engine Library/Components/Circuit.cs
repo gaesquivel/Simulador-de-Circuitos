@@ -20,10 +20,6 @@ namespace ElectricalAnalysis.Components
 
         public double CircuitTime { get; set; }
 
-        //public Vector<double> StaticResult;
-        //public Vector<double> StaticVector;
-        //public Matrix<double> StaticMatrix;
-
         public Circuit()
             : base()
         {
@@ -133,10 +129,12 @@ namespace ElectricalAnalysis.Components
 
                     comp.Nodes.Add(n);
                     n.Components.Add(comp);
-                   
-                    //if (n.Name == "0")
-                    //    n.IsReference = true;
 
+                    if (n.Name == "0")
+                    {
+                        n.IsReference = true;
+                        Reference = n;
+                    }
                     Components.Add(comp);
                 }
             }

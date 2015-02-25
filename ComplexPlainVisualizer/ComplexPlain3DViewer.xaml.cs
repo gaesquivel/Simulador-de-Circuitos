@@ -1,8 +1,4 @@
-﻿using ElectricalAnalysis.Analysis;
-using ElectricalAnalysis.Analysis.Solver;
-using ElectricalAnalysis.Components;
-//using MathNet.Numerics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -14,32 +10,40 @@ using System.Windows.Documents;
 using System.Windows.Input;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
-using System.Windows.Media.Media3D;
-using System.Windows.Navigation;
 using System.Windows.Shapes;
+using ElectricalAnalysis.Analysis;
+using ElectricalAnalysis.Analysis.Solver;
+using ElectricalAnalysis.Components;
+using System.Windows.Media.Media3D;
 
 namespace ComplexPlainVisualizer
 {
     /// <summary>
-    /// Lógica de interacción para MainWindow.xaml
+    /// Lógica de interacción para ComplexPlain3DViewer.xaml
     /// </summary>
-    public partial class MainWindow : Window
+    public partial class ComplexPlain3DViewer : Window
     {
         ComplexPlainViewModel model;
         Circuit cir2;
         ComplexPlainSolver sol1;
 
-        public MainWindow()
+
+
+        public ComplexPlain3DViewer()
         {
             InitializeComponent();
-
+            model = new ComplexPlainViewModel();
+           // model.UpdateModel();
             Button_Click(this, null);
+
         }
+
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            model = new ComplexPlainViewModel();
+            //model = new ComplexPlainViewModel();
             model.ColorCoding = ColorCoding.ByLights;
+
 
             Circuit cir = new Circuit();
             cir.ReadCircuit("Circuits/RCL.net");
@@ -68,19 +72,17 @@ namespace ComplexPlainVisualizer
                     foreach (var node in sol1.Results[W])
                     {
                         if (node.Key == "out")
-                            data[i, j] = new Point3D(W.Real /scalefactor, 
-                                                    W.Imaginary /scalefactor,
-                                                    //node.Value.Magnitude);
+                            data[i, j] = new Point3D(W.Real / scalefactor,
+                                                    W.Imaginary / scalefactor,
+                                //node.Value.Magnitude);
                                                     2 * Math.Log10(node.Value.Magnitude));
                     }
                 }
 
             model.Data = data;
-            model.UpdateModel(false);         
-            //model.CreateDataArray(ModuleInDB);
+            model.UpdateModel(false);
 
             DataContext = model;
-
         }
 
     }

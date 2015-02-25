@@ -18,7 +18,7 @@ namespace ElectricalAnalysis_Test
    {
         static void Main(string[] args)
         {
-            int i = 3;
+            int i = 1;
             Circuit cir = new Circuit();
             Circuit cir2 ;
 
@@ -26,13 +26,18 @@ namespace ElectricalAnalysis_Test
             {
                 case 0:
 
-            //cir.ReadCircuit("testdc.net");
-            //DCSolver solver = new DCSolver();
-            //DCSolver.Optimize(cir2);
+                    cir.ReadCircuit("testdc.net");
+                    cir2 = (Circuit)cir.Clone();
+                    DCSolver.Optimize(cir2);
+                    DCAnalysis ac0 = (DCAnalysis)cir2.Setup[0];
+                    DCSolver solver = (DCSolver)ac0.Solver;
+                    //solver.Solve(cir2, );
+                    cir2.Solve();
+                    solver.ExportToCSV("e:/Test.csv");
 
                     break;
                 case 1:
-                    cir.ReadCircuit("RCcharge.net");
+                    cir.ReadCircuit("RCL.net");
                     cir2 = (Circuit)cir.Clone();
                     cir2.Setup.RemoveAt(0);
                     ACAnalysis ac = new ACAnalysis();
@@ -45,7 +50,7 @@ namespace ElectricalAnalysis_Test
                     break;
 
                 case 3:
-                    cir.ReadCircuit("RCcharge.net");
+                    cir.ReadCircuit("RCL.net");
                     cir2 = (Circuit)cir.Clone();
                     cir2.Setup.RemoveAt(0);
                     ComplexPlainAnalysis ac1 = new ComplexPlainAnalysis();
@@ -53,7 +58,8 @@ namespace ElectricalAnalysis_Test
                     ACSweepSolver.Optimize(cir2);
                     cir2.Solve();
                     ComplexPlainSolver sol1 = (ComplexPlainSolver)ac1.Solver;
-
+                    sol1.SelectedNode = sol1.CurrentCircuit.Nodes["$N_0001"];
+                    sol1.ExportToCSV("e:/plain.csv");
 
                     break;
 

@@ -8,6 +8,28 @@ namespace ElectricalAnalysis.Components
 {
     public class Capacitor: ElectricComponent, PasiveComponent
     {
+
+        public override Complex32 current
+        {
+            get
+            {
+                return Complex32.Zero;
+            }
+            internal set
+            {
+                _current = value;
+            }
+        }
+
+        public override Complex32 Current(Node referenceNode, Complex32? W = null)
+        {
+            Complex32 i = Voltage / Impedance(W);
+            if (referenceNode == Nodes[0])
+                return i;
+            else
+                return -i;
+        }
+
         public Capacitor(ComponentContainer owner)
             : base(owner)
         {

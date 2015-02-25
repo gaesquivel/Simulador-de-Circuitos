@@ -11,6 +11,10 @@ namespace ElectricalAnalysis.Analysis.Solver
     public class ComplexPlainSolver:ACSweepSolver
     {
 
+        public Node SelectedNode { get; set; }
+        public ComplexPlainAnalysis CurrentAnalysis { get; set; }
+        public Circuit CurrentCircuit { get; set; }
+
         /// <summary>
         /// Storage W and their indexes
         /// </summary>
@@ -26,11 +30,15 @@ namespace ElectricalAnalysis.Analysis.Solver
         {
             int fila = 0;
             List<Node> nodos = new List<Node>();
+            CurrentAnalysis = ana as ComplexPlainAnalysis;
+            CurrentCircuit = cir;
+
 
             nodos.AddRange(cir.Nodes.Values);
             nodos.Remove(cir.Reference);
 
             List<Node> nodosnorton = new List<Node>();
+            List<Node> nortoncopia = new List<Node>();
 
             foreach (var nodo in nodos)
             {
@@ -61,24 +69,30 @@ namespace ElectricalAnalysis.Analysis.Solver
 
                 for (int j = 0; j < analis.Points; j++)
                 {
+                    nortoncopia.Clear();
+                    foreach (var item in nodosnorton)
+                    {
+                        nortoncopia.Add(item);
+                    }
+
                     //Calculo de tensiones de nodos
                     Complex32 W = new Complex32((float)(sigmamin + j * deltasig), (float)(wi + i * deltaw));
-                    var x = ACSweepSolver.Calculate(nodosnorton, W);
+                    var x = ACSweepSolver.Calculate(nortoncopia, W);
                     
                     //          Node    Voltage
                     Dictionary<string, Complex32> result = new Dictionary<string, Complex32>();
 
                     #region almacenamiento temporal
-                    foreach (var nodo in nodosnorton)
+                    foreach (var nodo in nortoncopia)
                     {
-                        fila = nodosnorton.IndexOf(nodo);
+                        fila = nortoncopia.IndexOf(nodo);
                         nodo.Voltage = x[fila];
                         result.Add(nodo.Name, nodo.Voltage);
                     }
                     foreach (var nodo in nodos)
                     {
-                        if (nodosnorton.Contains(nodo))
-                            continue;
+                        //if (nodosnorton.Contains(nodo))
+                        //    continue;
                         result.Add(nodo.Name, nodo.Voltage);
                     }
                     if (!Results.ContainsKey(W))
@@ -99,6 +113,44 @@ namespace ElectricalAnalysis.Analysis.Solver
 
            // ExportToCSV();
             return true;
+        }
+
+
+        public override void ExportToCSV(string FileName)
+        {
+            if (SelectedNode == null)
+            {
+                Node[] arr = CurrentCircuit.Nodes.Values.ToArray<Node>();
+                SelectedNode = arr[0];
+            }
+
+            using (var writer = new CsvFileWriter(FileName))
+            {
+                writer.Delimiter = ';';
+                List<string> results = new List<string>();
+
+                MathNet.Numerics.Complex32 W;
+                for (int i = 0; i < CurrentAnalysis.Points; i++)
+                {
+                    for (int j = 0; j < CurrentAnalysis.Points; j++)
+                    {
+                        W = WfromIndexes[new Tuple<int, int>(i, j)];
+                        foreach (var node in Results[W])
+                        {
+                            if (node.Key == SelectedNode.Name)
+                            { //W.Real ,
+                                //                        W.Imaginary 
+                                results.Add(node.Value.Magnitude.ToString());
+                                break;
+                            //                      2 * Math.Log10(node.Value.Magnitude));
+                            }
+                        }
+                    }
+                    writer.WriteRow(results);
+                    results.Clear();
+
+                }
+            }
         }
 
     }

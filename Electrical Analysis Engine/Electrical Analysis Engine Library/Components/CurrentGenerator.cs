@@ -9,7 +9,7 @@ namespace ElectricalAnalysis.Components
 {
     public class CurrentGenerator : ElectricComponent, Generator
     {
-        public override Complex32 Current
+        public override Complex32 current
         {
             get
             {
@@ -17,7 +17,7 @@ namespace ElectricalAnalysis.Components
             }
             internal set
             {
-                base.Current = value;
+                _current = value;
             }
         }
 

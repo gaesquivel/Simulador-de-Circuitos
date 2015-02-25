@@ -25,6 +25,7 @@ namespace ElectricalAnalysis.Analysis.Solver
             nodos.Remove(cir.Reference);
 
             List<Node> nodosnorton = new List<Node>();
+            List<Node> nortoncopia = new List<Node>();
 
             foreach (var nodo in nodos)
             {
@@ -53,25 +54,31 @@ namespace ElectricalAnalysis.Analysis.Solver
 
             while (w < wf)
             {
+                nortoncopia.Clear();
+                foreach (var item in nodosnorton)
+                {
+                    nortoncopia.Add(item);
+                }
+                
                 //Calculo de tensiones de nodos
                 Complex32 W = new Complex32(0, (float)w);
-                var x = Calculate(nodosnorton, W);
+                var x = Calculate(nortoncopia, W);
 
                 // #region 
                 //#endregion        
                 Dictionary<string, Complex32> result = new Dictionary<string, Complex32>();
 
                 #region almacenamiento temporal
-                foreach (var nodo in nodosnorton)
+                foreach (var nodo in nortoncopia)
                 {
-                    fila = nodosnorton.IndexOf(nodo);
+                    fila = nortoncopia.IndexOf(nodo);
                     nodo.Voltage = x[fila];
                     result.Add(nodo.Name, nodo.Voltage);
                 }
                 foreach (var nodo in nodos)
                 {
-                    if (nodosnorton.Contains(nodo))
-                        continue;
+                    //if (nodosnorton.Contains(nodo))
+                    //    continue;
                     result.Add(nodo.Name, nodo.Voltage);
                     //result.Add(
                 }
@@ -93,13 +100,49 @@ namespace ElectricalAnalysis.Analysis.Solver
                     }
                 }
             }
+            //calculo las corrientes:
+            CalculateCurrents(cir);
 
-            ExportToCSV();
+            //ExportToCSV();
             return true;
         }
 
         protected static Vector<Complex32> Calculate(List<Node> nodosnorton, Complex32 W)
         {
+            //existen nodos donde la tension se puede calcular directamente
+            List<Node> nodosCalculables = new List<Node>();
+            foreach (var nodo in nodosnorton)
+            {
+                if (nodo.TypeOfNode == Node.NodeType.VoltageDivideNode)
+                {
+                    Node nodo1 = nodo;
+                    Dipole compo1 = nodo.Components[0];
+                    Branch br = compo1.Owner as Branch;
+                    if (br == null)
+                    {
+                        throw new Exception();
+                    }
+                    Complex32 v1, v2, z1, z2;
+                    v1 = v2 = z1 = z2 = Complex32.Zero;
+                    //el nodo es interno en una rama, deberian los 2 componentes conectados
+                    //al nodo, 
+                    Dipole compo2 = nodo.Components[1];
+                    //hacia la izq (o derec)
+                    NavigateBranch(nodo1, compo1, W, ref v1, ref z1);
+                    //hacia el otro lado
+                    NavigateBranch(nodo1, compo2, W, ref v2, ref z2);
+                    nodo.Voltage = (z2 * v1 + v2 * z1) / (z1 + z2);
+                    nodosCalculables.Add(nodo);
+                }
+            }
+            //remuevo esos nodos de los que deben calcularse matricialmente
+            foreach (var nodo in nodosCalculables)
+            {
+                nodosnorton.Remove(nodo);
+            }
+            if (nodosnorton.Count == 0)
+                return null;
+
             int fila = 0, columna = 0;
             var v = Vector<Complex32>.Build.Dense(nodosnorton.Count);
             var A = Matrix<Complex32>.Build.DenseOfArray(new Complex32[nodosnorton.Count, nodosnorton.Count]);
@@ -122,38 +165,6 @@ namespace ElectricalAnalysis.Analysis.Solver
                         }
                     }
                 }
-                else if (nodo.TypeOfNode == Node.NodeType.VoltageDivideNode)
-                {
-                    Dipole compo1 = nodo.Components[0];
-                    Dipole compo2 = nodo.Components[1];
-                    Node nodo1 = compo1.OtherNode(nodo);
-                    Node nodo2 = compo2.OtherNode(nodo);
-                    Complex32 v1, v2, z1, z2;
-                    v1 = nodo1.Voltage;
-                    v2 = nodo2.Voltage;
-                    z1 = compo1.Impedance(W);
-                    z2 = compo2.Impedance(W);
-
-                    if (nodo1.IsVoltageKnowed)
-                        v[fila] += v1 * z1;
-                    else
-                    {
-                        columna = nodosnorton.IndexOf(nodo1);
-                        A[fila, columna] -= v1 * z1;
-                    }
-                    if (nodo2.IsVoltageKnowed)
-                        v[fila] += v2 * z2;
-                    else
-                    {
-                        columna = nodosnorton.IndexOf(nodo2);
-                        A[fila, columna] -= v2 * z2;
-                    }
-                    columna = nodosnorton.IndexOf(nodo);
-                    A[fila, columna] += z1 + z2;
-
-                    //nodo.Voltage = z2 * (v1 - v2) / (z1 + z2);
-
-                }
                 else if (nodo.TypeOfNode == Node.NodeType.VoltageLinkedNode)
                 {
                     Dipole compo = nodo.Components[0];
@@ -171,15 +182,38 @@ namespace ElectricalAnalysis.Analysis.Solver
             return x;
         }
 
-        void ExportToCSV()
+        private static void NavigateBranch(Node nodo , Dipole compo1, Complex32 W, ref Complex32 v1, ref Complex32 z1)
+        {
+            Node nodo1 = nodo;
+
+            while (!(nodo1.TypeOfNode == Node.NodeType.MultibranchCurrentNode || nodo1.IsReference)) 
+            {
+                if (compo1 is PasiveComponent)
+                {
+                    z1 += compo1.Impedance(W);
+                }
+                else if (compo1 is VoltageGenerator)
+                {
+                    v1 = compo1.voltage(nodo1);
+                }
+                else
+                {
+                    throw new NotImplementedException();
+                }
+                nodo1 = compo1.OtherNode(nodo1);
+                compo1 = nodo1.OtherComponent(compo1);
+            }
+        }
+
+        public override void ExportToCSV(string FileName)
         {
 
-            //se guarda
+            //se guarda@)
             //W     N1  N2 .... Nn
             //10    5   15      2
             //12    6   14      1
             //List<List<string>> todos = new List<List<string>>();
-            using (var writer = new CsvFileWriter(@"e:\Test.csv"))
+            using (var writer = new CsvFileWriter(FileName))
             {
                 List<string> results = new List<string>();
                 results.Add("W");
@@ -205,6 +239,12 @@ namespace ElectricalAnalysis.Analysis.Solver
                 }
             }
 
+        }
+
+        private static void CalculateCurrents(ComponentContainer cir)
+        {
+
+       
         }
 
     }

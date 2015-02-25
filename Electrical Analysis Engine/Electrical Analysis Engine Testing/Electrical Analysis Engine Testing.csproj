@@ -58,6 +58,9 @@
     <None Include="RCcharge.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="RCL.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="testdc.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

@@ -10,7 +10,7 @@ namespace ElectricalAnalysis.Components
     public abstract class Dipole: Item
     {
 
-        protected Complex32 current, voltage;
+        protected Complex32 _current;//, voltage;
         public ComponentContainer Owner { get; set; }
 
         public bool IsConnectedToEarth
@@ -24,6 +24,29 @@ namespace ElectricalAnalysis.Components
             }
         }
 
+        public virtual Complex32 Current(Node referenceNode, Complex32? W = null)
+        {
+            if (referenceNode == Nodes[0])
+                return _current;
+            else
+                return -_current;
+        }
+
+        /// <summary>
+        /// Valor de la corriente de continua
+        /// </summary>
+        public virtual Complex32 current
+        {
+            get
+            {
+                return _current;
+            }
+            internal set
+            {
+                _current = value;
+            }
+        }
+
         public virtual Complex32 NortonCurrent(Node referenceNode, Complex32 ?W = null) {
             return 0;
         }
@@ -33,34 +56,22 @@ namespace ElectricalAnalysis.Components
         }
 
 
-        /// <summary>
-        /// Valor de la corriente de continua
-        /// </summary>
-        public virtual Complex32 Current
+        public virtual Complex32 voltage(Node ReferenceNode)
         {
-            get
-            {
-                if (this is Capacitor)
-                    return 0;
-
-                if (this is Inductor)
-                    throw new NotImplementedException();
-                //if (this is VoltageGenerator)
-                //    throw new NotImplementedException();
-                
-                return Complex32.Zero;
-            }
-            internal set
-            {
-                current = value;
-            }
+            if (ReferenceNode == Nodes[0])
+                return Voltage;
+            if (ReferenceNode == Nodes[-1])
+                return Voltage;
+            return Complex32.NaN;
         }
 
-
+        /// <summary>
+        /// DC operating voltage
+        /// </summary>
         public virtual Complex32 Voltage
         {
-            get { return voltage; }
-            set { voltage = value; }
+            get { return Nodes[0].Voltage - Nodes[1].Voltage; }
+            //set { voltage = value; }
         }
 
         /// <summary>
@@ -85,12 +96,6 @@ namespace ElectricalAnalysis.Components
             return Nodes[0];
         }
 
-
-        //public virtual Complex32 Impedance(double W = 0)
-        //{
-        //    return Complex32.Zero;
-        //}
-
         public virtual Complex32 Impedance(Complex32? W = null)
         {
             return Complex32.Zero;
@@ -98,8 +103,8 @@ namespace ElectricalAnalysis.Components
 
         public virtual void Reset()
         {
-            Voltage = Complex32.Zero;
-            Current = Complex32.Zero;
+            //Voltage = Complex32.Zero;
+            current = Complex32.Zero;
         }
 
     }
