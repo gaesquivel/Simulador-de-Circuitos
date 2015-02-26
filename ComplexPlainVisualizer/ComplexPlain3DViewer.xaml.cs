@@ -23,8 +23,8 @@ namespace ComplexPlainVisualizer
     /// </summary>
     public partial class ComplexPlain3DViewer : Window
     {
-        ComplexPlainViewModel model;
-        Circuit cir2;
+        public ComplexPlainViewModel model { get; set; }
+        Circuit cir2, cir;
         ComplexPlainSolver sol1;
 
 
@@ -33,7 +33,8 @@ namespace ComplexPlainVisualizer
         {
             InitializeComponent();
             model = new ComplexPlainViewModel();
-           // model.UpdateModel();
+            cir = new Circuit();
+
             Button_Click(this, null);
 
         }
@@ -41,17 +42,27 @@ namespace ComplexPlainVisualizer
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
-            //model = new ComplexPlainViewModel();
+
             model.ColorCoding = ColorCoding.ByLights;
 
 
-            Circuit cir = new Circuit();
             cir.ReadCircuit("Circuits/RCL.net");
             cir2 = (Circuit)cir.Clone();
             cir2.Setup.RemoveAt(0);
             ComplexPlainAnalysis ac1 = new ComplexPlainAnalysis();
             cir2.Setup.Add(ac1);
             ACSweepSolver.Optimize(cir2);
+
+            Update(ac1);
+
+            lbComponents.ItemsSource = cir.Components;
+            //lbComponents.SelectedItem
+            DataContext = model;
+            //propgrid.SelectedObject = cir2;
+        }
+
+        private void Update(ComplexPlainAnalysis ac1)
+        {
             cir2.Solve();
             sol1 = (ComplexPlainSolver)ac1.Solver;
 
@@ -81,8 +92,11 @@ namespace ComplexPlainVisualizer
 
             model.Data = data;
             model.UpdateModel(false);
+        }
 
-            DataContext = model;
+        private void ButtonUpdate(object sender, RoutedEventArgs e)
+        {
+            Update((ComplexPlainAnalysis)cir2.Setup[0]);
         }
 
     }

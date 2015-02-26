@@ -64,6 +64,9 @@
     <None Include="testdc.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="testdcL.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="testidc.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

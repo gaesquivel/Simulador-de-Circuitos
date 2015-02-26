@@ -26,7 +26,7 @@ namespace ElectricalAnalysis_Test
             {
                 case 0:
 
-                    cir.ReadCircuit("testdc.net");
+                    cir.ReadCircuit("testdcL.net");
                     cir2 = (Circuit)cir.Clone();
                     DCSolver.Optimize(cir2);
                     DCAnalysis ac0 = (DCAnalysis)cir2.Setup[0];
@@ -59,6 +59,7 @@ namespace ElectricalAnalysis_Test
                     cir2.Solve();
                     ComplexPlainSolver sol1 = (ComplexPlainSolver)ac1.Solver;
                     sol1.SelectedNode = sol1.CurrentCircuit.Nodes["$N_0001"];
+                   // sol1.
                     sol1.ExportToCSV("e:/plain.csv");
 
                     break;
@@ -72,7 +73,7 @@ namespace ElectricalAnalysis_Test
        
 
 
-            Console.ReadKey();
+            Console.ReadKey();  
       }
    }
 }

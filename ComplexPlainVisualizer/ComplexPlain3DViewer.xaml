@@ -13,9 +13,12 @@
             <RowDefinition Height="Auto" />
             <RowDefinition Height="*" />
         </Grid.RowDefinitions>
-
+        <Grid.Resources>
+            <local:ComplexPlainViewModel x:Key="viewer"/>
+        </Grid.Resources>
         <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-            <Button Content="Run Simmulation" Click="Button_Click"/>
+            <Button Content="Run Simulation" Click="Button_Click"/>
+            <Button Content="Update" Click="ButtonUpdate"/>
         </StackPanel>
 
         <xcad:DockingManager Grid.Row="1" MaxHeight="425"
@@ -37,8 +40,8 @@
                     <xcad:LayoutAnchorablePane DockWidth="200">
                         <xcad:LayoutAnchorable ContentId="properties" Title="Properties" CanHide="False" CanClose="False"
                                             AutoHideWidth="240" IconSource="Images/preferences.png">
-                            <xctk:PropertyGrid NameColumnWidth="110"
-                        SelectedObject="{Binding ElementName=_layoutRoot, Path=LastFocusedDocument.Content}"/>
+                            <xctk:PropertyGrid Name="propgrid" NameColumnWidth="110"
+                        SelectedObject="{Binding ElementName=lbComponents, Path=SelectedItem}"/>
                         </xcad:LayoutAnchorable>
                     </xcad:LayoutAnchorablePane>
                     <xcad:LayoutDocumentPaneGroup >
@@ -61,14 +64,11 @@
                            
                         </xcad:LayoutDocumentPane>
                     </xcad:LayoutDocumentPaneGroup >
-                    <xcad:LayoutAnchorablePaneGroup DockWidth="125">
+                    <xcad:LayoutAnchorablePaneGroup DockWidth="100">
                         <xcad:LayoutAnchorablePane>
-                            <xcad:LayoutAnchorable ContentId="alarms" Title="Alarms" IconSource="Images/alarmclock.png" >
-                                <ListBox>
-                                    <s:String>Alarm 1</s:String>
-                                    <s:String>Alarm 2</s:String>
-                                    <s:String>Alarm 3</s:String>
-                                </ListBox>
+                            <xcad:LayoutAnchorable ContentId="alarms" Title="Components" IconSource="Images/cpu_view.png"  >
+                                <ListBox Name="lbComponents" DisplayMemberPath="Name"></ListBox>
+
                             </xcad:LayoutAnchorable>
                         
                         </xcad:LayoutAnchorablePane>

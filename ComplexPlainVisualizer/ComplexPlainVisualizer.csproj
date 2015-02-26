@@ -98,7 +98,6 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="Complex32.cs" />
     <Compile Include="ComplexPlain3DViewer.xaml.cs">
       <DependentUpon>ComplexPlain3DViewer.xaml</DependentUpon>
     </Compile>
@@ -176,6 +175,10 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\preferences.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\cpu_view.png" />
+    <Resource Include="Images\refresh.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

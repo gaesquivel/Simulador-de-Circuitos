@@ -30,6 +30,8 @@ namespace ElectricalAnalysis.Components
 
         public override Complex32 Impedance(Complex32 ?W)
         {
+            if (W == null)
+                return Complex32.Zero;
             //jW*L
             //S*L
             Complex32 L = new Complex32((float) Value, 0);

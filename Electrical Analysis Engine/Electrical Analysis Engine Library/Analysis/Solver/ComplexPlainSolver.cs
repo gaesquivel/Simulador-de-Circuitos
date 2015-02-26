@@ -77,22 +77,15 @@ namespace ElectricalAnalysis.Analysis.Solver
 
                     //Calculo de tensiones de nodos
                     Complex32 W = new Complex32((float)(sigmamin + j * deltasig), (float)(wi + i * deltaw));
-                    var x = ACSweepSolver.Calculate(nortoncopia, W);
+                    ACSweepSolver.Calculate(nortoncopia, W);
                     
                     //          Node    Voltage
                     Dictionary<string, Complex32> result = new Dictionary<string, Complex32>();
 
                     #region almacenamiento temporal
-                    foreach (var nodo in nortoncopia)
-                    {
-                        fila = nortoncopia.IndexOf(nodo);
-                        nodo.Voltage = x[fila];
-                        result.Add(nodo.Name, nodo.Voltage);
-                    }
+                  
                     foreach (var nodo in nodos)
                     {
-                        //if (nodosnorton.Contains(nodo))
-                        //    continue;
                         result.Add(nodo.Name, nodo.Voltage);
                     }
                     if (!Results.ContainsKey(W))
