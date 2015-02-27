@@ -279,7 +279,7 @@ namespace ElectricalAnalysis.Analysis.Solver
 
         public virtual bool Solve(Circuit cir, BasicAnalysis ana)
         {
-            int fila = 0;
+            //int fila = 0;
             List<Node> nodos = new List<Node>();
             circuit = cir;
 
@@ -369,10 +369,26 @@ namespace ElectricalAnalysis.Analysis.Solver
                         {
                             if (rama is Branch || rama is PasiveComponent)
                             {
-                                V = rama.NortonCurrent(nodo);
+                                columna = fila = nodosnorton.IndexOf(nodo);
+                                if (rama is Branch)
+                                    V = ((Branch)rama).NortonCurrent(nodo);
+                                else
+                                    V = rama.Current(nodo);
                                 v[fila] += V;
-                                Z = rama.Impedance().Reciprocal();
-                                A[fila, columna] += Z;
+                                Z = rama.Impedance();
+                                A[fila, columna] += 1/Z;
+                                Node nodo2 = rama.OtherNode(nodo);
+                                if (!nodo2.IsReference)
+                                {
+                                    columna = nodosnorton.IndexOf(nodo2);
+                                    A[fila, columna] -= 1 / Z;
+                                    
+                                }
+                            }
+                            else  if (rama is CurrentGenerator)
+                            {
+                                V = rama.Current(nodo);
+                                v[fila] += V;
                             }
                         }
                     }
@@ -447,7 +463,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                 }
                 else if (compo1 is VoltageGenerator)
                 {
-                    v1 += compo1.voltage(nodo1);
+                    v1 += compo1.voltage(nodo1, null);
                 }
                 else
                 {
@@ -463,29 +479,30 @@ namespace ElectricalAnalysis.Analysis.Solver
         }
 
 
-
-        private static void CalculateCurrents(ComponentContainer cir)
+        /// <summary>
+        /// Calculate Statics components currents
+        /// </summary>
+        /// <param name="container"></param>
+        private static void CalculateCurrents(ComponentContainer container)
         {
 
-            foreach (var comp in cir.Components)
+            foreach (var comp in container.Components)
             {
+                //la corriente de DC de un capacitor es 0
                 if (comp is Capacitor)
                     continue;
 
                 //la corriente en las resistencias se calcula directamente en ellas: es ley de Ohm:V/R
                 if (comp is Resistor || comp is CurrentGenerator)
                 {
-                    if (cir is Branch)
+                    if (container is Branch)
                     {
-                        //if ()
                         Node nodo = comp.Nodes[0];
-                        ((Branch)cir).current = comp.Current(nodo);
+                        ((Branch)container).current = comp.Current(nodo);
                     }
                     continue;
                 }
-                //{
-                //    comp.Current = comp.Voltage / comp.Impedance();
-                //}
+               
 
                 //en los Generadores de tension hay que calcular la corriente en 1 u ambos nodos
                 if (comp is VoltageGenerator || comp is Inductor)
@@ -499,12 +516,12 @@ namespace ElectricalAnalysis.Analysis.Solver
                             //Node nodo2 = com
                             comp.current = comp2.Current(nodo);
                         
-                            if (cir is Branch)
-                                ((Branch)cir).current = comp.Current(nodo);
+                            if (container is Branch)
+                                ((Branch)container).current = comp.Current(nodo);
                             goto out1;
                         }
                     }
-                    //si no tiene solo una resistencias en serie
+                    //si no tiene solo una resistencias en serie, es decir, un nodo de multiples ramas
                     //se aplica 2da de Kirchoff para el supernodo
                     throw new NotImplementedException();
                     foreach (var nodo in comp.Nodes)
@@ -516,7 +533,6 @@ namespace ElectricalAnalysis.Analysis.Solver
                         }
                     }
                 }
-
                 else if (comp is Branch)
                 {
                     CalculateCurrents((Branch)comp);
@@ -525,7 +541,7 @@ namespace ElectricalAnalysis.Analysis.Solver
 
                 else if (comp is ParallelBlock)
                 {
-                    CalculateCurrents((Branch)comp);
+                    CalculateCurrents((ParallelBlock)comp);
                     continue;
                 }
 

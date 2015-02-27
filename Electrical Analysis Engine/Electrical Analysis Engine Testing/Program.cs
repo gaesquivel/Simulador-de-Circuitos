@@ -10,22 +10,24 @@ using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra;
 using ElectricalAnalysis.Analysis.Solver;
 using ElectricalAnalysis.Analysis;
+using System.Drawing;
 //using Matrix = MathNet.Numerics.LinearAlgebra.Complex.DenseMatrix;
 
 namespace ElectricalAnalysis_Test
 {
    class Program
    {
+        static Circuit cir = new Circuit();
+        static Circuit cir2 ;
+        static ComplexPlainSolver sol1;
+
         static void Main(string[] args)
         {
             int i = 1;
-            Circuit cir = new Circuit();
-            Circuit cir2 ;
 
             switch (i)
             {
                 case 0:
-
                     cir.ReadCircuit("testdcL.net");
                     cir2 = (Circuit)cir.Clone();
                     DCSolver.Optimize(cir2);
@@ -37,6 +39,20 @@ namespace ElectricalAnalysis_Test
 
                     break;
                 case 1:
+
+                    cir.ReadCircuit("testidc.net");
+                    cir2 = (Circuit)cir.Clone();
+                    DCSolver.Optimize(cir2);
+                    DCAnalysis ac3 = (DCAnalysis)cir2.Setup[0];
+                    DCSolver solver3 = (DCSolver)ac3.Solver;
+                    //solver.Solve(cir2, );
+                    cir2.Solve();
+                    solver3.ExportToCSV("e:/Test.csv");
+
+                    break;
+
+
+                case 2:
                     cir.ReadCircuit("RCL.net");
                     cir2 = (Circuit)cir.Clone();
                     cir2.Setup.RemoveAt(0);
@@ -57,11 +73,12 @@ namespace ElectricalAnalysis_Test
                     cir2.Setup.Add(ac1);
                     ACSweepSolver.Optimize(cir2);
                     cir2.Solve();
-                    ComplexPlainSolver sol1 = (ComplexPlainSolver)ac1.Solver;
-                    sol1.SelectedNode = sol1.CurrentCircuit.Nodes["$N_0001"];
+                    sol1 = (ComplexPlainSolver)ac1.Solver;
+                    sol1.SelectedNode = sol1.CurrentCircuit.Nodes["out"];
                    // sol1.
                     sol1.ExportToCSV("e:/plain.csv");
-
+                   Bitmap bmp =  FileUtils.DrawImage(func, ac1.Points, ac1.Points);
+                   bmp.Save("e:/plain.bmp");
                     break;
 
 
@@ -75,5 +92,19 @@ namespace ElectricalAnalysis_Test
 
             Console.ReadKey();  
       }
+
+
+        static Complex32 func(int x, int y)
+        {
+            Complex32 W = sol1.WfromIndexes[new Tuple<int, int>(x, y)];
+            foreach (var node in  sol1.Voltages[W])
+            {
+                if (node.Key == "out")
+                {
+                    return node.Value;
+                }
+            }
+            return Complex32.Zero;
+        }
    }
 }

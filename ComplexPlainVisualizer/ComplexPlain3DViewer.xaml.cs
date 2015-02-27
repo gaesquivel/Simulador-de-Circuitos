@@ -80,7 +80,7 @@ namespace ComplexPlainVisualizer
                 for (int j = 0; j < model.Columns; j++)
                 {
                     W = sol1.WfromIndexes[new Tuple<int, int>(i, j)];
-                    foreach (var node in sol1.Results[W])
+                    foreach (var node in sol1.Voltages[W])
                     {
                         if (node.Key == "out")
                             data[i, j] = new Point3D(W.Real / scalefactor,
@@ -97,6 +97,11 @@ namespace ComplexPlainVisualizer
         private void ButtonUpdate(object sender, RoutedEventArgs e)
         {
             Update((ComplexPlainAnalysis)cir2.Setup[0]);
+        }
+
+        private void ButtonAbrir_Click(object sender, RoutedEventArgs e)
+        {
+
         }
 
     }

@@ -34,6 +34,9 @@
     <ErrorReport>prompt</ErrorReport>
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
+  <PropertyGroup>
+    <ApplicationIcon>planoCIco.ico</ApplicationIcon>
+  </PropertyGroup>
   <ItemGroup>
     <Reference Include="HelixToolkit">
       <HintPath>..\Circuit Simulation Integrated Interface\packages\HelixToolkit.2015.1.474\lib\portable-net4+sl4+wp71+win8\HelixToolkit.dll</HintPath>
@@ -179,6 +182,27 @@
   <ItemGroup>
     <Resource Include="Images\cpu_view.png" />
     <Resource Include="Images\refresh.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\folder.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\chart.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\cpu_run.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\document_out.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\document_chart.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\planoCIco.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="planoCIco.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

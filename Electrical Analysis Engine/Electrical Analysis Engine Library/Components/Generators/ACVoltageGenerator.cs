@@ -36,7 +36,7 @@ namespace ElectricalAnalysis.Components
             ACVoltage = new Complex32(ACMagnitude, ACPhase);
         }
 
-        public override Complex32 TheveninVoltage(Node referenceNode, Complex32? W = null)
+        public override Complex32 voltage(Node referenceNode, Complex32? W = null)
         {
             if (W == null || W.Value.IsZero())
             {

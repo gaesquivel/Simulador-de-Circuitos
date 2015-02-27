@@ -52,7 +52,7 @@ namespace ComplexPlainVisualizer
             get
             {
                 // Brush = BrushHelper.CreateGradientBrush(Colors.White, Colors.Blue);
-                // Brush = GradientBrushes.RainbowStripes;
+                return GradientBrushes.Hue;
                 // Brush = GradientBrushes.BlueWhiteRed;
                 switch (ColorCoding)
                 {

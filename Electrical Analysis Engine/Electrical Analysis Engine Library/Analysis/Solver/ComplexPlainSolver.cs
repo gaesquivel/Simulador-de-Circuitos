@@ -23,12 +23,14 @@ namespace ElectricalAnalysis.Analysis.Solver
         /// <summary>
         /// Storage the different values of W and a dictionary with the nodes and their Voltages
         /// </summary>
-        public Dictionary<Complex32, Dictionary<string, Complex32>> Results { get; protected set; }//W  Nname    Nvoltage
-        //public Tuple<Complex32, Complex32>[,] Results { get; set; }
+        public new Dictionary<Complex32, Dictionary<string, Complex32>> Voltages { get; protected set; }//W  Nname    Nvoltage
+  
+        //                  W              CompoName   CompoCurrent
+        public new Dictionary<Complex32, Dictionary<string, Complex32>> Currents { get; protected set; }
 
         public override bool Solve(Circuit cir, BasicAnalysis ana)
         {
-            int fila = 0;
+            //int fila = 0;
             List<Node> nodos = new List<Node>();
             CurrentAnalysis = ana as ComplexPlainAnalysis;
             CurrentCircuit = cir;
@@ -60,8 +62,8 @@ namespace ElectricalAnalysis.Analysis.Solver
             deltaw = (wf - wi) / analis.Points;
             deltasig = (sigmamax - sigmamin) / analis.Points;
 
-            //Results = new Tuple<Complex32, Complex32>[analis.Points, analis.Points];
-            Results = new Dictionary<Complex32, Dictionary<string, Complex32>>();
+            Voltages = new Dictionary<Complex32, Dictionary<string, Complex32>>();
+            Currents = new Dictionary<Complex32, Dictionary<string, Complex32>>();
             WfromIndexes = new Dictionary<Tuple<int, int>, Complex32>();
 
             for (int i = 0; i < analis.Points; i++)
@@ -88,9 +90,9 @@ namespace ElectricalAnalysis.Analysis.Solver
                     {
                         result.Add(nodo.Name, nodo.Voltage);
                     }
-                    if (!Results.ContainsKey(W))
+                    if (!Voltages.ContainsKey(W))
                     {
-                        Results.Add(W, result);
+                        Voltages.Add(W, result);
                         WfromIndexes.Add(new Tuple<int, int>(i, j), W);
                     }
                     else
@@ -101,11 +103,33 @@ namespace ElectricalAnalysis.Analysis.Solver
 
                     #endregion
 
+                    //calculo las corrientes:
+                    CalculateCurrents(cir, W);
+                    Dictionary<string, Complex32> currents = new Dictionary<string, Complex32>();
+                    StorageCurrents(cir, currents);
+                    Currents.Add(W, currents);
+
                 }
             }
 
-           // ExportToCSV();
             return true;
+        }
+
+        /// <summary>
+        /// Almacena las corrientes del W actual
+        /// </summary>
+        /// <param name="cir"></param>
+        /// <param name="currents"></param>
+        private static void StorageCurrents(ComponentContainer cir, Dictionary<string, Complex32> currents)
+        {
+            foreach (var compo in cir.Components)
+            {
+                currents.Add(compo.Name, compo.current);
+                if (compo is ComponentContainer)
+                {
+                    StorageCurrents((ComponentContainer)compo, currents);
+                }
+            }
         }
 
 
@@ -128,7 +152,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                     for (int j = 0; j < CurrentAnalysis.Points; j++)
                     {
                         W = WfromIndexes[new Tuple<int, int>(i, j)];
-                        foreach (var node in Results[W])
+                        foreach (var node in Voltages[W])
                         {
                             if (node.Key == SelectedNode.Name)
                             { //W.Real ,

@@ -21,6 +21,11 @@ namespace ElectricalAnalysis.Components
             }
         }
 
+        //public override Complex32 NortonCurrent(Node referenceNode, Complex32? W = null)
+        //{
+        //    return Current(referenceNode, W);
+        //}
+
         public CurrentGenerator(ComponentContainer owner)
             : base(owner)
         {

@@ -13,13 +13,15 @@ namespace ElectricalAnalysis.Analysis.Solver
     {
 
         //                  W                Nname    Nvoltage
-        public Dictionary<double, Dictionary<string, Complex32>> Results { get; protected set; }
+        public virtual Dictionary<double, Dictionary<string, Complex32>> Voltages { get; protected set; }
+        //                  W              CompoName   CompoCurrent
+        public virtual Dictionary<double, Dictionary<string, Complex32>> Currents { get; protected set; }
 
         public override bool Solve(Circuit cir, BasicAnalysis ana)
         {
-            int fila = 0;
             List<Node> nodos = new List<Node>();
-            Results = new Dictionary<double, Dictionary<string, Complex32>>();
+            Voltages = new Dictionary<double, Dictionary<string, Complex32>>();
+            Currents = new Dictionary<double, Dictionary<string, Complex32>>();
 
             nodos.AddRange(cir.Nodes.Values);
             nodos.Remove(cir.Reference);
@@ -73,9 +75,16 @@ namespace ElectricalAnalysis.Analysis.Solver
                     result.Add(nodo.Name, nodo.Voltage);
                 }
 
-                if (!Results.ContainsKey(w))
-                    Results.Add(w, result);
+                if (!Voltages.ContainsKey(w))
+                    Voltages.Add(w, result);
                 #endregion
+
+                //calculo las corrientes:
+                CalculateCurrents(cir, W);
+                Dictionary<string, Complex32> currents = new Dictionary<string, Complex32>();
+                StorageCurrents(cir, currents);
+                Currents.Add(w, currents);
+
 
                 if (analis.ScanType == ACAnalysis.ACAnalysisScan.Linear)
                     w += deltaw;
@@ -91,10 +100,25 @@ namespace ElectricalAnalysis.Analysis.Solver
                     }
                 }
             }
-            //calculo las corrientes:
-            CalculateCurrents(cir);
 
             return true;
+        }
+
+        /// <summary>
+        /// Almacena las corrientes del W actual
+        /// </summary>
+        /// <param name="cir"></param>
+        /// <param name="currents"></param>
+        private static void StorageCurrents(ComponentContainer cir, Dictionary<string, Complex32> currents)
+        {
+            foreach (var compo in cir.Components)
+            {
+                currents.Add(compo.Name, compo.current);
+                if (compo is ComponentContainer)
+                {
+                    StorageCurrents((ComponentContainer)compo, currents);
+                }
+            }
         }
 
         protected static void Calculate(List<Node> nodosnorton, Complex32 W)
@@ -132,10 +156,26 @@ namespace ElectricalAnalysis.Analysis.Solver
                         {
                             if (rama is Branch || rama is PasiveComponent)
                             {
-                                V = rama.NortonCurrent(nodo, W);
+                                columna = fila = nodosnorton.IndexOf(nodo);
+                                if (rama is Branch)
+                                    V = ((Branch)rama).NortonCurrent(nodo, W);
+                                else
+                                    V = rama.Current(nodo, W);
+                                
                                 v[fila] += V;
-                                Z = rama.Impedance(W).Reciprocal();
-                                A[fila, columna] += Z;
+                                Z = rama.Impedance(W);
+                                A[fila, columna] += 1 / Z;
+                                Node nodo2 = rama.OtherNode(nodo);
+                                if (!nodo2.IsReference)
+                                {
+                                    columna = nodosnorton.IndexOf(nodo2);
+                                    A[fila, columna] -= 1 / Z;
+                                }
+                            }
+                            else if (rama is CurrentGenerator)
+                            {
+                                V = rama.Current(nodo, W);
+                                v[fila] += V;
                             }
                         }
                     }
@@ -213,7 +253,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                 }
                 else if (compo1 is VoltageGenerator)
                 {
-                    v1 += compo1.voltage(nodo1);
+                    v1 += compo1.voltage(nodo1, W);
                 }
                 else
                 {
@@ -240,7 +280,7 @@ namespace ElectricalAnalysis.Analysis.Solver
             {
                 List<string> results = new List<string>();
                 results.Add("W");
-                foreach (var item in Results)
+                foreach (var item in Voltages)
                 {
                     foreach (var node in item.Value)
                         results.Add(node.Key.ToString());
@@ -250,7 +290,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                 results.Clear();
 
                 //for (int row = 0; row < Results.Count; row++)
-                foreach(var item in Results)
+                foreach(var item in Voltages)
                 {
                     results.Add(item.Key.ToString());
                     foreach (var node in item.Value)
@@ -264,11 +304,66 @@ namespace ElectricalAnalysis.Analysis.Solver
 
         }
 
-        private static void CalculateCurrents(ComponentContainer cir)
+        protected static void CalculateCurrents(ComponentContainer container, Complex32 W)
         {
 
-       
-        }
+            foreach (var comp in container.Components)
+            {
+                //la corriente en las resistencias se calcula directamente en ellas: es ley de Ohm:V/R
+                if (comp is PasiveComponent || comp is CurrentGenerator)
+                {
+                    Node nodo = comp.Nodes[0];
+                    comp.current = comp.Current(nodo, W);
+                    if (container is Branch)
+                    {
+                        ((Branch)container).current = comp.current;
+                    }
+                    continue;
+                }
 
+
+                //en los Generadores de tension hay que calcular la corriente en 1 u ambos nodos
+                if (comp is VoltageGenerator)
+                {
+                    foreach (var nodo in comp.Nodes)
+                    {
+                        Dipole comp2 = nodo.OtherComponent(comp);
+                        //si tiene solo un resistor en serie es automatico el valor de corriente
+                        if (nodo.Components.Count == 2 && (comp2 is PasiveComponent || comp2 is CurrentGenerator))
+                        {
+                            comp.current = comp2.Current(nodo, W);
+
+                            if (container is Branch)
+                                ((Branch)container).current = comp.current;
+                            goto out1;
+                        }
+                    }
+                    //si no tiene solo una resistencias en serie, es decir, un nodo de multiples ramas
+                    //se aplica 2da de Kirchoff para el supernodo
+                    throw new NotImplementedException();
+                    foreach (var nodo in comp.Nodes)
+                    {
+                        Complex32 i;
+                        foreach (var comp2 in nodo.Components)
+                        {
+
+                        }
+                    }
+                }
+                else if (comp is Branch)
+                {
+                    CalculateCurrents((Branch)comp, W);
+                    continue;
+                }
+
+                else if (comp is ParallelBlock)
+                {
+                    CalculateCurrents((Branch)comp, W);
+                    continue;
+                }
+
+            out1: ;
+            }
+        }
     }
 }

@@ -10,7 +10,7 @@ namespace ElectricalAnalysis.Components
     public class VoltageGenerator : ElectricComponent, Generator
     {
 
-        public override Complex32 voltage(Node ReferenceNode)
+        public override Complex32 voltage(Node ReferenceNode, Complex32 ?W)
         {
             if (ReferenceNode == Nodes[0])
                 return Voltage;
@@ -28,12 +28,12 @@ namespace ElectricalAnalysis.Components
           
         }
 
-        public override Complex32 TheveninVoltage(Node referenceNode, Complex32? W = null)
-        {
-            if (referenceNode == Nodes[0])
-                return new Complex32((float) Value, 0);
-            return new Complex32((float)-Value, 0);
-        }
+        //public override Complex32 TheveninVoltage(Node referenceNode, Complex32? W = null)
+        //{
+        //    if (referenceNode == Nodes[0])
+        //        return new Complex32((float) Value, 0);
+        //    return new Complex32((float)-Value, 0);
+        //}
 
 
         public VoltageGenerator(ComponentContainer owner)

@@ -11,7 +11,13 @@ namespace ElectricalAnalysis.Analysis
         public string Step { get; set; }
         public string FinalTime { get; set; }
 
-
+        public TransientAnalysis()
+            : base()
+        {
+            Step = "1u";
+            FinalTime = "100u";
+        
+        }
 
 
     }

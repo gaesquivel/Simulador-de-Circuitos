@@ -12,6 +12,7 @@ namespace ElectricalAnalysis.Components
 
         protected Complex32 _current;//, voltage;
         public ComponentContainer Owner { get; set; }
+        public Circuit OwnerCircuit { get; set; }
 
         public bool IsConnectedToEarth
         {
@@ -24,12 +25,29 @@ namespace ElectricalAnalysis.Components
             }
         }
 
+        /// <summary>
+        /// Corriente incremental, dependiente del tiempo en algunos componentes
+        /// </summary>
+        /// <param name="referenceNode"></param>
+        /// <param name="CurrentTime"></param>
+        /// <returns></returns>
+        public virtual double Current(Node referenceNode, double CurrentTime)
+        {
+            return _current.Real;
+        }
+
+        public virtual double voltage(Node referenceNode, double CurrentTime)
+        {
+            return Voltage.Real;
+        }
+
         public virtual Complex32 Current(Node referenceNode, Complex32? W = null)
         {
+            //el signo contrario al pensado, entra por neagtivo y sale por positivo
             if (referenceNode == Nodes[0])
-                return _current;
+                return -current;
             else
-                return -_current;
+                return current;
         }
 
         /// <summary>
@@ -47,16 +65,27 @@ namespace ElectricalAnalysis.Components
             }
         }
 
-        public virtual Complex32 NortonCurrent(Node referenceNode, Complex32 ?W = null) {
-            return 0;
-        }
-        public virtual Complex32 TheveninVoltage(Node referenceNode, Complex32? W = null)
-        {
-            return 0;
-        }
+
+        //public virtual double nortoncurrent(node referencenode, double t)
+        //{
+        //    return 0;
+        //}
+
+        //public virtual double theveninvoltage(node referencenode, double t)
+        //{
+        //    return 0;
+        //}
+
+        //public virtual complex32 nortoncurrent(node referencenode, complex32 ?w = null) {
+        //    return 0;
+        //}
+        //public virtual complex32 theveninvoltage(node referencenode, complex32? w = null)
+        //{
+        //    return 0;
+        //}
 
 
-        public virtual Complex32 voltage(Node ReferenceNode)
+        public virtual Complex32 voltage(Node ReferenceNode, Complex32 ?W = null)
         {
             if (ReferenceNode == Nodes[0])
                 return Voltage;
@@ -87,6 +116,8 @@ namespace ElectricalAnalysis.Components
             Nodes.Add(new Node());
             Nodes.Add(new Node());
             Owner = owner;
+            if (owner is Circuit)
+                OwnerCircuit = (Circuit)owner;
         }
         
         public Node OtherNode(Node thisnode)

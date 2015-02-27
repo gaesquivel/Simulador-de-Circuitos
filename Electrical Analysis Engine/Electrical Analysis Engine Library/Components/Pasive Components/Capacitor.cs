@@ -21,13 +21,27 @@ namespace ElectricalAnalysis.Components
             }
         }
 
+       
+
+        //public override double TheveninVoltage(Node referenceNode, double t)
+        //{
+        //    return voltage(referenceNode, t);
+        //}
+
+        public override double voltage(Node referenceNode, double CurrentTime)
+        {
+            double deltat = CurrentTime - OwnerCircuit.CircuitTime;
+            if (deltat <= 0)
+            {
+                throw new Exception();
+            }
+            double i = Voltage.Real + current.Real * deltat / Value;
+            return i;
+        }
+
         public override Complex32 Current(Node referenceNode, Complex32? W = null)
         {
-            Complex32 i = Voltage / Impedance(W);
-            if (referenceNode == Nodes[0])
-                return i;
-            else
-                return -i;
+            return voltage(referenceNode) / Impedance(W);
         }
 
         public Capacitor(ComponentContainer owner)

@@ -36,6 +36,7 @@
     </Reference>
     <Reference Include="System" />
     <Reference Include="System.Core" />
+    <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
     <Reference Include="System.Xml.Linq" />
     <Reference Include="System.Data.DataSetExtensions" />
@@ -54,33 +55,34 @@
     <Compile Include="Analysis\Solver\CircuitSolver.cs" />
     <Compile Include="Analysis\Solver\DCSolver.cs" />
     <Compile Include="Analysis\TransientAnalysis.cs" />
-    <Compile Include="Components\ACVoltageGenerator.cs" />
-    <Compile Include="Components\Block.cs" />
-    <Compile Include="Components\branch.cs" />
-    <Compile Include="Components\Capacitor.cs" />
+    <Compile Include="Components\Generators\ACVoltageGenerator.cs" />
+    <Compile Include="Components\Blocks\Block.cs" />
+    <Compile Include="Components\Blocks\branch.cs" />
+    <Compile Include="Components\Pasive Components\Capacitor.cs" />
     <Compile Include="Components\Circuit.cs">
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="Components\ComponentContainer.cs" />
-    <Compile Include="Components\CurrentGenerator.cs" />
+    <Compile Include="Components\Blocks\ComponentContainer.cs" />
+    <Compile Include="Components\Generators\CurrentGenerator.cs" />
     <Compile Include="Components\Dipole.cs" />
     <Compile Include="Components\ElectricComponent.cs" />
-    <Compile Include="Components\Generator.cs" />
-    <Compile Include="Components\Inductor.cs" />
+    <Compile Include="Components\Generators\Generator.cs" />
+    <Compile Include="Components\Pasive Components\Inductor.cs" />
     <Compile Include="Components\Item.cs" />
     <Compile Include="Components\Node.cs" />
-    <Compile Include="Components\ParallelBlock.cs" />
-    <Compile Include="Components\PasiveComponent.cs" />
+    <Compile Include="Components\Blocks\ParallelBlock.cs" />
+    <Compile Include="Components\Pasive Components\PasiveComponent.cs" />
     <Compile Include="Analysis\DCAnalysis.cs" />
     <Compile Include="Data\ACData.cs" />
     <Compile Include="Data\TransientData.cs" />
     <Compile Include="Data\SimulationData.cs" />
     <Compile Include="Data\DCData.cs" />
     <Compile Include="FileUtils.cs" />
+    <Compile Include="ImageUtils.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
-    <Compile Include="Components\Resistor.cs" />
+    <Compile Include="Components\Pasive Components\Resistor.cs" />
     <Compile Include="StringUtils.cs" />
-    <Compile Include="Components\VoltageGenerator.cs" />
+    <Compile Include="Components\Generators\VoltageGenerator.cs" />
   </ItemGroup>
   <ItemGroup>
     <WCFMetadata Include="Service References\" />
@@ -89,6 +91,7 @@
     <None Include="Components\ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
+  <ItemGroup />
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
        Other similar extension points exist, see Microsoft.Common.targets.

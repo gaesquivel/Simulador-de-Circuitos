@@ -6,22 +6,40 @@
         xmlns:s="clr-namespace:System;assembly=mscorlib"
         xmlns:h="clr-namespace:HelixToolkit.Wpf;assembly=HelixToolkit.Wpf" 
         xmlns:local="clr-namespace:ComplexPlainVisualizer" 
-
-    Title="ComplexPlain3DViewer" Height="300" Width="600">
+        
+        Title="ComplexPlain3DViewer" Height="500" Width="800" Icon="Images/planoCIco.png">
     <Grid>
         <Grid.RowDefinitions>
-            <RowDefinition Height="Auto" />
+            <RowDefinition Height="40" />
             <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <Grid.Resources>
             <local:ComplexPlainViewModel x:Key="viewer"/>
         </Grid.Resources>
-        <StackPanel Orientation="Horizontal" Margin="0,0,0,10">
-            <Button Content="Run Simulation" Click="Button_Click"/>
-            <Button Content="Update" Click="ButtonUpdate"/>
-        </StackPanel>
+        <ToolBar>
+            <Button Click="ButtonAbrir_Click" 
+                    ToolTip="Open .Net Pspice File">
+                <Image Source="Images/folder.png" />
+            </Button>
+            <!--<Button Click="Button_Click_2">
+                <Image Source="Images/window_view.png" />
+            </Button>-->
+            <Button Click="ButtonUpdate" ToolTip="Refresh Simulation">
+                <Image Source="Images/cpu_run.png" />
+            </Button>
 
-        <xcad:DockingManager Grid.Row="1" MaxHeight="425"
+            <Button >
+                <Image Source="Images/chart.png" />
+            </Button>
+            <!--<Button Click="Button_Click_4" ToolTip="FFT Inversa + Filtro Pasa Alto">
+                <Image Source="Images/chart.png" />
+            </Button>-->
+          
+        </ToolBar>
+
+      
+        <xcad:DockingManager Grid.Row="1"
                            AllowMixedOrientation="True"
                            BorderBrush="Black"
                            BorderThickness="1"
@@ -46,7 +64,7 @@
                     </xcad:LayoutAnchorablePane>
                     <xcad:LayoutDocumentPaneGroup >
                         <xcad:LayoutDocumentPane>
-                            <xcad:LayoutDocument ContentId="document1" Title="Document 1" IconSource="Images/document.png" >
+                            <xcad:LayoutDocument ContentId="document1" Title="Complex Plain Simulation" IconSource="Images/document.png" CanClose="False" CanFloat="False" >
                                 <h:HelixViewport3D ZoomExtentsWhenLoaded="True" ShowCoordinateSystem="True" Grid.Row="1">
                                     <h:HelixViewport3D.Camera>
                                         <!-- HelixViewport3D.ZoomExtentsWhenLoaded will figure out the position of the Camera -->
@@ -78,5 +96,10 @@
               
             </xcad:LayoutRoot>
         </xcad:DockingManager>
+
+        <StatusBar Grid.Row="2">
+            <TextBlock Text="Hello"/>
+
+        </StatusBar>
     </Grid>
 </Window>

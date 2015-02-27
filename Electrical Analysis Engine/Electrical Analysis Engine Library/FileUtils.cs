@@ -1,34 +1,130 @@
-﻿using System;
+﻿using MathNet.Numerics;
+using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using System.Drawing.Imaging;
+using System.Drawing;
 
 namespace ElectricalAnalysis
 {
     public class FileUtils
     {
+        // bounds in the complex plane
 
-        public static void ExportToCSV()
-        { 
-            string filePath = @"E:\test.csv";   
-            string delimiter = ",";   
-   
-            string[][] output = new string[][]{   
-                new string[]{"Col 1 Row 1", "Col 2 Row 1", "Col 3 Row 1"},   
-                new string[]{"Col1 Row 2", "Col2 Row 2", "Col3 Row 2"}   
-            };   
-            int length = output.GetLength(0);   
-            StringBuilder sb = new StringBuilder();   
-            for (int index = 0; index < length; index++)   
-                sb.AppendLine(string.Join(delimiter, output[index]));   
-   
-            File.WriteAllText(filePath, sb.ToString());  
 
+        public static bool ExportToBitmap()
+        {
+            return true;
+        }
+
+        public static Bitmap DrawImage(Func<int, int, Complex32> f, int Width = 300, int Height = 300)
+        {
+            //double re_min = -3.0;
+            //double re_max = +3.0;
+            //double im_min = -3.0;
+            //double im_max = +3.0;
+
+            // get the function to evaluate
+            // = functions[functionList.SelectedIndex].Function;
+
+            Bitmap image = new Bitmap(Width, Height);
+
+            // iterate over all image pixels
+            for (int x = 0; x < Width; x++)
+            {
+                //double re = re_min + x * (re_max - re_min) / Width;
+                for (int y = 0; y < Height; y++)
+                {
+                   // double im = im_max - y * (im_max - im_min) / Height;
+
+                    // form a complex number based on the pixel value
+                   // Complex32 z = new Complex32((float)re, (float)im);
+
+                    // compute the value of the current complex function for that complex number
+                    Complex32 fz = f(x, y);
+
+                    // don't try to plot non-numeric values (e.g. at poles)
+                    if (Double.IsInfinity(fz.Real) || Double.IsNaN(fz.Real) || Double.IsInfinity(fz.Imaginary) || Double.IsNaN(fz.Imaginary)) continue;
+
+                    // convert the complex function value to a HSV color triplet
+                    Tuple<double, double, double> hsv = ImageUtils.ComplexToHsv(fz);
+
+                    // convert the HSV color triplet to an RBG color triplet
+                    Tuple<double, double, double> rgb = ImageUtils.HsvToRgb(hsv);
+                    int r = (int)Math.Truncate(255.0 * rgb.Item1);
+                    int g = (int)Math.Truncate(255.0 * rgb.Item2);
+                    int b = (int)Math.Truncate(255.0 * rgb.Item3);
+                    Color color = Color.FromArgb(r, g, b);
+
+                    // plot the point
+                    image.SetPixel(x, y, color);
+
+                }
+            }
+
+            // put the image in the image box control
+            // imageBox.Image = image;
+            return image;
         
         }
+
+        
+        public static Bitmap DrawImage(Func<Complex32, Complex32> f, int Width = 300, int Height = 300)
+        {
+            double re_min = -3.0;
+            double re_max = +3.0;
+            double im_min = -3.0;
+            double im_max = +3.0;
+
+            // get the function to evaluate
+            // = functions[functionList.SelectedIndex].Function;
+
+            Bitmap image = new Bitmap(Width, Height);
+
+            // iterate over all image pixels
+            for (int x = 0; x < Width; x++)
+            {
+                double re = re_min + x * (re_max - re_min) / Width;
+                for (int y = 0; y < Height; y++)
+                {
+                    double im = im_max - y * (im_max - im_min) / Height;
+
+                    // form a complex number based on the pixel value
+                    Complex32 z = new Complex32((float)re, (float)im);
+
+                    // compute the value of the current complex function for that complex number
+                    Complex32 fz = f(z);
+
+                    // don't try to plot non-numeric values (e.g. at poles)
+                    if (Double.IsInfinity(fz.Real) || Double.IsNaN(fz.Real) || Double.IsInfinity(fz.Imaginary) || Double.IsNaN(fz.Imaginary)) continue;
+
+                    // convert the complex function value to a HSV color triplet
+                    Tuple<double, double, double> hsv = ImageUtils.ComplexToHsv(fz);
+
+                    // convert the HSV color triplet to an RBG color triplet
+                    Tuple<double, double, double> rgb = ImageUtils.HsvToRgb(hsv);
+                    int r = (int)Math.Truncate(255.0 * rgb.Item1);
+                    int g = (int)Math.Truncate(255.0 * rgb.Item2);
+                    int b = (int)Math.Truncate(255.0 * rgb.Item3);
+                    Color color = Color.FromArgb(r, g, b);
+
+                    // plot the point
+                    image.SetPixel(x, y, color);
+
+                }
+            }
+
+            // put the image in the image box control
+            // imageBox.Image = image;
+            return image;
+        }
+
+
+
 
 
     }

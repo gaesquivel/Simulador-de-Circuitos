@@ -27,6 +27,29 @@ namespace ElectricalAnalysis.Components
 
         }
 
+        //public override double NortonCurrent(Node referenceNode, double t)
+        //{
+        //    if (referenceNode == Nodes[0])
+        //        return -current.Real;
+        //    else
+        //        return current.Real;
+        //}
+
+        public override double Current(Node referenceNode, double CurrentTime)
+        {
+            double deltat = CurrentTime - OwnerCircuit.CircuitTime;
+            if (deltat <= 0)
+            {
+                throw new Exception();
+            }
+            double i = _current.Real + voltage(referenceNode).Real * deltat / Value;
+            return i;
+        }
+
+        public override Complex32 Current(Node referenceNode, Complex32? W = null)
+        {
+            return voltage(referenceNode) / Impedance(W);
+        } 
 
         public override Complex32 Impedance(Complex32 ?W)
         {
