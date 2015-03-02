@@ -2,6 +2,6 @@
 
 
 
-R_R1         $N_0002 $N_0001  1k  
+R_R1         $N_0002 out  1k  
 V_V2         $N_0002 0 DC 10V AC 10V 
-C_C1         0 $N_0001  1u  
+C_C1         0 out  10n  

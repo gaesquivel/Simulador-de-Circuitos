@@ -24,7 +24,7 @@ namespace ElectricalAnalysis.Components
             //}
         }
 
-         public ACVoltageGenerator(ComponentContainer owner, string name, string value):base(owner)
+         public ACVoltageGenerator(ComponentContainer owner, string name, string value = null):base(owner)
         {
             Initialize(name, value);
             ACVoltage = new Complex32(1, 0);

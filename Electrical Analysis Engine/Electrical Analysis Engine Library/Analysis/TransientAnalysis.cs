@@ -1,4 +1,5 @@
-﻿using System;
+﻿using ElectricalAnalysis.Analysis.Solver;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -16,7 +17,7 @@ namespace ElectricalAnalysis.Analysis
         {
             Step = "1u";
             FinalTime = "100u";
-        
+            Solver = new TransientSolver();
         }
 
 

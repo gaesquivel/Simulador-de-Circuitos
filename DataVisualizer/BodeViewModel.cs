@@ -42,7 +42,7 @@ namespace DataVisualizer
 
                 ACSweepSolver sol = (ACSweepSolver)ac.Solver;
 
-                foreach (var res in sol.Results)
+                foreach (var res in sol.Voltages)
                 {
                     //Console.Write(res.Key.ToString() + "rad/seg");
                     foreach (var nodo in res.Value)

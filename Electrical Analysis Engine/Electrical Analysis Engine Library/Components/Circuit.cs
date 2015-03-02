@@ -6,6 +6,8 @@ using System.Text;
 using System.Threading.Tasks;
 using MathNet.Numerics;
 using MathNet.Numerics.LinearAlgebra;
+using ElectricalAnalysis.Components.Generators;
+using ElectricalAnalysis.Components.Controlled;
 
 namespace ElectricalAnalysis.Components
 {
@@ -50,11 +52,20 @@ namespace ElectricalAnalysis.Components
                 reader.Close();
 
                 string[] lines = txt.Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                foreach (var item in lines)
+                for (int i = 0; i < lines.Length; i++ )
                 {
+                    string item = lines[i];
                     //un comentario
                     if (item.StartsWith("*"))
                         continue;
+
+                    int j = i + 1;
+                    while (j < lines.Length && lines[j].StartsWith("+"))
+                    {
+                        item += " " + lines[j].Substring(1);
+                        j++;
+                        i++;
+                    }
 
                     //R_R1         $N_0002 $N_0001  1k
                     string[] elemn = item.Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
@@ -72,11 +83,33 @@ namespace ElectricalAnalysis.Components
                             {
                                 ACVoltageGenerator ac = new ACVoltageGenerator(this, comp1[1], elemn[4]);
                                 if (elemn.Length == 8)
-                                    ac.ACVoltage = new Complex32((float)StringUtils.DecodeString(elemn[6]), 
+                                    ac.ACVoltage = new Complex32((float)StringUtils.DecodeString(elemn[6]),
                                                                 (float)StringUtils.DecodeString(elemn[6]));
                                 else
                                     ac.ACVoltage = new Complex32((float)StringUtils.DecodeString(elemn[6]), 0);
                                 comp = (ACVoltageGenerator)ac;
+                            }
+                            else if (elemn.Length > 8)
+                            {
+                                //V_V1         $N_0001 0 DC 0 AC 1
+                                //+SIN 1 1 1k 0 0 0
+                                SineVoltageGenerator vsin = new SineVoltageGenerator(this, comp1[1]);
+                                //if (elemn.Length == 8)
+                                    //vsin.ACVoltage = new Complex32((float)StringUtils.DecodeString(elemn[6]),
+                                    //                            (float)StringUtils.DecodeString(elemn[6]));
+                                //else
+                                   vsin.ACVoltage = new Complex32((float)StringUtils.DecodeString(elemn[6]), 0);
+                                vsin.Amplitude = elemn[9];
+                                vsin.Offset = elemn[8];
+                                vsin.Frequency = elemn[10];
+                                vsin.Thau = elemn[12];
+                                vsin.Delay = elemn[11];
+                                vsin.Phase = elemn[13];
+                                comp = vsin;
+                            }
+                            else
+                            {
+                                throw new NotImplementedException();
                             }
                             break;
                         case "I":
@@ -95,13 +128,26 @@ namespace ElectricalAnalysis.Components
                             comp = new Capacitor(this, comp1[1], elemn[3]);
 
                             break;
+                        case "E":
+                            //E_E1         $N_0002 0 $N_0001 0 10
+                            VoltageControlledGenerator E = new VoltageControlledGenerator(this, comp1[1]);
+                            E.Gain = elemn[5];
 
+                            Node node1 = null;
+                            node1 = CreateOrFindNode(elemn[3]);
+                            E.InputNodes.Add(node1);
+
+                            node1 = CreateOrFindNode(elemn[4]);
+                            E.InputNodes.Add(node1);
+
+                            comp = E;
+                            break;
                         default:
                             throw new Exception();
                     }
 
                     comp.Nodes.Clear();
-                   //agrego los nodos al circuito y al componente
+                    //agrego los nodos al circuito y al componente
                     Node n;
                     if (!Nodes.ContainsKey(elemn[1]))
                     {
@@ -147,6 +193,19 @@ namespace ElectricalAnalysis.Components
            // return cir;
         }
 
+        private Node CreateOrFindNode(string name)
+        {
+            Node n = null;
+            if (Nodes.ContainsKey(name))
+                n = Nodes[name];
+            else
+            {
+                n = new Node(name);
+                Nodes.Add(n.Name, n);
+            }
+            return n;
+        }
+
         public string Solve()
         { 
             string file = "";
@@ -179,6 +238,10 @@ namespace ElectricalAnalysis.Components
                 cir.Nodes.Add(node.Key, node.Value);
             }
             cir.Components.AddRange(Components);
+            foreach (var comp in cir.Components)
+            {
+                comp.OwnerCircuit = cir;
+            }
             cir.Reference = Reference;
 
             return cir;

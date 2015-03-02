@@ -55,9 +55,11 @@
     <Compile Include="Analysis\Solver\CircuitSolver.cs" />
     <Compile Include="Analysis\Solver\DCSolver.cs" />
     <Compile Include="Analysis\TransientAnalysis.cs" />
+    <Compile Include="Components\Controlled\VoltageControlledGenerator.cs" />
     <Compile Include="Components\Generators\ACVoltageGenerator.cs" />
     <Compile Include="Components\Blocks\Block.cs" />
     <Compile Include="Components\Blocks\branch.cs" />
+    <Compile Include="Components\Generators\SineVoltageGenerator.cs" />
     <Compile Include="Components\Pasive Components\Capacitor.cs" />
     <Compile Include="Components\Circuit.cs">
       <SubType>Code</SubType>

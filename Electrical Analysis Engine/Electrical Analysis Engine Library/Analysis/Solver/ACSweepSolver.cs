@@ -278,6 +278,7 @@ namespace ElectricalAnalysis.Analysis.Solver
             //List<List<string>> todos = new List<List<string>>();
             using (var writer = new CsvFileWriter(FileName))
             {
+                writer.Delimiter = ';';
                 List<string> results = new List<string>();
                 results.Add("W");
                 foreach (var item in Voltages)
@@ -358,7 +359,7 @@ namespace ElectricalAnalysis.Analysis.Solver
 
                 else if (comp is ParallelBlock)
                 {
-                    CalculateCurrents((Branch)comp, W);
+                    CalculateCurrents((ParallelBlock)comp, W);
                     continue;
                 }
 

@@ -10,6 +10,8 @@ namespace ElectricalAnalysis.Components
 {
     public class Node: Item
     {
+        private NodeType typeofnode;
+
         public enum NodeType { 
             /// <summary>
             /// this node was not analyze yet
@@ -47,12 +49,22 @@ namespace ElectricalAnalysis.Components
             /// </summary>
             VoltageDivideNode,
             ///// <summary>
-            ///// In this case the voltage can be calculated eas
+            ///// In this case the voltage can be calculated with some formulae
             ///// </summary>
-            //VoltageDivideKnownNode
+            VoltageVariableNode
         }
 
-        public NodeType TypeOfNode { get; set; }
+        public NodeType TypeOfNode
+        {
+            get
+            { return typeofnode; }
+            set
+            {
+                if (value == NodeType.VoltageLinkedNode && typeofnode == NodeType.VoltageFixedNode)
+                    return;
+                typeofnode = value;
+            }
+        }
 
         public ComponentContainer Owner { get; set; }
 

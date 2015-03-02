@@ -109,31 +109,34 @@ namespace ElectricalAnalysis.Analysis.Solver
 
             #region busco componentes en paralelo
 
-            for (int i = 0; i < cir.Components.Count - 1; i++)
+            if (false)
             {
-                if (yaanalizados.Contains(cir.Components[i]))
-                    continue;
-                Dipole comp1 = cir.Components[i];
-
-                for (int j = i + 1; j < cir.Components.Count; j++)
+                for (int i = 0; i < cir.Components.Count - 1; i++)
                 {
-                    if (yaanalizados.Contains(cir.Components[j]))
+                    if (yaanalizados.Contains(cir.Components[i]))
                         continue;
-                    Dipole comp2 = cir.Components[j];
-                    if ((comp1.Nodes[0] == comp2.Nodes[0] && comp1.Nodes[1] == comp2.Nodes[1]) ||
-                        (comp1.Nodes[0] == comp2.Nodes[1] && comp1.Nodes[1] == comp2.Nodes[0]))
+                    Dipole comp1 = cir.Components[i];
+
+                    for (int j = i + 1; j < cir.Components.Count; j++)
                     {
-                        if (para == null)
+                        if (yaanalizados.Contains(cir.Components[j]))
+                            continue;
+                        Dipole comp2 = cir.Components[j];
+                        if ((comp1.Nodes[0] == comp2.Nodes[0] && comp1.Nodes[1] == comp2.Nodes[1]) ||
+                            (comp1.Nodes[0] == comp2.Nodes[1] && comp1.Nodes[1] == comp2.Nodes[0]))
                         {
-                            para = new ParallelBlock(cir, comp1, comp2);
-                            paralelos.Add(para);
-                            yaanalizados.Add(comp1);
-                            yaanalizados.Add(comp2);
-                        }
-                        else
-                        {
-                            para.Components.Add(comp2);
-                            yaanalizados.Add(comp2);
+                            if (para == null)
+                            {
+                                para = new ParallelBlock(cir, comp1, comp2);
+                                paralelos.Add(para);
+                                yaanalizados.Add(comp1);
+                                yaanalizados.Add(comp2);
+                            }
+                            else
+                            {
+                                para.Components.Add(comp2);
+                                yaanalizados.Add(comp2);
+                            }
                         }
                     }
                 }

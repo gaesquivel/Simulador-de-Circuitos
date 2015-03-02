@@ -23,12 +23,12 @@ namespace ElectricalAnalysis_Test
 
         static void Main(string[] args)
         {
-            int i = 1;
+            int i = 5;
 
             switch (i)
             {
                 case 0:
-                    cir.ReadCircuit("testdcL.net");
+                    cir.ReadCircuit("RLcharge.net");
                     cir2 = (Circuit)cir.Clone();
                     DCSolver.Optimize(cir2);
                     DCAnalysis ac0 = (DCAnalysis)cir2.Setup[0];
@@ -39,7 +39,6 @@ namespace ElectricalAnalysis_Test
 
                     break;
                 case 1:
-
                     cir.ReadCircuit("testidc.net");
                     cir2 = (Circuit)cir.Clone();
                     DCSolver.Optimize(cir2);
@@ -77,10 +76,38 @@ namespace ElectricalAnalysis_Test
                     sol1.SelectedNode = sol1.CurrentCircuit.Nodes["out"];
                    // sol1.
                     sol1.ExportToCSV("e:/plain.csv");
-                   Bitmap bmp =  FileUtils.DrawImage(func, ac1.Points, ac1.Points);
-                   bmp.Save("e:/plain.bmp");
+                    Bitmap bmp =  FileUtils.DrawImage(func, ac1.Points, ac1.Points);
+                    bmp.Save("e:/plain.bmp");
                     break;
 
+
+                case 4:
+                    cir.ReadCircuit("RCL.net");
+                    //cir.ReadCircuit("RCcharge.net");
+                    cir2 = (Circuit)cir.Clone();
+                    cir2.Setup.RemoveAt(0);
+                    TransientAnalysis ac5 = new TransientAnalysis();
+                    ac5.Step = "10n";
+                    cir2.Setup.Add(ac5);
+                    TransientSolver sol5 = (TransientSolver)ac5.Solver;
+                    TransientSolver.Optimize(cir2);
+                    cir2.Solve();
+                    sol5.ExportToCSV("e:/time.csv");
+                    break;
+
+                case 5:
+                    cir.ReadCircuit("vsingain.net");
+                    //cir.ReadCircuit("RCcharge.net");
+                    cir2 = (Circuit)cir.Clone();
+                    cir2.Setup.RemoveAt(0);
+                    TransientAnalysis ac6 = new TransientAnalysis();
+                    ac6.Step = "100n";
+                    cir2.Setup.Add(ac6);
+                    TransientSolver sol6 = (TransientSolver)ac6.Solver;
+                    TransientSolver.Optimize(cir2);
+                    cir2.Solve();
+                    sol6.ExportToCSV("e:/time.csv");
+                    break;
 
                 default:
                     break;

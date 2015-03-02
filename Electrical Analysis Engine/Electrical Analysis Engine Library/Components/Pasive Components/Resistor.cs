@@ -8,6 +8,16 @@ namespace ElectricalAnalysis.Components
 {
     public class Resistor : ElectricComponent, PasiveComponent
     {
+
+        public override double Current(Node referenceNode, double CurrentTime)
+        {
+            Complex32 i = Voltage / Impedance();
+            if (referenceNode == Nodes[0])
+                return i.Real;
+            else
+                return -i.Real;
+        }
+
         public override Complex32 current
         {
             get

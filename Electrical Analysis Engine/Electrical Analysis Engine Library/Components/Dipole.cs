@@ -38,7 +38,9 @@ namespace ElectricalAnalysis.Components
 
         public virtual double voltage(Node referenceNode, double CurrentTime)
         {
-            return Voltage.Real;
+            if (referenceNode == Nodes[0])
+                return Voltage.Real;
+            return -Voltage.Real;
         }
 
         public virtual Complex32 Current(Node referenceNode, Complex32? W = null)
@@ -89,8 +91,8 @@ namespace ElectricalAnalysis.Components
         {
             if (ReferenceNode == Nodes[0])
                 return Voltage;
-            if (ReferenceNode == Nodes[-1])
-                return Voltage;
+            if (ReferenceNode == Nodes[1])
+                return -Voltage;
             return Complex32.NaN;
         }
 
@@ -135,7 +137,7 @@ namespace ElectricalAnalysis.Components
         public virtual void Reset()
         {
             //Voltage = Complex32.Zero;
-            current = Complex32.Zero;
+            _current = Complex32.Zero;
         }
 
     }

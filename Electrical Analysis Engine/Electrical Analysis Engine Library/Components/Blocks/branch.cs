@@ -12,6 +12,16 @@ namespace ElectricalAnalysis.Components
     /// </summary>
     public class Branch: Block
     {
+
+        public Dipole CurrentImposser { get; set; }
+
+        public Branch(ComponentContainer owner):base(owner)
+        {
+            Name = "br" + ID.ToString();
+            InternalNodes = new List<Node>();
+        
+        }
+
         public virtual Complex32 TheveninVoltage(Node referenceNode, Complex32 ?W = null)
         {
             Complex32 v = 0;
@@ -69,6 +79,11 @@ namespace ElectricalAnalysis.Components
 
         public virtual double NortonCurrent(Node referenceNode, double t)
         {
+            if (CurrentImposser != null)
+            {
+                return Current(referenceNode, t);
+            }
+
             double v = 0, z = 0;
             Dipole compo1 = null;
             Node node1 = null;
@@ -141,19 +156,69 @@ namespace ElectricalAnalysis.Components
             //}
         }
 
+        //la corriente puede variar en el tiempo
+        public override double Current(Node referenceNode, double t)
+        {
+            double i = 0;
+            if (CurrentImposser != null)
+            {
+                if (CurrentImposser.Nodes.Contains(referenceNode))
+                {
+                    i = CurrentImposser.Current(referenceNode, t);
+                    _current = new Complex32((float)i, 0);
+                }
+                else
+                {
+                    //hay que buscar nodo a nodo 
+                    throw new NotImplementedException();
+                }
+            }
+            else
+            {
+                foreach (var item in Components)
+                {
+                    //los generadores de corriente imponen la corriente en una rama!
+                    if (item is CurrentGenerator)
+                    {
+                        CurrentImposser = item;
+                        i = item.Current(referenceNode, t);
+                        break;
+                    }
+                    //si no hay generadores de corriente la corriente la imponen lo inductores
+                    else if (item is Inductor)
+                    {
+                        CurrentImposser = item;
+                        i = item.Current(referenceNode, t);
+                    }
+                }
+            }
+
+            if (CurrentImposser == null)
+                i = _current.Real;
+
+            if (referenceNode == Nodes[0])
+                return -i;
+            else
+                return i;
+        } 
 
         public override Complex32 current
         {
             get
             {
+                if (CurrentImposser != null)
+                {
+                    return CurrentImposser.current;
+                }
+                //los generadores de corriente imponen la corriente en una rama!
                 foreach (var item in Components)
                 {
                     if (item is CurrentGenerator)
                     {
+                        CurrentImposser = item;
                         return item.current;
                     }
                 }
-
                 return _current;
             }
             internal set
@@ -165,22 +230,7 @@ namespace ElectricalAnalysis.Components
 
         public List<Node> InternalNodes { get; protected set; }
 
-        public Branch(ComponentContainer owner):base(owner)
-        {
-            InternalNodes = new List<Node>();
-        }
-
-        //public override Complex32 Impedance(double W = 0)
-        //{
-        //    Complex32 Z = Complex32.Zero;
-        //    foreach (var item in Components)
-        //    {
-        //        Z += item.Impedance(W);
-        //    }
-
-        //    return Z;
-        //}
-
+     
 
         public override Complex32 Impedance(Complex32 ?W = null)
         {

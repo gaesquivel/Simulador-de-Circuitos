@@ -8,7 +8,8 @@ namespace ElectricalAnalysis.Components
 {
     public class Inductor : ElectricComponent, PasiveComponent
     {
-
+        double previoustime;
+        
 
 
         public Inductor(ComponentContainer owner)
@@ -27,23 +28,35 @@ namespace ElectricalAnalysis.Components
 
         }
 
-        //public override double NortonCurrent(Node referenceNode, double t)
-        //{
-        //    if (referenceNode == Nodes[0])
-        //        return -current.Real;
-        //    else
-        //        return current.Real;
-        //}
 
-        public override double Current(Node referenceNode, double CurrentTime)
+        public override double Current(Node referenceNode, double t)
         {
-            double deltat = CurrentTime - OwnerCircuit.CircuitTime;
-            if (deltat <= 0)
+            double deltat = t - OwnerCircuit.CircuitTime;
+            if (deltat < 0)
             {
-                throw new Exception();
+                throw new NotImplementedException();
             }
-            double i = _current.Real + voltage(referenceNode).Real * deltat / Value;
-            return i;
+            //si ya se calculo la corriente devuelvo la calculada
+            if (previoustime > 0 && previoustime == t)
+            {
+                if (referenceNode == Nodes[0])
+                    return _current.Real;
+                else if (referenceNode == Nodes[1])
+                    return -_current.Real;
+                else
+                    throw new NotImplementedException();
+            }
+            previoustime = t;
+            //recalculo la corriente
+            double deltai = voltage(referenceNode).Real * deltat / Value;
+            double i = _current.Real - deltai;
+            if (referenceNode == Nodes[0])
+                _current = new Complex32((float)-i, 0);
+            else if (referenceNode == Nodes[1])
+                _current = new Complex32((float)i, 0);
+            else
+                throw new NotImplementedException();
+            return _current.Real;
         }
 
         public override Complex32 Current(Node referenceNode, Complex32? W = null)
@@ -59,6 +72,12 @@ namespace ElectricalAnalysis.Components
             //S*L
             Complex32 L = new Complex32((float) Value, 0);
             return W.Value * L;
+        }
+
+        public override void Reset()
+        {
+            previoustime = 0;
+            base.Reset();
         }
     }
 }
