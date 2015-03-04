@@ -60,23 +60,27 @@
                     <xcad:LayoutDocumentPaneGroup >
                         <xcad:LayoutDocumentPane>
                             <xcad:LayoutDocument ContentId="document1" Title="Complex Plain Simulation" IconSource="Images/document.png" CanClose="False" CanFloat="False" >
+                                    
 
-                                <d3:ChartPlotter Name="plotter" Margin="10,10,20,10">
-                                    <d3:InjectedPlotter Name="innerPlotter" Background="Aqua" >
-                                        <d3:LineGraph x:Name="linephase" Stroke="red" StrokeThickness="3" Margin="0,1,0,-1"/>
-                                       
-                                    </d3:InjectedPlotter>
-                                    <d3:InjectedPlotter Name="otherPlotter" Background="red" >
+                                    <d3:ChartPlotter Name="plotter" Margin="10,10,20,10">
                                         <d3:LineGraph x:Name="linegraph" Stroke="Blue" StrokeThickness="3" Margin="0,1,0,-1"/>
-                                        <d3:VerticalAxis Placement="Right" />
-                                        <d3:VerticalAxisTitle  Placement="Right" />
-                                    </d3:InjectedPlotter>
-                                    <d3:Header FontFamily="Arial" Content="{Binding ElementName=linegraph, Path=Stroke}"/>
-                                    <d3:VerticalAxisTitle FontFamily="Arial" />
-                                    <d3:HorizontalAxisTitle FontFamily="Arial" />
-                                </d3:ChartPlotter>
 
+                                        <d3:LineGraph x:Name="linephase" Stroke="Blue" StrokeThickness="3" Margin="0,1,0,-1"/>
 
+                                    <!--<d3:InjectedPlotter Name="otherPlotter" Background="red" >
+                                            <d3:Header FontFamily="Arial" Content="Hola2"/>
+                                            <d3:VerticalAxisTitle FontFamily="Arial" Placement="Right"  />
+                                            <d3:HorizontalAxisTitle FontFamily="Arial" />
+                                        </d3:InjectedPlotter>-->
+                                    </d3:ChartPlotter>
+    
+                                    
+                                    <!--<d3:ChartPlotter >
+                                       
+                                        <d3:Header FontFamily="Arial" Content="{Binding ElementName=linegraph, Path=Stroke}"/>
+                                        <d3:VerticalAxisTitle FontFamily="Arial" />
+                                        <d3:HorizontalAxisTitle FontFamily="Arial" />
+                                    </d3:ChartPlotter>-->
                             </xcad:LayoutDocument>
 
                         </xcad:LayoutDocumentPane>

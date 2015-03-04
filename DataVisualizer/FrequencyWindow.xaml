@@ -16,8 +16,7 @@
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <ToolBar>
-            <Button Click="ButtonAbrir_Click" 
-                    ToolTip="Open .Net Pspice File">
+            <Button Click="ButtonAbrir_Click" ToolTip="Open .Net Pspice File">
                 <Image Source="Images/folder.png" />
             </Button>
 
@@ -30,7 +29,7 @@
             <Button ToolTip="Draw Selected Item" Click="ButtonAddLine">
                 <Image Source="Images/line-chart.png" />
             </Button>
-            <Button ToolTip="UnDraw Selected Item" Click="BtnDeleteLine">
+            <Button ToolTip="Export To CSV Excel File" Click="BtnExport">
                 <Image Source="Images/delete2.png" />
             </Button>
 
@@ -61,14 +60,24 @@
                     <xcad:LayoutDocumentPaneGroup >
                         <xcad:LayoutDocumentPane>
                             <xcad:LayoutDocument ContentId="document1" Title="AC sweep Simulation" IconSource="Images/line-chartsmall.png" CanClose="False" CanFloat="False" >
-                               
-                                    <d3:ChartPlotter Name="plotter" >
-                                        <d3:LineGraph x:Name="linegraph"  Stroke="Blue" StrokeThickness="3" Margin="0,1,0,-1"/>
-                                        <d3:VerticalAxisTitle  FontFamily="Arial" Content="{Binding ElementName=lbComponents, Path=SelectedItem.Name}"/>
+                                <Grid>
+                                    <Grid.RowDefinitions>
+                                        <RowDefinition Height="*" />
+                                        <RowDefinition Height="*" />
+                                    </Grid.RowDefinitions>
+                                    <d3:ChartPlotter Name="plotter" Margin="5, 5, 10, 5">
+                                        <d3:LineGraph x:Name="linegraph"  Stroke="Blue" StrokeThickness="3" />
+                                        <!--<d3:VerticalAxisTitle  FontFamily="Arial" Content="{Binding ElementName=lbComponents, Path=SelectedItem.Name}"/>-->
                                         <d3:HorizontalAxisTitle FontFamily="Arial" Content="ω [rad/seg]"/>
                                     </d3:ChartPlotter>
-                                   
-                                  
+
+                                    <d3:ChartPlotter Name="otherPlotter" Margin="5,5,10,5" Grid.Row="1">
+                                        <d3:LineGraph x:Name="phasegraph" Stroke="Red" StrokeThickness="3" />
+                                        <d3:Header FontFamily="Arial" Content="{Binding ElementName=lbComponents, Path=SelectedItem.Name}"/>
+                                        <!--<d3:VerticalAxisTitle FontFamily="Arial" />-->
+                                        <d3:HorizontalAxisTitle FontFamily="Arial"  Content="ω [rad/seg]" />
+                                    </d3:ChartPlotter>
+                                </Grid>
 
                             </xcad:LayoutDocument>
                         </xcad:LayoutDocumentPane>
@@ -78,6 +87,7 @@
                     <xcad:LayoutAnchorablePaneGroup DockWidth="100">
                         <xcad:LayoutAnchorablePane>
                             <xcad:LayoutAnchorable ContentId="alarms" Title="Components" IconSource="Images/cpu_view.png" CanClose="False"  >
+                               
                                 <StackPanel Orientation="Vertical">
                                     <Label Content="Components"/>
                                     <ListBox Name="lbComponents" DisplayMemberPath="Name" SelectionChanged="lbComponents_SelectionChanged"></ListBox>
@@ -88,7 +98,6 @@
                                 </StackPanel>
 
                             </xcad:LayoutAnchorable>
-
                         </xcad:LayoutAnchorablePane>
                     </xcad:LayoutAnchorablePaneGroup>
                 </xcad:LayoutPanel>
@@ -98,7 +107,7 @@
         </xcad:DockingManager>
 
         <StatusBar Grid.Row="2">
-            <TextBlock Text="Hello"/>
+            <TextBlock  Name="TxtStatus" Text="Circuits/RCL.net"/>
 
         </StatusBar>
     </Grid>

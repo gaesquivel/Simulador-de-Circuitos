@@ -52,16 +52,16 @@ namespace ComplexPlainVisualizer
             get
             {
                 // Brush = BrushHelper.CreateGradientBrush(Colors.White, Colors.Blue);
-                return GradientBrushes.Hue;
+                return GradientBrushes.Rainbow;
                 // Brush = GradientBrushes.BlueWhiteRed;
-                switch (ColorCoding)
-                {
-                    case ColorCoding.ByGradientY:
-                        return BrushHelper.CreateGradientBrush(Colors.Red, Colors.White, Colors.Blue);
-                    case ColorCoding.ByLights:
-                        return Brushes.White;
-                }
-                return null;
+                //switch (ColorCoding)
+                //{
+                //    case ColorCoding.ByGradientY:
+                //        return BrushHelper.CreateGradientBrush(Colors.Red, Colors.White, Colors.Blue);
+                //    case ColorCoding.ByLights:
+                //        return Brushes.White;
+                //}
+                //return null;
             }
         }
 
@@ -84,15 +84,16 @@ namespace ComplexPlainVisualizer
             if (CreateData || Data == null)
                 Data = CreateDataArray(Function);
 
-            switch (ColorCoding)
-            {
-                case ColorCoding.ByGradientY:
-                    ColorValues = FindGradientY(Data);
-                    break;
-                case ColorCoding.ByLights:
-                    ColorValues = null;
-                    break;
-            }
+            ColorValues = FindGradientY(Data);
+            //switch (ColorCoding)
+            //{
+            //    case ColorCoding.ByGradientY:
+            //        ColorValues = FindGradientY(Data);
+            //        break;
+            //    case ColorCoding.ByLights:
+            //        ColorValues = null;
+            //        break;
+            //}
             RaisePropertyChanged("Data");
             RaisePropertyChanged("ColorValues");
             RaisePropertyChanged("SurfaceBrush");

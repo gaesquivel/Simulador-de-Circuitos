@@ -1,9 +1,10 @@
 ﻿<Application x:Class="DataVisualizer.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="MainWindow.xaml"
+             StartupUri="FrequencyWindow.xaml"
+            
              >
     <Application.Resources>
-         
+          <!--Plain2DAnalizer  MainWindow-->
     </Application.Resources>
 </Application>

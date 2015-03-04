@@ -23,7 +23,7 @@ namespace ElectricalAnalysis_Test
 
         static void Main(string[] args)
         {
-            int i = 5;
+            int i = 2;
 
             switch (i)
             {
@@ -52,7 +52,8 @@ namespace ElectricalAnalysis_Test
 
 
                 case 2:
-                    cir.ReadCircuit("RCL.net");
+                    cir.ReadCircuit("derivador.net");
+                    //cir.ReadCircuit("RCL.net");
                     cir2 = (Circuit)cir.Clone();
                     cir2.Setup.RemoveAt(0);
                     ACAnalysis ac = new ACAnalysis();
@@ -61,11 +62,12 @@ namespace ElectricalAnalysis_Test
                     cir2.Solve();
 
                     ACSweepSolver sol = (ACSweepSolver)ac.Solver;
-
+                    sol.ExportToCSV("ACSweep.csv");
                     break;
 
                 case 3:
-                    cir.ReadCircuit("RCL.net");
+                    //cir.ReadCircuit("derivador.net");
+                    cir.ReadCircuit("RLC.net");
                     cir2 = (Circuit)cir.Clone();
                     cir2.Setup.RemoveAt(0);
                     ComplexPlainAnalysis ac1 = new ComplexPlainAnalysis();

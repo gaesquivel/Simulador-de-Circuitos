@@ -15,6 +15,7 @@ using ElectricalAnalysis.Analysis;
 using ElectricalAnalysis.Analysis.Solver;
 using ElectricalAnalysis.Components;
 using System.Windows.Media.Media3D;
+using Microsoft.Win32;
 
 namespace ComplexPlainVisualizer
 {
@@ -33,31 +34,17 @@ namespace ComplexPlainVisualizer
         {
             InitializeComponent();
             model = new ComplexPlainViewModel();
-            cir = new Circuit();
 
+            model.ColorCoding = ColorCoding.ByLights;
             Button_Click(this, null);
-
+            Simulate("Circuits/RCL.net");
         }
 
 
         private void Button_Click(object sender, RoutedEventArgs e)
         {
 
-            model.ColorCoding = ColorCoding.ByLights;
 
-
-            cir.ReadCircuit("Circuits/RCL.net");
-            cir2 = (Circuit)cir.Clone();
-            cir2.Setup.RemoveAt(0);
-            ComplexPlainAnalysis ac1 = new ComplexPlainAnalysis();
-            cir2.Setup.Add(ac1);
-            ACSweepSolver.Optimize(cir2);
-
-            Update(ac1);
-
-            lbComponents.ItemsSource = cir.Components;
-            //lbComponents.SelectedItem
-            DataContext = model;
             //propgrid.SelectedObject = cir2;
         }
 
@@ -66,27 +53,27 @@ namespace ComplexPlainVisualizer
             cir2.Solve();
             sol1 = (ComplexPlainSolver)ac1.Solver;
 
-            int scalefactor = 5000;
-            model.MinX = ac1.SigmaMin / scalefactor;
-            model.MaxX = ac1.SigmaMax / scalefactor;
-            model.MaxY = ac1.WMax / scalefactor;
-            model.MinY = ac1.WMin / scalefactor;
+            model.MinX = ac1.SigmaMin;
+            model.MaxX = ac1.SigmaMax;
+            model.MaxY = ac1.WMax;
+            model.MinY = ac1.WMin ;
             model.Columns = ac1.Points;
             model.Rows = ac1.Points;
-            var data = new Point3D[model.Rows, model.Columns];
-            //public Tuple<Complex32, Complex32>[,] Results { get; set; }
+           
+
+            var data = new Point3D[model.Rows + 1, model.Columns +1];
             MathNet.Numerics.Complex32 W;
-            for (int i = 0; i < model.Rows; i++)
-                for (int j = 0; j < model.Columns; j++)
+            for (int i = 0; i <= model.Rows; i++)
+                for (int j = 0; j <= model.Columns; j++)
                 {
                     W = sol1.WfromIndexes[new Tuple<int, int>(i, j)];
                     foreach (var node in sol1.Voltages[W])
                     {
                         if (node.Key == "out")
-                            data[i, j] = new Point3D(W.Real / scalefactor,
-                                                    W.Imaginary / scalefactor,
-                                //node.Value.Magnitude);
-                                                    2 * Math.Log10(node.Value.Magnitude));
+                            data[i, j] = new Point3D(W.Real,
+                                                    W.Imaginary,
+                               // node.Value.Magnitude);
+                                                    20 * Math.Log10(node.Value.Magnitude));
                     }
                 }
 
@@ -101,7 +88,39 @@ namespace ComplexPlainVisualizer
 
         private void ButtonAbrir_Click(object sender, RoutedEventArgs e)
         {
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.InitialDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location);;
+            dlg.Filter = "Circuit Net List files (*.net)|*.net|All files (*.*)|*.*";
+            if (dlg.ShowDialog() == true)
+            {
+                Simulate(dlg.FileName);
+            }
+        }
 
+        private void Simulate(string FileName)
+        {
+            cir = new Circuit();
+            cir.ReadCircuit(FileName);
+            cir2 = (Circuit)cir.Clone();
+            cir2.Setup.RemoveAt(0);
+            ComplexPlainAnalysis ac1 = new ComplexPlainAnalysis();
+            cir2.Setup.Add(ac1);
+            ACSweepSolver.Optimize(cir2);
+
+            Update(ac1);
+
+            lbComponents.ItemsSource = cir.Components;
+            lbNodes.ItemsSource = cir.Nodes;
+            //lbComponents.SelectedItem
+            DataContext = model;
+        }
+
+        private void lbComponents_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        {
+            if (sender == lbComponents)
+                propgrid.SelectedObject = lbComponents.SelectedItem;
+            else if (sender == lbNodes)
+                propgrid.SelectedObject = lbNodes.SelectedItem;
         }
 
     }

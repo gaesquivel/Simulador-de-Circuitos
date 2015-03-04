@@ -26,13 +26,6 @@ namespace ElectricalAnalysis.Components
             }
         }
 
-       
-
-        //public override double TheveninVoltage(Node referenceNode, double t)
-        //{
-        //    return voltage(referenceNode, t);
-        //}
-
         public override double voltage(Node referenceNode, double t)
         {
             double deltat = t - OwnerCircuit.CircuitTime;

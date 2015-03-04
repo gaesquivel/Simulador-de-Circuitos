@@ -65,11 +65,12 @@ namespace ElectricalAnalysis.Analysis.Solver
             Voltages = new Dictionary<Complex32, Dictionary<string, Complex32>>();
             Currents = new Dictionary<Complex32, Dictionary<string, Complex32>>();
             WfromIndexes = new Dictionary<Tuple<int, int>, Complex32>();
+            Complex32 W = Complex32.Zero;
 
-            for (int i = 0; i < analis.Points; i++)
+            for (int i = 0; i <= analis.Points; i++)
             {
 
-                for (int j = 0; j < analis.Points; j++)
+                for (int j = 0; j <= analis.Points; j++)
                 {
                     nortoncopia.Clear();
                     foreach (var item in nodosnorton)
@@ -78,7 +79,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                     }
 
                     //Calculo de tensiones de nodos
-                    Complex32 W = new Complex32((float)(sigmamin + j * deltasig), (float)(wi + i * deltaw));
+                    W = new Complex32((float)(sigmamin + j * deltasig), (float)(wi + i * deltaw));
                     ACSweepSolver.Calculate(nortoncopia, W);
                     
                     //          Node    Voltage

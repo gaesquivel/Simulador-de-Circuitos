@@ -251,7 +251,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                 {
                     Node other = compo.OtherNode(nodo);
                     other.TypeOfNode = Node.NodeType.MultibranchCurrentNode;
-                    if (!nodosnormales.Contains(other))
+                    if (!nodosnormales.Contains(other) && !other.IsReference)
                         nodosnormales.Add(other);
                 }
                 yaanalizados.Add(compo);
@@ -261,7 +261,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                 //rama valida
                 ramas.Add(br);
                 Node other = br.OtherNode(nodo);
-                if (!nodosnormales.Contains(other))
+                if (!nodosnormales.Contains(other) && !other.IsReference)
                     nodosnormales.Add(other);
                 yaanalizados.AddRange(br.Components);
                 foreach (var comp in br.Components)

@@ -12,6 +12,7 @@ namespace ElectricalAnalysis.Components
     /// </summary>
     public class Branch: Block
     {
+        double previoustime;
 
         public Dipole CurrentImposser { get; set; }
 
@@ -150,15 +151,22 @@ namespace ElectricalAnalysis.Components
                 }
                 return voltage;
             }
-            //set
-            //{
-            //    base.Voltage = value;
-            //}
         }
 
         //la corriente puede variar en el tiempo
         public override double Current(Node referenceNode, double t)
         {
+            //si ya se calculo la corriente devuelvo la calculada
+            if (previoustime > 0 && previoustime == t)
+            {
+                if (referenceNode == Nodes[0])
+                    return _current.Real;
+                else if (referenceNode == Nodes[1])
+                    return -_current.Real;
+                else
+                    throw new NotImplementedException();
+            }
+
             double i = 0;
             if (CurrentImposser != null)
             {
@@ -198,8 +206,10 @@ namespace ElectricalAnalysis.Components
 
             if (referenceNode == Nodes[0])
                 return -i;
-            else
+            else// if (referenceNode == Nodes[1])
                 return i;
+            //else
+                throw new NotImplementedException();
         } 
 
         public override Complex32 current
@@ -243,6 +253,11 @@ namespace ElectricalAnalysis.Components
             return Z;
         }
 
+        public override void Reset()
+        {
+            previoustime = 0;
+            base.Reset();
+        }
 
     }
 }

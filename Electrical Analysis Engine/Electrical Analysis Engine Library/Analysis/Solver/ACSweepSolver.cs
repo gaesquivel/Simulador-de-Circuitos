@@ -247,6 +247,10 @@ namespace ElectricalAnalysis.Analysis.Solver
 
             while (!(nodo1.TypeOfNode == Node.NodeType.MultibranchCurrentNode || nodo1.IsReference)) 
             {
+                if (nodo1.TypeOfNode == Node.NodeType.VoltageFixedNode)
+                {
+                    v1 += nodo1.Voltage;
+                }
                 if (compo1 is PasiveComponent)
                 {
                     z1 += compo1.Impedance(W);
@@ -262,7 +266,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                 nodo1 = compo1.OtherNode(nodo1);
                 compo1 = nodo1.OtherComponent(compo1);
             }
-            if (nodo1.TypeOfNode == Node.NodeType.MultibranchCurrentNode)
+            if (nodo1.TypeOfNode == Node.NodeType.MultibranchCurrentNode && !nodo1.IsReference)
             {
                 v1 += nodo1.Voltage;
             }
@@ -341,14 +345,17 @@ namespace ElectricalAnalysis.Analysis.Solver
                     }
                     //si no tiene solo una resistencias en serie, es decir, un nodo de multiples ramas
                     //se aplica 2da de Kirchoff para el supernodo
-                    throw new NotImplementedException();
+                   // throw new NotImplementedException();
                     foreach (var nodo in comp.Nodes)
                     {
-                        Complex32 i;
-                        foreach (var comp2 in nodo.Components)
+                        if (nodo.IsReference)
                         {
-
+                            continue;
                         }
+                        Complex32 i = Complex32.Zero;
+                        i =  CalculateSupernodeCurrent(nodo, W, comp);
+                        comp.current = i;
+                        break;
                     }
                 }
                 else if (comp is Branch)
@@ -365,6 +372,31 @@ namespace ElectricalAnalysis.Analysis.Solver
 
             out1: ;
             }
+        }
+
+        /// <summary>
+        /// Dado un supernodo, recorre todas sus ramas para halla la corriente en una de ellas
+        /// </summary>
+        /// <param name="nodo"></param>
+        /// <param name="W"></param>
+        /// <returns></returns>
+        private static Complex32 CalculateSupernodeCurrent(Node nodo, Complex32 W, Dipole comp)
+        {
+            Complex32 i = Complex32.Zero;
+            foreach (var comp2 in nodo.Components)
+            {
+                if (comp2 == comp)
+                {
+                    continue;
+                }
+                if (comp2 is VoltageGenerator)
+                {
+                    Node nodo1 = comp2.OtherNode(nodo);
+                    i += CalculateSupernodeCurrent(nodo1, W, comp2);
+                }else
+                    i += comp2.Current(nodo, W);
+            }
+            return i;
         }
     }
 }

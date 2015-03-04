@@ -9,6 +9,7 @@ namespace ComplexPlainVisualizer
 {
     public class SurfacePlotVisual3D : ModelVisual3D
     {
+
         public static readonly DependencyProperty PointsProperty =
             DependencyProperty.Register("Points", typeof (Point3D[,]), typeof (SurfacePlotVisual3D),
                                         new UIPropertyMetadata(null, ModelChanged));
@@ -28,8 +29,13 @@ namespace ComplexPlainVisualizer
             IntervalX = 1;
             IntervalY = 1;
             IntervalZ = 0.25;
-            FontSize = 0.06;
-            LineThickness = 0.01;
+            //ScaleX = 1;
+            //ScaleY = 1;
+            //ScaleZ = 1;
+            FontSize = 0.3; //0.06
+            LineThickness = 0.04; //0.01
+            AutoScale = true;
+            SubAxisCount = 4;
 
             visualChild = new ModelVisual3D();
             Children.Add(visualChild);
@@ -67,6 +73,11 @@ namespace ComplexPlainVisualizer
 
 
         // todo: make Dependency properties
+        public double ScaleX { get; set; }
+        public double ScaleY { get; set; }
+        public double ScaleZ { get; set; }
+        public int SubAxisCount { get; set; }
+        public bool AutoScale { get; set; }
         public double IntervalX { get; set; }
         public double IntervalY { get; set; }
         public double IntervalZ { get; set; }
@@ -97,8 +108,19 @@ namespace ComplexPlainVisualizer
             double maxY = double.MinValue;
             double minZ = double.MaxValue;
             double maxZ = double.MinValue;
+            //double RealminX = double.MaxValue;
+            //double RealmaxX = double.MinValue;
+            //double RealminY = double.MaxValue;
+            //double RealmaxY = double.MinValue;
+            //double RealminZ = double.MaxValue;
+            //double RealmaxZ = double.MinValue;
+
             double minColorValue = double.MaxValue;
             double maxColorValue = double.MinValue;
+
+        
+            #region Color things
+
             for (int i = 0; i < rows; i++)
                 for (int j = 0; j < columns; j++)
                 {
@@ -124,6 +146,8 @@ namespace ComplexPlainVisualizer
             else
                 maxColorValue = -minColorValue;
 
+            #endregion
+
             // set the texture coordinates by z-value or ColorValue
             var texcoords = new Point[rows,columns];
             for (int i = 0; i < rows; i++)
@@ -135,27 +159,61 @@ namespace ComplexPlainVisualizer
                     texcoords[i, j] = new Point(u, u);
                 }
 
+
+            if (AutoScale)
+            {
+                ScaleX =10 / Math.Abs(maxX - minX);
+                ScaleY =10/ Math.Abs(maxY - minY);
+                ScaleZ =5 / Math.Abs(maxZ - minZ);
+            }
+
             var surfaceMeshBuilder = new MeshBuilder();
             surfaceMeshBuilder.AddRectangularMesh(Points, texcoords);
+            surfaceMeshBuilder.Scale(ScaleX, ScaleY, ScaleZ);
 
             var surfaceModel = new GeometryModel3D(surfaceMeshBuilder.ToMesh(),
                                                    MaterialHelper.CreateMaterial(SurfaceBrush, null, null, 1, 0));
             surfaceModel.BackMaterial = surfaceModel.Material;
 
+ 
+            //RealmaxX = maxX;
+            //RealminX = minX;
+            //RealmaxY = maxY;
+            //RealminY = minY;
+            //RealmaxZ = maxZ;
+            //RealminZ = minZ;
+            maxX *= ScaleX;
+            minX *= ScaleX;
+            maxY *= ScaleY;
+            minY *= ScaleY;
+            maxZ *= ScaleZ;
+            minZ *= ScaleZ;
+
+            IntervalX = (maxX - minX) / SubAxisCount;
+            IntervalY = (maxY - minY) / SubAxisCount;
+            IntervalZ = (maxZ - minZ) / SubAxisCount;
+            
+            #region eje x
+
             var axesMeshBuilder = new MeshBuilder();
             for (double x = minX; x <= maxX; x += IntervalX)
             {
                 double j = (x - minX)/(maxX - minX)*(columns - 1);
-                var path = new List<Point3D> {new Point3D(x, minY, minZ)};
+                //var path = new List<Point3D> { new Point3D(x , minY , minZ) };
+                var path = new List<Point3D> { new Point3D(x, minY , minZ) };
                 for (int i = 0; i < rows; i++)
                 {
-                    path.Add(BilinearInterpolation(Points, i, j));
+                    Point3D p = BilinearInterpolation(Points, i, j);
+                    p.X *= ScaleX;
+                    p.Y *= ScaleY;
+                    p.Z *= ScaleZ;
+                    path.Add(p);
                 }
                 path.Add(new Point3D(x, maxY, minZ));
 
                 axesMeshBuilder.AddTube(path, LineThickness, 9, false);
-                GeometryModel3D label = TextCreator.CreateTextLabelModel3D(x.ToString(), Brushes.Black, true, FontSize,
-                                                                           new Point3D(x, minY - FontSize*2.5, minZ),
+                GeometryModel3D label = TextCreator.CreateTextLabelModel3D(((int)(x / ScaleX)).ToString(), Brushes.Black, true, FontSize,
+                                                                           new Point3D(x, minY - FontSize * 2.5, minZ),
                                                                            new Vector3D(1, 0, 0), new Vector3D(0, 1, 0));
                 plotModel.Children.Add(label);
             }
@@ -163,10 +221,15 @@ namespace ComplexPlainVisualizer
             {
                 GeometryModel3D label = TextCreator.CreateTextLabelModel3D("X-axis", Brushes.Black, true, FontSize,
                                                                            new Point3D((minX + maxX)*0.5,
-                                                                                       minY - FontSize*6, minZ),
+                                                                                       minY - FontSize * 6, minZ),
                                                                            new Vector3D(1, 0, 0), new Vector3D(0, 1, 0));
                 plotModel.Children.Add(label);
             }
+
+            #endregion
+
+
+            #region eje y
 
             for (double y = minY; y <= maxY; y += IntervalY)
             {
@@ -174,39 +237,53 @@ namespace ComplexPlainVisualizer
                 var path = new List<Point3D> {new Point3D(minX, y, minZ)};
                 for (int j = 0; j < columns; j++)
                 {
-                    path.Add(BilinearInterpolation(Points, i, j));
+                    Point3D p = BilinearInterpolation(Points, i, j);
+                    p.X *= ScaleX;
+                    p.Y *= ScaleY;
+                    p.Z *= ScaleZ;
+                    path.Add(p);
                 }
                 path.Add(new Point3D(maxX, y, minZ));
 
                 axesMeshBuilder.AddTube(path, LineThickness, 9, false);
-                GeometryModel3D label = TextCreator.CreateTextLabelModel3D(y.ToString(), Brushes.Black, true, FontSize,
-                                                                           new Point3D(minX - FontSize*3, y, minZ),
+                GeometryModel3D label = TextCreator.CreateTextLabelModel3D(((int)(y / ScaleY)).ToString(), Brushes.Black, true, FontSize,
+                                                                           new Point3D(minX - FontSize * 3, y, minZ),
                                                                            new Vector3D(1, 0, 0), new Vector3D(0, 1, 0));
                 plotModel.Children.Add(label);
             }
             {
                 GeometryModel3D label = TextCreator.CreateTextLabelModel3D("Y-axis", Brushes.Black, true, FontSize,
-                                                                           new Point3D(minX - FontSize*10,
-                                                                                       (minY + maxY)*0.5, minZ),
+                                                                           new Point3D(minX - FontSize * 10,
+                                                                                       (minY + maxY) * 0.5, minZ),
                                                                            new Vector3D(0, 1, 0), new Vector3D(-1, 0, 0));
                 plotModel.Children.Add(label);
             }
+
+            #endregion
+
+
+
+
+            #region eje z
+
+
             double z0 = (int) (minZ/IntervalZ)*IntervalZ;
             for (double z = z0; z <= maxZ + double.Epsilon; z += IntervalZ)
             {
-                GeometryModel3D label = TextCreator.CreateTextLabelModel3D(z.ToString(), Brushes.Black, true, FontSize,
-                                                                           new Point3D(minX - FontSize*3, maxY, z),
+                GeometryModel3D label = TextCreator.CreateTextLabelModel3D(((int)(z / ScaleZ)).ToString(), Brushes.Black, true, FontSize,
+                                                                           new Point3D(minX - FontSize * 3, maxY, z),
                                                                            new Vector3D(1, 0, 0), new Vector3D(0, 0, 1));
                 plotModel.Children.Add(label);
             }
             {
                 GeometryModel3D label = TextCreator.CreateTextLabelModel3D("Z-axis", Brushes.Black, true, FontSize,
-                                                                           new Point3D(minX - FontSize*10, maxY,
+                                                                           new Point3D(minX - FontSize * 10, maxY,
                                                                                        (minZ + maxZ)*0.5),
                                                                            new Vector3D(0, 0, 1), new Vector3D(1, 0, 0));
                 plotModel.Children.Add(label);
             }
 
+            #endregion
 
             var bb = new Rect3D(minX, minY, minZ, maxX - minX, maxY - minY, 0*(maxZ - minZ));
             axesMeshBuilder.AddBoundingBox(bb, LineThickness);

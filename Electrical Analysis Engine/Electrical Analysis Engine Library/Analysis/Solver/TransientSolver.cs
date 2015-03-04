@@ -463,6 +463,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                    
                 if (nodo.TypeOfNode == Node.NodeType.VoltageVariableNode)
                 {
+                    //el componenete esta conectado a tierra buscado
                     Dipole compo1 = null;
                     foreach (var compo in nodo.Components)
 	                {

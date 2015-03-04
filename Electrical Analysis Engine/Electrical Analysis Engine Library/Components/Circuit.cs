@@ -13,7 +13,12 @@ namespace ElectricalAnalysis.Components
 {
     public class Circuit:Item, ICloneable, ComponentContainer
     {
+        public enum CircuitState
+        { 
+            Empty, FileLoaded, Optimized, Solved
+        }
 
+        public CircuitState State { get; protected set; }
         public List<BasicAnalysis> Setup { get; protected set; }
         public List<Dipole> Components { get; protected set; }
         public Dictionary<string,Node> Nodes { get; protected set; }
@@ -183,6 +188,7 @@ namespace ElectricalAnalysis.Components
                     }
                     Components.Add(comp);
                 }
+                State = CircuitState.FileLoaded;
             }
             catch (Exception ex)
             {
@@ -190,7 +196,6 @@ namespace ElectricalAnalysis.Components
                 throw;
             }
 
-           // return cir;
         }
 
         private Node CreateOrFindNode(string name)
@@ -206,16 +211,36 @@ namespace ElectricalAnalysis.Components
             return n;
         }
 
-        public string Solve()
-        { 
-            string file = "";
+        public bool Solve()
+        {
+            switch (State)
+            {
+                case CircuitState.Empty:
+                    HasErrors = true;
+                    break;
+                case CircuitState.FileLoaded:
+                    
+                    break;
+                case CircuitState.Optimized:
+                    break;
+                case CircuitState.Solved:
+                    break;
+                default:
+                    break;
+            }
+            if (HasErrors)
+                return false;
 
+            bool state = false;
             foreach (var item in Setup)
             {
-                item.Solver.Solve(this, item);
+                state &= item.Solver.Solve(this, item);
             }
-
-            return file;
+            if (state)
+                State = CircuitState.Solved;
+            else
+                HasErrors = true;
+            return state;
         }
 
         public void Reset()

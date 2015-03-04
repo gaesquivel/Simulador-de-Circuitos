@@ -1,10 +1,13 @@
-﻿using ElectricalAnalysis.Analysis;
+﻿using ElectricalAnalysis;
+using ElectricalAnalysis.Analysis;
 using ElectricalAnalysis.Analysis.Solver;
 using ElectricalAnalysis.Components;
 using MathNet.Numerics;
 using Microsoft.Research.DynamicDataDisplay;
+using Microsoft.Research.DynamicDataDisplay.Charts;
 using Microsoft.Research.DynamicDataDisplay.Charts.Shapes;
 using Microsoft.Research.DynamicDataDisplay.DataSources;
+using Microsoft.Win32;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -32,7 +35,6 @@ namespace DataVisualizer
         //ObservableDataSource<Tuple<double, double>> sourcevoltage = null;
         Circuit cir;
         Circuit cir2;
-        //VerticalAxisTitle axis;
 
         public MainWindow()
         {
@@ -41,23 +43,19 @@ namespace DataVisualizer
            
         }
 
-        public void Simulate()
+        public void Simulate(string circuitname = "Circuits/RCL.net")
         {
             cir = new Circuit();
-//            cir.ReadCircuit("Circuits/RCL.net");
-            cir.ReadCircuit("Circuits/vsingain.net");
-            //cir.ReadCircuit("Circuits/RCcharge.net");
+            cir.ReadCircuit(circuitname);
             cir2 = (Circuit)cir.Clone();
             cir2.Setup.RemoveAt(0);
             TransientAnalysis ac5 = new TransientAnalysis();
-            ac5.Step = "20u";
-            ac5.FinalTime = "3m";
+            ac5.Step = "200n";
+            ac5.FinalTime = "30u";
             cir2.Setup.Add(ac5);
             TransientSolver sol5 = (TransientSolver)ac5.Solver;
             TransientSolver.Optimize(cir2);
             Refresh();
-           // Redraw();
-
         }
 
         private void Refresh()
@@ -65,10 +63,6 @@ namespace DataVisualizer
             TransientSolver sol5 = (TransientSolver)cir2.Setup[0].Solver;
             cir2.Solve();
             Redraw();
-
-            //DrawCurrent(sol5, "C1");
-           // DrawVoltage(sol5, "out");
-
         }
 
         private void DrawVoltage(TransientSolver sol5, string name)
@@ -106,16 +100,17 @@ namespace DataVisualizer
             // Create first source
             source1 = new ObservableDataSource<Tuple<double, double>>();
             source1.SetXYMapping(z => 
-                {
-                    Point p = new Point(z.Item1, z.Item2);
-                    return p;
-                });
-            //sourcevoltage = new ObservableDataSource<Tuple<double, double>>();
-            //sourcevoltage.SetXYMapping(z =>
-            //{
-            //    Point p = new Point(z.Item1, z.Item2);
-            //    return p;
-            //});
+                                        {
+                                            Point p = new Point(z.Item1, z.Item2);
+                                            return p;
+                                        });
+            HorizontalAxis axis = (HorizontalAxis)plotter.MainHorizontalAxis;
+            //axis.LabelProvider.SetCustomFormatter(info => info.Tick.ToString("#.######E+0"));
+            axis.LabelProvider.SetCustomFormatter(info => StringUtils.CodeString(info.Tick));
+
+            VerticalAxis axis2 = (VerticalAxis)plotter.MainVerticalAxis;
+            //axis.LabelProvider.SetCustomFormatter(info => info.Tick.ToString("#.######E+0"));
+            axis2.LabelProvider.SetCustomFormatter(info => StringUtils.CodeString(info.Tick));
 
             Random rnd = new Random();
             for (int i = 0; i < 50; i++)
@@ -123,22 +118,19 @@ namespace DataVisualizer
                 source1.Collection.Add(new Tuple<double, double>(i, rnd.Next(100)));
                 //sourcevoltage.Collection.Add(new Tuple<double, double>(i, 10 + rnd.Next(20)));
             }
-            //LineGraph line = new LineGraph(source1);
-            //line.AddToPlotter(plotter);
-           // plotter.Children.Add(line);
 
             linegraph.DataSource = source1;
-          //  linephase.DataSource = sourcevoltage;
-            //axis = new VerticalAxisTitle();
-            //axis.da
-            //plotter.Children.Add(axis);
-            //linegraph.AddToPlotter(plotter);
-            //RightVerticalAxis.
         }
 
         private void ButtonAbrir_Click(object sender, RoutedEventArgs e)
         {
-
+            OpenFileDialog dlg = new OpenFileDialog();
+            dlg.InitialDirectory = ".";
+            dlg.Filter = "Circuit Net List files (*.net)|*.net|All files (*.*)|*.*";
+            if (dlg.ShowDialog(this).Value == true)
+            {
+                Simulate(dlg.FileName);
+            }
         }
 
         private void ButtonUpdate(object sender, RoutedEventArgs e)
@@ -170,7 +162,6 @@ namespace DataVisualizer
         private void Button_Zoom(object sender, RoutedEventArgs e)
         {
            
-           // propgrid.SelectedObject = plotter.AxisGrid;
         }
 
         private void Button_Bode(object sender, RoutedEventArgs e)
@@ -217,6 +208,10 @@ namespace DataVisualizer
 
         private void Button_AnalysisSetup(object sender, RoutedEventArgs e)
         {
+            if (cir2 == null)
+            {
+                return;
+            }
             propgrid.SelectedObject = cir2.Setup[0];
         }
 

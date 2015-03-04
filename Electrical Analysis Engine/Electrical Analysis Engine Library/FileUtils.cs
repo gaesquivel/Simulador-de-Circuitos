@@ -185,7 +185,7 @@ namespace ElectricalAnalysis
     /// <summary>
     /// Common base class for CSV reader and writer classes.
     /// </summary>
-    public abstract class CsvFileCommon
+    public abstract class CsvFileCommon 
     {
         /// <summary>
         /// These are special characters in CSV files. If a column contains any

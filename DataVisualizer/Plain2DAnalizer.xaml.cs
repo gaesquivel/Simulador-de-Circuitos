@@ -1,4 +1,7 @@
-﻿using Microsoft.Research.DynamicDataDisplay;
+﻿using ElectricalAnalysis;
+using Microsoft.Research.DynamicDataDisplay;
+using Microsoft.Research.DynamicDataDisplay.Charts;
+using Microsoft.Research.DynamicDataDisplay.Charts.Axes.Numeric;
 using Microsoft.Research.DynamicDataDisplay.Charts.Shapes;
 using Microsoft.Research.DynamicDataDisplay.DataSources;
 using Microsoft.Research.DynamicDataDisplay.PointMarkers;
@@ -34,6 +37,8 @@ namespace DataVisualizer
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
+            //plotter.DataTransform = new Log10Transform();
+            
             // Create first source
             sourcecurrent = new ObservableDataSource<Tuple<double, double>>();
             sourcecurrent.SetXYMapping(z =>
@@ -41,6 +46,30 @@ namespace DataVisualizer
                 Point p = new Point(z.Item1, z.Item2);
                 return p;
             });
+
+            //plotter.DataTransform = new Log10Transform();
+            //HorizontalAxis xAxis = new HorizontalAxis
+            //{
+            //    TicksProvider = new NumericTicksProvider(),
+            //    LabelProvider = new ExponentialLabelProvider()
+            //};
+            //plotter.MainHorizontalAxis = xAxis;
+            //VerticalAxis yAxis = new VerticalAxis
+            //{
+            //    //TicksProvider = new LogarithmNumericTicksProvider(10),
+            //    TicksProvider = new NumericTicksProvider(),
+            //    LabelProvider = new ExponentialLabelProvider()
+            //};
+            //plotter.MainVerticalAxis = yAxis;
+
+            HorizontalAxis axis = (HorizontalAxis)plotter.MainHorizontalAxis;
+            //axis.LabelProvider.SetCustomFormatter(info => info.Tick.ToString("#.######E+0"));
+            axis.LabelProvider.SetCustomFormatter(info => StringUtils.CodeString(info.Tick));
+
+            VerticalAxis axisv = (VerticalAxis)plotter.MainVerticalAxis;
+            //String.Format(new TelephoneFormatter(), "{0}", 0)
+            axisv.LabelProvider.SetCustomFormatter(info => info.Tick.ToString("#.######E+0"));
+
             sourcevoltage = new ObservableDataSource<Tuple<double, double>>();
             sourcevoltage.SetXYMapping(z =>
             {
@@ -48,35 +77,58 @@ namespace DataVisualizer
                 return p;
             });
 
-            List<Point> list = new List<Point>();
+            //otherPlotter.DataTransform = new Log10Transform();
+            //xAxis = new HorizontalAxis
+            //{
+            //    TicksProvider = new LogarithmNumericTicksProvider(10),
+            //    LabelProvider = new UnroundingLabelProvider()
+            //};
+            //otherPlotter.MainHorizontalAxis = xAxis;
+            //yAxis = new VerticalAxis
+            //{
+            //    TicksProvider = new LogarithmNumericTicksProvider(10),
+            //    LabelProvider = new UnroundingLabelProvider()
+            //};
+            //otherPlotter.MainVerticalAxis = yAxis;
+
+
+
+            //List<Point> list = new List<Point>();
 
             Random rnd = new Random();
-            for (int i = 0; i < 300; i++)
+            for (int i = 10; i < 300; i++)
             {
-                sourcecurrent.Collection.Add(new Tuple<double, double>(i, rnd.Next(100)));
-                sourcevoltage.Collection.Add(new Tuple<double, double>(i, 10 + rnd.Next(20)));
-                list.Add(new Point(i, rnd.Next(50)));
+                sourcecurrent.Collection.Add(new Tuple<double, double>(i, 20000 + rnd.Next(10000)));
+                sourcevoltage.Collection.Add(new Tuple<double, double>(i, 30 + rnd.Next(20)));
+                //list.Add(new Point(i, rnd.Next(50)));
             }
+            //plotter1.VerticalAxis.LabelProvider = new ExponentialLabelProvider();
             //LineGraph line = new LineGraph(source1);
             //line.AddToPlotter(plotter);
             // plotter.Children.Add(line);
 
-            linegraph.DataSource = sourcecurrent;
-            linephase.DataSource = sourcevoltage;
+            //otherPlotter.MainVerticalAxis.
+
+            linegraph.DataSource = sourcevoltage ;
+            linephase.DataSource = sourcecurrent;
             //axis = new VerticalAxisTitle();
             //linegraph = new Microsoft.Research.DynamicDataDisplay.LineGraph(
             // Creating the new DraggablePoint
-            int x1 = 10, y1 = 10;
-            Point q = new Point(x1, y1);
-            var globalPoint = new DraggablePoint(q);
-
-            globalPoint.PositionChanged += (s, r) =>
+            if (false)
             {
-                globalPoint.Position = q;
-            };
+                int x1 = 10, y1 = 10;
+                Point q = new Point(x1, y1);
+                var globalPoint = new DraggablePoint(q);
 
+                globalPoint.PositionChanged += (s, r) =>
+                {
+                    globalPoint.Position = q;
+                };
+                plotter.Children.Add(globalPoint);
+
+            }
+            
             // Set the point on the map
-            plotter.Children.Add(globalPoint);
 
            
         }
@@ -97,7 +149,7 @@ namespace DataVisualizer
             edc.AddMapping(CircleElementPointMarker.ToolTipTextProperty, s => String.Format("Y-Data : {0}\nX-Data : {1}", s.Y, s.X));
 
             LineGraph line =new LineGraph(edc);
-            innerPlotter.Children.Add(line);
+            plotter.Children.Add(line);
             //,
             line.LinePen = new Pen(Brushes.Transparent, 3);
             //line. new CircleElementPointMarker

@@ -64,8 +64,11 @@
                     </xcad:LayoutAnchorablePane>
                     <xcad:LayoutDocumentPaneGroup >
                         <xcad:LayoutDocumentPane>
-                            <xcad:LayoutDocument ContentId="document1" Title="Complex Plain Simulation" IconSource="Images/document.png" CanClose="False" CanFloat="False" >
-                                <h:HelixViewport3D ZoomExtentsWhenLoaded="True" ShowCoordinateSystem="True" Grid.Row="1">
+                            <xcad:LayoutDocument ContentId="document1" Title="Complex Plain Simulation" IconSource="Images/document.png"
+                                                 CanClose="False" CanFloat="False" >
+                              
+                                
+                                <h:HelixViewport3D ZoomExtentsWhenLoaded="True" ShowCoordinateSystem="True">
                                     <h:HelixViewport3D.Camera>
                                         <!-- HelixViewport3D.ZoomExtentsWhenLoaded will figure out the position of the Camera -->
                                         <PerspectiveCamera LookDirection="5,10,-10" UpDirection="0,0,1"/>
@@ -75,20 +78,30 @@
                                     <ModelVisual3D Content="{Binding Lights}" />
 
                                     <!-- The plot visual (surface, axes and labels) -->
-                                    <local:SurfacePlotVisual3D Points="{Binding Data}" ColorValues="{Binding ColorValues}" SurfaceBrush="{Binding SurfaceBrush}"/>
+                                    <local:SurfacePlotVisual3D x:Name="surface" Points="{Binding Data}" ColorValues="{Binding ColorValues}" SurfaceBrush="{Binding SurfaceBrush}"/>
 
                                 </h:HelixViewport3D>
+                                
+                                
                             </xcad:LayoutDocument>
-                           
                         </xcad:LayoutDocumentPane>
                     </xcad:LayoutDocumentPaneGroup >
                     <xcad:LayoutAnchorablePaneGroup DockWidth="100">
                         <xcad:LayoutAnchorablePane>
                             <xcad:LayoutAnchorable ContentId="alarms" Title="Components" IconSource="Images/cpu_view.png"  >
-                                <ListBox Name="lbComponents" DisplayMemberPath="Name"></ListBox>
+                                
+                                
+                                <StackPanel Orientation="Vertical">
+                                    <Label Content="Components"/>
+                                    <ListBox Name="lbComponents" DisplayMemberPath="Name" SelectionChanged="lbComponents_SelectionChanged"></ListBox>
+                                    <Label Content="nodes"/>
+                                    <ListBox Name="lbNodes" DisplayMemberPath="Name" SelectionChanged="lbComponents_SelectionChanged"></ListBox>
+                                    <Label Content="Lines"/>
+                                    <ListBox Name="lbGraph" DisplayMemberPath="Name" SelectionChanged="lbComponents_SelectionChanged"></ListBox>
+                                </StackPanel>
 
+                                
                             </xcad:LayoutAnchorable>
-                        
                         </xcad:LayoutAnchorablePane>
                     </xcad:LayoutAnchorablePaneGroup>
                 </xcad:LayoutPanel>

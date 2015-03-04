@@ -21,6 +21,7 @@ using ElectricalAnalysis.Components;
 using ElectricalAnalysis;
 using Microsoft.Research.DynamicDataDisplay.Charts;
 using Microsoft.Research.DynamicDataDisplay.Charts.Axes.Numeric;
+using Microsoft.Win32;
 
 namespace DataVisualizer
 {
@@ -58,13 +59,13 @@ namespace DataVisualizer
             this.Loaded += Window_Loaded;
         }
 
-        public void Simulate()
+        public void Simulate(string circuitname)
         {
-
+            TxtStatus.Text = circuitname;
             cir = new Circuit();
 
             //cir.ReadCircuit("Circuits/RCL.net");
-            cir.ReadCircuit("Circuits/derivador.net");
+            cir.ReadCircuit(circuitname);
             cir2 = (Circuit)cir.Clone();
             cir2.Setup.RemoveAt(0);
             ACAnalysis ac = new ACAnalysis();
@@ -72,14 +73,13 @@ namespace DataVisualizer
             ACSweepSolver.Optimize(cir2);
            
             Refresh();
-
         }
 
         private void Refresh()
         {
             ACSweepSolver sol5 = (ACSweepSolver)cir2.Setup[0].Solver;
             cir2.Solve();
-            AddVoltage(sol5, "out");
+            //AddVoltage(sol5, "out");
             //SelectedObject = sol5;
         }
 
@@ -111,7 +111,7 @@ namespace DataVisualizer
                     {
                         Tuple<double, double> p = new Tuple<double, double>(data.Key, item.Value.Magnitude);
                         source1.Collection.Add(p);
-                        p = new Tuple<double, double>(data.Key, item.Value.Phase);
+                        p = new Tuple<double, double>(data.Key, 90 * item.Value.Phase / Math.PI);
                         source2.Collection.Add(p);
                         break;
                     }
@@ -154,45 +154,72 @@ namespace DataVisualizer
                 source2.Collection.Add(new Tuple<double, double>(xArray[i], yArray[i]));
             }
 
-            HorizontalAxis xAxis = new HorizontalAxis
+            plotter.MainHorizontalAxis = new HorizontalAxis
             {
                 TicksProvider = new LogarithmNumericTicksProvider(10),
-                LabelProvider = new UnroundingLabelProvider()
+                LabelProvider = new UnroundingLabelProvider() { CustomFormatter = info => StringUtils.CodeString(info.Tick) }
             };
-            plotter.MainHorizontalAxis = xAxis;
 
-            VerticalAxis yAxis = new VerticalAxis
+            plotter.MainVerticalAxis = new VerticalAxis
             {
                 TicksProvider = new LogarithmNumericTicksProvider(10),
-                LabelProvider = new UnroundingLabelProvider()
+                LabelProvider = new UnroundingLabelProvider() { CustomFormatter = info => StringUtils.CodeString(info.Tick) }
             };
-            plotter.MainVerticalAxis = yAxis;
+            //axis.LabelProvider.SetCustomFormatter(info => info.Tick.ToString("#.######E+0"));
+            //axis.LabelProvider.SetCustomFormatter(info => StringUtils.CodeString(info.Tick));
 
-            //HorizontalAxis xAxis2 = new HorizontalAxis
+            //VerticalAxis axis2 = (VerticalAxis)plotter.MainVerticalAxis;
+            ////axis.LabelProvider.SetCustomFormatter(info => info.Tick.ToString("#.######E+0"));
+            //axis2.LabelProvider.SetCustomFormatter(info => StringUtils.CodeString(info.Tick));
+
+            //HorizontalAxis xAxis = new HorizontalAxis
+            //{
+            //    TicksProvider = new LogarithmNumericTicksProvider(10),
+            //    LabelProvider = new UnroundingLabelProvider() { CustomFormatter = info => StringUtils.CodeString(info.Tick) }
+            //};
+            //plotter.MainHorizontalAxis = xAxis;
+
+            //VerticalAxis yAxis = new VerticalAxis
             //{
             //    TicksProvider = new LogarithmNumericTicksProvider(10),
             //    LabelProvider = new UnroundingLabelProvider()
             //};
-            //plotterphase.MainHorizontalAxis = xAxis2;
-            //plotterphase.MainVerticalAxis = xAxis;
+            //plotter.MainVerticalAxis = yAxis;
 
-           // yAxis = new VerticalAxis
-           // {
-           //     TicksProvider = new LogarithmNumericTicksProvider(10),
-           //     LabelProvider = new UnroundingLabelProvider()
-           // };
-           //// plotterphase.MainVerticalAxis = yAxis;
+
+
+            otherPlotter.DataTransform = new Log10XTransform();
+            otherPlotter.MainHorizontalAxis = new HorizontalAxis
+            {
+                TicksProvider = new LogarithmNumericTicksProvider(10),
+                LabelProvider = new UnroundingLabelProvider() { CustomFormatter = info => StringUtils.CodeString(info.Tick) }
+            };
+            //otherPlotter.MainHorizontalAxis = xAxis2;
+            //otherPlotter.MainVerticalAxis = xAxis;
+
+            //yAxis = new VerticalAxis
+            //{
+            //    TicksProvider = new LogarithmNumericTicksProvider(10),
+            //    LabelProvider = new UnroundingLabelProvider()
+            //};
+            // otherPlotter.MainVerticalAxis = yAxis;
 
 
 
             linegraph.DataSource = source1;
-            //linephase.DataSource = source2;
+            phasegraph.DataSource = source2;
 
         }
 
         private void ButtonAbrir_Click(object sender, RoutedEventArgs e)
         {
-
+            OpenFileDialog dlg = new OpenFileDialog();
+            //dlg.InitialDirectory = ".";
+            dlg.Filter = "Circuit Net List files (*.net)|*.net|All files (*.*)|*.*";
+            if (dlg.ShowDialog() == true)
+            {
+                Simulate(dlg.FileName);
+            }
         }
 
         private void ButtonUpdate(object sender, RoutedEventArgs e)
@@ -204,7 +231,7 @@ namespace DataVisualizer
             //simThread.IsBackground = true;
             //simThread.Start();
 
-            Simulate();
+            Simulate(TxtStatus.Text);
             lbComponents.ItemsSource = cir.Components;
             lbNodes.ItemsSource = cir.Nodes.Values;
 
@@ -255,7 +282,6 @@ namespace DataVisualizer
             else if (propgrid.SelectedObject is Dipole)
             {
                 AddCurren(sol5, ((Dipole)propgrid.SelectedObject).Name);
-                
             }
             
         }
@@ -263,6 +289,19 @@ namespace DataVisualizer
         private void BtnDeleteLine(object sender, RoutedEventArgs e)
         {
 
+        }
+
+        private void BtnExport(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog save = new SaveFileDialog();
+            save.Filter = "Circuit Net List files (*.net)|*.net|All files (*.*)|*.*";
+            if (save.ShowDialog() == true)
+            {
+                //CsvFileWriter writer = new CsvFileWriter(save.FileName);
+                //writer.Quote = ';';
+                ACSweepSolver sol5 = (ACSweepSolver)cir2.Setup[0].Solver;
+                sol5.ExportToCSV(save.FileName);
+            }
         }
     }
 }

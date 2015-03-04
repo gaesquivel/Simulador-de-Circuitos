@@ -16,7 +16,6 @@ namespace ElectricalAnalysis
             // Claudio Rocchini used this color mapping
             // in his image at http://en.wikipedia.org/wiki/File:Color_complex_plot.jpg
             // for the Wikipedia article on "Complex Analysis"
-
             public static Tuple<double, double, double> ComplexToHsv(Complex32 z)
             {
 

@@ -55,6 +55,9 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+    <None Include="derivador.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="vsingain.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
