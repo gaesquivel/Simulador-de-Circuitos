@@ -114,7 +114,7 @@ namespace ElectricalAnalysis
                 return number2.ToString() + multiplies[pow2];
             }
             else
-                return number.ToString();
+                return number.ToString("0.00");
         }
 
         

@@ -5,6 +5,8 @@ using System.Text;
 using System.Threading.Tasks;
 //using System.Numerics;
 using MathNet.Numerics;
+using System.Diagnostics;
+using System.ComponentModel;
 
 namespace ElectricalAnalysis.Components
 {
@@ -48,12 +50,13 @@ namespace ElectricalAnalysis.Components
             /// voltage pasive divider ecuation
             /// </summary>
             VoltageDivideNode,
-            ///// <summary>
-            ///// In this case the voltage can be calculated with some formulae
-            ///// </summary>
+            /// <summary>
+            /// In this case the voltage can be calculated with some formulae
+            /// </summary>
             VoltageVariableNode
         }
 
+        [Browsable(false)]
         public NodeType TypeOfNode
         {
             get
@@ -66,15 +69,21 @@ namespace ElectricalAnalysis.Components
             }
         }
 
+        [Browsable(false)]
         public ComponentContainer Owner { get; set; }
 
         public Complex32 Voltage { get; internal set; }
+
+        [Browsable(false)]
         public bool IsReference { get; set; }
+
+        [Browsable(false)]
         public List<Dipole> Components { get; protected set; }
         
         /// <summary>
         /// indica si el nodo esta conectado directamente a un generador de tension
         /// </summary>
+        [Browsable(false)]
         public bool IsVoltageConnected
         {
             get {
@@ -100,6 +109,7 @@ namespace ElectricalAnalysis.Components
             //Parent = parent;
         }
 
+        [DebuggerStepThrough]
         public Dipole OtherComponent(Dipole compo)
         {
             if (compo == Components[0])
@@ -111,6 +121,7 @@ namespace ElectricalAnalysis.Components
         /// <summary>
         /// Node Voltage is well known for some reason (or not)
         /// </summary>
+        [Browsable(false)]
         public bool IsVoltageKnowed
         {
             get

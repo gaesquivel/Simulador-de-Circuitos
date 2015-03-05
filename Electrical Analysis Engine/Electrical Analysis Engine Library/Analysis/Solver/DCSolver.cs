@@ -228,7 +228,8 @@ namespace ElectricalAnalysis.Analysis.Solver
             //{
             //    AddComponentNodes(cir, rama);
             //}
-           
+            cir.State = Circuit.CircuitState.Optimized;
+
             return true;
         }
 
@@ -333,6 +334,7 @@ namespace ElectricalAnalysis.Analysis.Solver
             CalculateCurrents(cir);
 
 
+            cir.State = Circuit.CircuitState.Solved;
             return true;
         }
 

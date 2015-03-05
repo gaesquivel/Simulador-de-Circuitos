@@ -4,6 +4,7 @@ using System.Windows;
 using System.Windows.Media;
 using System.Windows.Media.Media3D;
 using HelixToolkit.Wpf;
+using ElectricalAnalysis;
 
 namespace ComplexPlainVisualizer
 {
@@ -212,7 +213,7 @@ namespace ComplexPlainVisualizer
                 path.Add(new Point3D(x, maxY, minZ));
 
                 axesMeshBuilder.AddTube(path, LineThickness, 9, false);
-                GeometryModel3D label = TextCreator.CreateTextLabelModel3D(((int)(x / ScaleX)).ToString(), Brushes.Black, true, FontSize,
+                GeometryModel3D label = TextCreator.CreateTextLabelModel3D(StringUtils.CodeString(x / ScaleX), Brushes.Black, true, FontSize,
                                                                            new Point3D(x, minY - FontSize * 2.5, minZ),
                                                                            new Vector3D(1, 0, 0), new Vector3D(0, 1, 0));
                 plotModel.Children.Add(label);
@@ -246,7 +247,7 @@ namespace ComplexPlainVisualizer
                 path.Add(new Point3D(maxX, y, minZ));
 
                 axesMeshBuilder.AddTube(path, LineThickness, 9, false);
-                GeometryModel3D label = TextCreator.CreateTextLabelModel3D(((int)(y / ScaleY)).ToString(), Brushes.Black, true, FontSize,
+                GeometryModel3D label = TextCreator.CreateTextLabelModel3D(StringUtils.CodeString(y / ScaleY), Brushes.Black, true, FontSize,
                                                                            new Point3D(minX - FontSize * 3, y, minZ),
                                                                            new Vector3D(1, 0, 0), new Vector3D(0, 1, 0));
                 plotModel.Children.Add(label);
@@ -270,7 +271,7 @@ namespace ComplexPlainVisualizer
             double z0 = (int) (minZ/IntervalZ)*IntervalZ;
             for (double z = z0; z <= maxZ + double.Epsilon; z += IntervalZ)
             {
-                GeometryModel3D label = TextCreator.CreateTextLabelModel3D(((int)(z / ScaleZ)).ToString(), Brushes.Black, true, FontSize,
+                GeometryModel3D label = TextCreator.CreateTextLabelModel3D(StringUtils.CodeString(z / ScaleZ), Brushes.Black, true, FontSize,
                                                                            new Point3D(minX - FontSize * 3, maxY, z),
                                                                            new Vector3D(1, 0, 0), new Vector3D(0, 0, 1));
                 plotModel.Children.Add(label);

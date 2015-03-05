@@ -168,6 +168,7 @@ namespace ElectricalAnalysis.Analysis.Solver
 
 
             cir.Components.AddRange(ramas);
+            cir.State = Circuit.CircuitState.Optimized;
 
             return true;
         }
@@ -356,6 +357,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                 cir.CircuitTime = t;
                 t += deltat;
             }
+            cir.State = Circuit.CircuitState.Solved;
 
             return true;
         }
@@ -379,6 +381,42 @@ namespace ElectricalAnalysis.Analysis.Solver
             }
             foreach (var nodo in nodosCalculables)
                 nodosnorton.Remove(nodo);
+
+            //tensiones que se calculan directamente
+            foreach (var nodo in nodosCalculables)
+            {
+                if (nodo.TypeOfNode == Node.NodeType.VoltageFixedNode)
+                {
+                    foreach (var compo in nodo.Components)
+                    {
+                        if (compo.IsConnectedToEarth && (compo is VoltageGenerator || compo is Capacitor))
+                        {
+                            nodo.Voltage = new Complex32((float)compo.voltage(nodo, t), 0);   //el componente conectado a tierra debe ser Vdc o Vsin o capacitor
+                            break;
+                        }
+                    }
+                    continue;
+                }
+                if (nodo.TypeOfNode == Node.NodeType.VoltageVariableNode)
+                {
+                    //el componente esta conectado a tierra buscado
+                    Dipole compo1 = null;
+                    foreach (var compo in nodo.Components)
+                    {
+                        if (compo.IsConnectedToEarth)
+                        {
+                            compo1 = compo;
+                            break;
+                        }
+                    }
+                    if (compo1 == null)
+                    {
+                        throw new NotImplementedException();
+                    }
+                    nodo.Voltage = new Complex32((float)compo1.voltage(nodo, t), 0);
+                    continue;
+                }
+            }
 
             #region Tensiones de nodods que se calculan mediante matriz
             if (nodosnorton.Count > 0)
@@ -444,42 +482,11 @@ namespace ElectricalAnalysis.Analysis.Solver
             }
             #endregion
 
-            //existen nodos donde la tension se puede calcular directamente
+            //existen nodos donde la tension se puede calcular casi directamente
             foreach (var nodo in nodosCalculables)
             {
                
-                if (nodo.TypeOfNode == Node.NodeType.VoltageFixedNode)
-                {
-                    foreach (var compo in nodo.Components)
-                    {
-                        if (compo.IsConnectedToEarth && (compo is VoltageGenerator || compo is Capacitor))
-                        {
-                            nodo.Voltage = new Complex32((float) compo.voltage(nodo, t), 0);   //el componente conectado a tierra debe ser Vdc o Vsin o capacitor
-                            break;
-                        }
-                    }
-                    continue;
-                }
-                   
-                if (nodo.TypeOfNode == Node.NodeType.VoltageVariableNode)
-                {
-                    //el componenete esta conectado a tierra buscado
-                    Dipole compo1 = null;
-                    foreach (var compo in nodo.Components)
-	                {
-                        if (compo.IsConnectedToEarth)
-                        {
-                            compo1 = compo;
-                            break;
-                        }
-	                }
-                    if (compo1 == null)
-                    {
-                        throw new NotImplementedException();
-                    }
-                    nodo.Voltage = new Complex32((float) compo1.voltage(nodo, t), 0);
-                    continue;
-                }
+             
                 if (nodo.TypeOfNode == Node.NodeType.VoltageDivideNode)
                 {
                     Node nodo1 = nodo;

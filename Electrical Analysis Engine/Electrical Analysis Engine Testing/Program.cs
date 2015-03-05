@@ -28,7 +28,7 @@ namespace ElectricalAnalysis_Test
             switch (i)
             {
                 case 0:
-                    cir.ReadCircuit("RLcharge.net");
+                    cir.ReadCircuit("circuits/RLcharge.net");
                     cir2 = (Circuit)cir.Clone();
                     DCSolver.Optimize(cir2);
                     DCAnalysis ac0 = (DCAnalysis)cir2.Setup[0];
@@ -39,7 +39,7 @@ namespace ElectricalAnalysis_Test
 
                     break;
                 case 1:
-                    cir.ReadCircuit("testidc.net");
+                    cir.ReadCircuit("circuits/testidc.net");
                     cir2 = (Circuit)cir.Clone();
                     DCSolver.Optimize(cir2);
                     DCAnalysis ac3 = (DCAnalysis)cir2.Setup[0];
@@ -52,7 +52,7 @@ namespace ElectricalAnalysis_Test
 
 
                 case 2:
-                    cir.ReadCircuit("derivador.net");
+                    cir.ReadCircuit("circuits/derivador.net");
                     //cir.ReadCircuit("RCL.net");
                     cir2 = (Circuit)cir.Clone();
                     cir2.Setup.RemoveAt(0);
@@ -67,7 +67,7 @@ namespace ElectricalAnalysis_Test
 
                 case 3:
                     //cir.ReadCircuit("derivador.net");
-                    cir.ReadCircuit("RLC.net");
+                    cir.ReadCircuit("circuits/RLC.net");
                     cir2 = (Circuit)cir.Clone();
                     cir2.Setup.RemoveAt(0);
                     ComplexPlainAnalysis ac1 = new ComplexPlainAnalysis();
@@ -84,7 +84,7 @@ namespace ElectricalAnalysis_Test
 
 
                 case 4:
-                    cir.ReadCircuit("RCL.net");
+                    cir.ReadCircuit("circuits/RCL.net");
                     //cir.ReadCircuit("RCcharge.net");
                     cir2 = (Circuit)cir.Clone();
                     cir2.Setup.RemoveAt(0);
@@ -98,7 +98,7 @@ namespace ElectricalAnalysis_Test
                     break;
 
                 case 5:
-                    cir.ReadCircuit("vsingain.net");
+                    cir.ReadCircuit("circuits/vsingain.net");
                     //cir.ReadCircuit("RCcharge.net");
                     cir2 = (Circuit)cir.Clone();
                     cir2.Setup.RemoveAt(0);

@@ -18,7 +18,7 @@ namespace ElectricalAnalysis.Components
             Empty, FileLoaded, Optimized, Solved
         }
 
-        public CircuitState State { get; protected set; }
+        public CircuitState State { get; set; }
         public List<BasicAnalysis> Setup { get; protected set; }
         public List<Dipole> Components { get; protected set; }
         public Dictionary<string,Node> Nodes { get; protected set; }
@@ -88,8 +88,8 @@ namespace ElectricalAnalysis.Components
                             {
                                 ACVoltageGenerator ac = new ACVoltageGenerator(this, comp1[1], elemn[4]);
                                 if (elemn.Length == 8)
-                                    ac.ACVoltage = new Complex32((float)StringUtils.DecodeString(elemn[6]),
-                                                                (float)StringUtils.DecodeString(elemn[6]));
+                                    ac.ACVoltage = Complex32.FromPolarCoordinates((float)StringUtils.DecodeString(elemn[6]),
+                                                                (float)StringUtils.DecodeString(elemn[7]));
                                 else
                                     ac.ACVoltage = new Complex32((float)StringUtils.DecodeString(elemn[6]), 0);
                                 comp = (ACVoltageGenerator)ac;
@@ -231,7 +231,7 @@ namespace ElectricalAnalysis.Components
             if (HasErrors)
                 return false;
 
-            bool state = false;
+            bool state = true;
             foreach (var item in Setup)
             {
                 state &= item.Solver.Solve(this, item);
@@ -245,6 +245,7 @@ namespace ElectricalAnalysis.Components
 
         public void Reset()
         {
+            HasErrors = false;
             foreach (var item in Components)
             {
                 item.Reset();

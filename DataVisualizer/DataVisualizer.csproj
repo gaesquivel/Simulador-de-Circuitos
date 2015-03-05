@@ -176,7 +176,7 @@
     <None Include="Circuits\RCcharge.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Circuits\RCL.net">
+    <None Include="Circuits\RCLhi.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Circuits\vsingain.net">
@@ -247,6 +247,12 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\line-chartsmall.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\export_excel.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\table.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

@@ -35,24 +35,27 @@ namespace DataVisualizer
         //ObservableDataSource<Tuple<double, double>> sourcevoltage = null;
         Circuit cir;
         Circuit cir2;
+        TransientAnalysis ac5;
 
         public MainWindow()
         {
             InitializeComponent();
             this.Loaded += Window_Loaded;
-           
         }
 
-        public void Simulate(string circuitname = "Circuits/RCL.net")
+        public void Simulate(string circuitname)
         {
             cir = new Circuit();
             cir.ReadCircuit(circuitname);
             cir2 = (Circuit)cir.Clone();
             cir2.Setup.RemoveAt(0);
-            TransientAnalysis ac5 = new TransientAnalysis();
-            ac5.Step = "200n";
-            ac5.FinalTime = "30u";
-            cir2.Setup.Add(ac5);
+            if (ac5 == null)
+            {
+                ac5 = new TransientAnalysis();
+                ac5.Step = "200n";
+                ac5.FinalTime = "50u";
+                cir2.Setup.Add(ac5);
+            }
             TransientSolver sol5 = (TransientSolver)ac5.Solver;
             TransientSolver.Optimize(cir2);
             Refresh();
@@ -60,7 +63,7 @@ namespace DataVisualizer
 
         private void Refresh()
         {
-            TransientSolver sol5 = (TransientSolver)cir2.Setup[0].Solver;
+            //TransientSolver sol5 = (TransientSolver)cir2.Setup[0].Solver;
             cir2.Solve();
             Redraw();
         }
@@ -99,8 +102,7 @@ namespace DataVisualizer
         {
             // Create first source
             source1 = new ObservableDataSource<Tuple<double, double>>();
-            source1.SetXYMapping(z => 
-                                        {
+            source1.SetXYMapping(z =>   {
                                             Point p = new Point(z.Item1, z.Item2);
                                             return p;
                                         });
@@ -125,7 +127,8 @@ namespace DataVisualizer
         private void ButtonAbrir_Click(object sender, RoutedEventArgs e)
         {
             OpenFileDialog dlg = new OpenFileDialog();
-            dlg.InitialDirectory = ".";
+            //dlg.InitialDirectory = ".";
+            dlg.InitialDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location); ;
             dlg.Filter = "Circuit Net List files (*.net)|*.net|All files (*.*)|*.*";
             if (dlg.ShowDialog(this).Value == true)
             {
@@ -142,10 +145,10 @@ namespace DataVisualizer
             //simThread.IsBackground = true;
             //simThread.Start();
             
-            Simulate();
+            Simulate(txtCircuitName.Text);
             lbComponents.ItemsSource = cir.Components;
             lbNodes.ItemsSource = cir.Nodes.Values;
-
+            DataContext = ((TransientSolver)ac5.Solver).Voltages;
         }
 
         private void ButtonRefresh(object sender, RoutedEventArgs e)
@@ -178,31 +181,39 @@ namespace DataVisualizer
                 propgrid.SelectedObject = lbNodes.SelectedItem;
         }
 
-        private void ButtonAddLine(object sender, RoutedEventArgs e)
+        private void ButtonRedraw(object sender, RoutedEventArgs e)
         {
             Redraw();
-
         }
 
         private void Redraw()
         {
-            if (propgrid.SelectedObject == null)
+
+            if (cir2 == null)
                 return;
 
             if (source1 != null)
                 source1.Collection.Clear();
-
 
             TransientSolver sol5 = (TransientSolver)cir2.Setup[0].Solver;
             if (propgrid.SelectedObject is Node)
             {
                 //if (sourcevoltage != null)
                 //    sourcevoltage.Collection.Clear();
-                DrawVoltage(sol5, ((Node)propgrid.SelectedObject).Name);
+                if (cir.Nodes.ContainsKey(txtPlotted.Text))
+                    DrawVoltage(sol5, txtPlotted.Text);
+
+//                DrawVoltage(sol5, ((Node)propgrid.SelectedObject).Name);
             }
             else if (propgrid.SelectedObject is Dipole)
             {
-                DrawCurrent(sol5, ((Dipole)propgrid.SelectedObject).Name);
+                foreach (var item in cir.Components)
+	            {
+                    if (item.Name == txtPlotted.Text)
+                        DrawCurrent(sol5, item.Name);
+                //DrawCurrent(sol5, ((Dipole)propgrid.SelectedObject).Name);
+		 
+	            }
             }
         }
 
@@ -215,5 +226,17 @@ namespace DataVisualizer
             propgrid.SelectedObject = cir2.Setup[0];
         }
 
+
+        private void BtnExport(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog save = new SaveFileDialog();
+            save.InitialDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location); ;
+            save.Filter = "Circuit Net List files (*.csv)|*.net|All files (*.*)|*.*";
+            if (save.ShowDialog() == true)
+            {
+                ACSweepSolver sol5 = (ACSweepSolver)cir2.Setup[0].Solver;
+                sol5.ExportToCSV(save.FileName);
+            }
+        }
     }
 }

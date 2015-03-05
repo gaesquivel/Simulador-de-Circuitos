@@ -33,7 +33,8 @@ namespace ElectricalAnalysis.Analysis.Solver
             {
                 if (nodo.TypeOfNode == Node.NodeType.MultibranchCurrentNode ||
                     nodo.TypeOfNode == Node.NodeType.VoltageLinkedNode ||
-                    nodo.TypeOfNode == Node.NodeType.VoltageDivideNode)
+                    nodo.TypeOfNode == Node.NodeType.VoltageDivideNode ||
+                    nodo.TypeOfNode == Node.NodeType.VoltageFixedNode)
                     nodosnorton.Add(nodo);
             }
 
@@ -101,6 +102,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                 }
             }
 
+            cir.State = Circuit.CircuitState.Solved;
             return true;
         }
 
@@ -132,15 +134,34 @@ namespace ElectricalAnalysis.Analysis.Solver
 
             foreach (var nodo in nodosnorton)
             {
-                if (nodo.TypeOfNode == Node.NodeType.VoltageDivideNode)
+                if (nodo.TypeOfNode == Node.NodeType.VoltageDivideNode ||
+                    nodo.TypeOfNode == Node.NodeType.VoltageFixedNode)
                     nodosCalculables.Add(nodo);
             }
             foreach (var nodo in nodosCalculables)
                 nodosnorton.Remove(nodo);
 
+             //existen nodos donde la tension se puede calcular directamente
+            foreach (var nodo in nodosCalculables)
+            {
+                if (nodo.TypeOfNode == Node.NodeType.VoltageFixedNode)
+                {
+                    foreach (var compo in nodo.Components)
+                    {
+                        if (compo.IsConnectedToEarth && (compo is ACVoltageGenerator))
+                        {
+                            nodo.Voltage = compo.voltage(nodo, W);   //el componente conectado a tierra debe ser Vdc o Vsin o capacitor
+                            break;
+                        }
+                    }
+                    continue;
+                }
+            }
+
+            #region Calculo de tensions mediante matrices
+
             if (nodosnorton.Count > 0)
             {
-
                 int fila = 0, columna = 0;
                 var v = Vector<Complex32>.Build.Dense(nodosnorton.Count);
                 var A = Matrix<Complex32>.Build.DenseOfArray(new Complex32[nodosnorton.Count, nodosnorton.Count]);
@@ -193,17 +214,17 @@ namespace ElectricalAnalysis.Analysis.Solver
                         throw new NotImplementedException();
                 }
                 var x = A.Solve(v);
-                //return x;
+                
                 foreach (var nodo in nodosnorton)
                 {
                     fila = nodosnorton.IndexOf(nodo);
                     nodo.Voltage = x[fila];
-                    //result.Add(nodo.Name, nodo.Voltage);
                 }
             }
 
+            #endregion
 
-            //existen nodos donde la tension se puede calcular directamente
+            //existen nodos donde la tension se puede calcular indirectamente
             foreach (var nodo in nodosCalculables)
             {
                 if (nodo.TypeOfNode == Node.NodeType.VoltageDivideNode)
@@ -249,7 +270,9 @@ namespace ElectricalAnalysis.Analysis.Solver
             {
                 if (nodo1.TypeOfNode == Node.NodeType.VoltageFixedNode)
                 {
+                    //llegue al final de la rama
                     v1 += nodo1.Voltage;
+                    break;
                 }
                 if (compo1 is PasiveComponent)
                 {
@@ -375,7 +398,7 @@ namespace ElectricalAnalysis.Analysis.Solver
         }
 
         /// <summary>
-        /// Dado un supernodo, recorre todas sus ramas para halla la corriente en una de ellas
+        /// Dado un supernodo, recorre todas sus ramas para hallar la corriente en una de ellas
         /// </summary>
         /// <param name="nodo"></param>
         /// <param name="W"></param>

@@ -1,6 +1,8 @@
 ﻿using MathNet.Numerics;
 using System;
 using System.Collections.Generic;
+using System.ComponentModel;
+using System.Diagnostics;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
@@ -11,9 +13,16 @@ namespace ElectricalAnalysis.Components
     {
 
         protected Complex32 _current;//, voltage;
+
+
+
+        [Browsable(false)]
         public ComponentContainer Owner { get; set; }
+
+        [Browsable(false)]
         public Circuit OwnerCircuit { get; set; }
 
+        [Browsable(false)]
         public bool IsConnectedToEarth
         {
             get
@@ -55,6 +64,7 @@ namespace ElectricalAnalysis.Components
         /// <summary>
         /// Valor de la corriente de continua
         /// </summary>
+        [Browsable(false)]
         public virtual Complex32 current
         {
             get
@@ -68,23 +78,7 @@ namespace ElectricalAnalysis.Components
         }
 
 
-        //public virtual double nortoncurrent(node referencenode, double t)
-        //{
-        //    return 0;
-        //}
-
-        //public virtual double theveninvoltage(node referencenode, double t)
-        //{
-        //    return 0;
-        //}
-
-        //public virtual complex32 nortoncurrent(node referencenode, complex32 ?w = null) {
-        //    return 0;
-        //}
-        //public virtual complex32 theveninvoltage(node referencenode, complex32? w = null)
-        //{
-        //    return 0;
-        //}
+      
 
 
         public virtual Complex32 voltage(Node ReferenceNode, Complex32 ?W = null)
@@ -99,6 +93,7 @@ namespace ElectricalAnalysis.Components
         /// <summary>
         /// DC operating voltage
         /// </summary>
+        [Browsable(false)]
         public virtual Complex32 Voltage
         {
             get { return Nodes[0].Voltage - Nodes[1].Voltage; }
@@ -108,7 +103,11 @@ namespace ElectricalAnalysis.Components
         /// <summary>
         /// Listado de nodos de un componente. son 2 nada mas
         /// </summary>
+        [Browsable(false)]
         public List<Node> Nodes { get; protected set; }
+
+
+        [Browsable(false)]
         public int ReferenceNode { get; set; }
 
         public Dipole(ComponentContainer owner)
@@ -121,7 +120,8 @@ namespace ElectricalAnalysis.Components
             if (owner is Circuit)
                 OwnerCircuit = (Circuit)owner;
         }
-        
+
+         [DebuggerStepThrough]
         public Node OtherNode(Node thisnode)
         {
             if (thisnode == Nodes[0])

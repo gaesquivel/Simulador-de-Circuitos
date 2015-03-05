@@ -46,6 +46,7 @@ namespace ElectricalAnalysis.Analysis.Solver
             {
                 if (nodo.TypeOfNode == Node.NodeType.MultibranchCurrentNode ||
                     nodo.TypeOfNode == Node.NodeType.VoltageLinkedNode ||
+                    nodo.TypeOfNode == Node.NodeType.VoltageFixedNode ||
                     nodo.TypeOfNode == Node.NodeType.VoltageDivideNode)
                     nodosnorton.Add(nodo);
             }
@@ -112,6 +113,7 @@ namespace ElectricalAnalysis.Analysis.Solver
 
                 }
             }
+            cir.State = Circuit.CircuitState.Solved;
 
             return true;
         }

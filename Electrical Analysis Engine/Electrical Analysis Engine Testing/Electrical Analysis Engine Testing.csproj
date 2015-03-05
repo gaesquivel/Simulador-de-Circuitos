@@ -55,32 +55,32 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
-    <None Include="derivador.net">
+    <None Include="Circuits\derivador.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="vsingain.net">
+    <None Include="Circuits\vsingain.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="TestRIdc.net">
+    <None Include="Circuits\TestRIdc.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="RLcharge.net">
+    <None Include="Circuits\RLcharge.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
-    <None Include="RCcharge.net">
+    <None Include="Circuits\RCcharge.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="RCL.net">
+    <None Include="Circuits\RCL.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="testdc.net">
+    <None Include="Circuits\testdc.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="testdcL.net">
+    <None Include="Circuits\testdcL.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="testidc.net">
+    <None Include="Circuits\testidc.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
   </ItemGroup>

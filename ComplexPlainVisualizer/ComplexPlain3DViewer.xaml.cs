@@ -35,21 +35,13 @@ namespace ComplexPlainVisualizer
             InitializeComponent();
             model = new ComplexPlainViewModel();
 
-            model.ColorCoding = ColorCoding.ByLights;
-            Button_Click(this, null);
+            model.ColorCoding = ColorCoding.ByGradientY;
             Simulate("Circuits/RCL.net");
         }
-
-
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-
-
-            //propgrid.SelectedObject = cir2;
-        }
-
+        
         private void Update(ComplexPlainAnalysis ac1)
         {
+            cir2.Reset();
             cir2.Solve();
             sol1 = (ComplexPlainSolver)ac1.Solver;
 
@@ -110,7 +102,7 @@ namespace ComplexPlainVisualizer
             Update(ac1);
 
             lbComponents.ItemsSource = cir.Components;
-            lbNodes.ItemsSource = cir.Nodes;
+            lbNodes.ItemsSource = cir.Nodes.Values;
             //lbComponents.SelectedItem
             DataContext = model;
         }
@@ -123,5 +115,35 @@ namespace ComplexPlainVisualizer
                 propgrid.SelectedObject = lbNodes.SelectedItem;
         }
 
+
+        private void Button_AnalysisSetup(object sender, RoutedEventArgs e)
+        {
+            if (cir2 == null)
+            {
+                return;
+            }
+            propgrid.SelectedObject = cir2.Setup[0];
+        }
+
+
+        private void BtnExport(object sender, RoutedEventArgs e)
+        {
+            SaveFileDialog save = new SaveFileDialog();
+            save.InitialDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location); ;
+            save.Filter = "Circuit Net List files (*.csv)|*.net|All files (*.*)|*.*";
+            if (save.ShowDialog() == true)
+            {
+                //CsvFileWriter writer = new CsvFileWriter(save.FileName);
+                //writer.Quote = ';';
+                ComplexPlainSolver sol5 = (ComplexPlainSolver)cir2.Setup[0].Solver;
+                sol5.ExportToCSV(save.FileName);
+            }
+        }
+
+        private void ButtonRedraw(object sender, RoutedEventArgs e)
+        {
+            //Redraw();
+
+        }
     }
 }

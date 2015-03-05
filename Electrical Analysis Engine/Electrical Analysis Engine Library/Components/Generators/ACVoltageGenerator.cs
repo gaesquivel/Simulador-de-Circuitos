@@ -33,7 +33,9 @@ namespace ElectricalAnalysis.Components
         public ACVoltageGenerator(ComponentContainer owner, float ACMagnitude = 1, float ACPhase = 0)
             : base(owner)
         {
-            ACVoltage = new Complex32(ACMagnitude, ACPhase);
+            ACVoltage = Complex32.FromPolarCoordinates(ACMagnitude, ACPhase);
+            //ACVoltage = new Complex32(ACMagnitude, 0);
+
         }
 
         public override Complex32 voltage(Node referenceNode, Complex32? W = null)

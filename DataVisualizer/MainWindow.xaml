@@ -22,15 +22,19 @@
             <Button Click="ButtonRefresh" ToolTip="Refres Results">
                 <Image Source="Images/Refresh.png" />
             </Button>
-            <Button ToolTip="Draw Selected Item" Click="ButtonAddLine">
+            <Button ToolTip="Draw Selected Item" Click="ButtonRedraw">
                 <Image Source="Images/line-chart.png" />
             </Button>
+          
+            <Button ToolTip="Analysis Setup" Click="Button_AnalysisSetup">
+                <Image Source="Images/edit.png" />
+            </Button>
+            
             <Button Click="Button_Bode" ToolTip="Show Bode Example">
                 <Image Source="Images/chart.png" />
             </Button>
-
-            <Button ToolTip="Analysis Setup" Click="Button_AnalysisSetup">
-                <Image Source="Images/edit.png" />
+            <Button ToolTip="Export To CSV Excel File" Click="BtnExport">
+                <Image Source="Images/export_excel.png" />
             </Button>
             <!--<Button Click="Button_Zoom" ToolTip="Zoom Out">
                 <Image Source="Images/Zoom_out.png" />
@@ -60,7 +64,8 @@
                     </xcad:LayoutAnchorablePane>
                     <xcad:LayoutDocumentPaneGroup >
                         <xcad:LayoutDocumentPane>
-                            <xcad:LayoutDocument ContentId="document1" Title="Bode Magnitude Simulation" IconSource="Images/oszillograph.png" CanClose="False" CanFloat="False" >
+                            <xcad:LayoutDocument ContentId="document1" Title="Bode Magnitude Simulation" IconSource="Images/oszillograph.png"
+                                                 CanClose="False" CanFloat="False" >
 
                                 <d3:ChartPlotter Name="plotter" >
                                     <d3:LineGraph x:Name="linegraph" Stroke="Blue" StrokeThickness="3" Margin="0,1,0,-1"/>
@@ -70,6 +75,11 @@
 
 
                             </xcad:LayoutDocument>
+
+                            <!--<xcad:LayoutDocument ContentId="document2" Title="Values" IconSource="Images/table.png">
+                                <DataGrid ItemsSource="{Binding}"/>
+                            </xcad:LayoutDocument>-->
+
                         </xcad:LayoutDocumentPane>
                     </xcad:LayoutDocumentPaneGroup >
                     <xcad:LayoutAnchorablePaneGroup DockWidth="100">
@@ -96,7 +106,8 @@
         </xcad:DockingManager>
 
         <StatusBar Grid.Row="2">
-            <TextBlock Text="Hello"/>
+            <TextBlock Name="txtCircuitName" Text="Circuits/RCLhi.net"/>
+            <TextBlock Name="txtPlotted" Text="out"/>
 
         </StatusBar>
     </Grid>

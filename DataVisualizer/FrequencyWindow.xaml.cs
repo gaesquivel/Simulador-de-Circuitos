@@ -79,8 +79,6 @@ namespace DataVisualizer
         {
             ACSweepSolver sol5 = (ACSweepSolver)cir2.Setup[0].Solver;
             cir2.Solve();
-            //AddVoltage(sol5, "out");
-            //SelectedObject = sol5;
         }
 
         private void AddVoltage(ACSweepSolver sol5, string NodeName)
@@ -93,7 +91,7 @@ namespace DataVisualizer
                     {
                         Tuple<double, double> p = new Tuple<double, double>(data.Key, item.Value.Magnitude);
                         source1.Collection.Add(p);
-                        p = new Tuple<double, double>(data.Key, item.Value.Phase);
+                        p = new Tuple<double, double>(data.Key, 90 * item.Value.Phase / Math.PI);
                         source2.Collection.Add(p);
                         break;
                     }
@@ -215,6 +213,7 @@ namespace DataVisualizer
         {
             OpenFileDialog dlg = new OpenFileDialog();
             //dlg.InitialDirectory = ".";
+            dlg.InitialDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location); ;
             dlg.Filter = "Circuit Net List files (*.net)|*.net|All files (*.*)|*.*";
             if (dlg.ShowDialog() == true)
             {
@@ -240,6 +239,7 @@ namespace DataVisualizer
         private void ButtonRefresh(object sender, RoutedEventArgs e)
         {
             source1.Collection.Clear();
+            source2.Collection.Clear();
             // Start computation process in second thread
             //Thread simThread = new Thread(new ThreadStart(Refresh));
             //simThread.IsBackground = true;
@@ -291,10 +291,22 @@ namespace DataVisualizer
 
         }
 
+
+        private void Button_AnalysisSetup(object sender, RoutedEventArgs e)
+        {
+            if (cir2 == null)
+            {
+                return;
+            }
+            propgrid.SelectedObject = cir2.Setup[0];
+        }
+
+
         private void BtnExport(object sender, RoutedEventArgs e)
         {
             SaveFileDialog save = new SaveFileDialog();
-            save.Filter = "Circuit Net List files (*.net)|*.net|All files (*.*)|*.*";
+            save.InitialDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location); ;
+            save.Filter = "Circuit Net List files (*.csv)|*.net|All files (*.*)|*.*";
             if (save.ShowDialog() == true)
             {
                 //CsvFileWriter writer = new CsvFileWriter(save.FileName);

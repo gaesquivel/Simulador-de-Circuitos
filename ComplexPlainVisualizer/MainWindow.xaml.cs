@@ -83,5 +83,12 @@ namespace ComplexPlainVisualizer
 
         }
 
+        //private void lbComponents_SelectionChanged(object sender, SelectionChangedEventArgs e)
+        //{
+        //    if (sender == lbComponents)
+        //        propgrid.SelectedObject = lbComponents.SelectedItem;
+        //    else if (sender == lbNodes)
+        //        propgrid.SelectedObject = lbNodes.SelectedItem;
+        //}
     }
 }

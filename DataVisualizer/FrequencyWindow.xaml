@@ -30,9 +30,11 @@
                 <Image Source="Images/line-chart.png" />
             </Button>
             <Button ToolTip="Export To CSV Excel File" Click="BtnExport">
-                <Image Source="Images/delete2.png" />
+                <Image Source="Images/export_excel.png" />
             </Button>
-
+            <Button ToolTip="Analysis Setup" Click="Button_AnalysisSetup">
+                <Image Source="Images/edit.png" />
+            </Button>
         </ToolBar>
         <xcad:DockingManager Grid.Row="1"
                            AllowMixedOrientation="True"
@@ -107,7 +109,7 @@
         </xcad:DockingManager>
 
         <StatusBar Grid.Row="2">
-            <TextBlock  Name="TxtStatus" Text="Circuits/RCL.net"/>
+            <TextBlock  Name="TxtStatus" Text="Circuits/RCLhi.net"/>
 
         </StatusBar>
     </Grid>
