@@ -1,4 +1,5 @@
 ﻿using ElectricalAnalysis.Components;
+using ElectricalAnalysis.Components.Controlled;
 using MathNet.Numerics;
 using System;
 using System.Collections.Generic;
@@ -30,26 +31,20 @@ namespace ElectricalAnalysis.Analysis.Solver
 
         public override bool Solve(Circuit cir, BasicAnalysis ana)
         {
-            //int fila = 0;
             List<Node> nodos = new List<Node>();
             CurrentAnalysis = ana as ComplexPlainAnalysis;
             CurrentCircuit = cir;
 
+            //List<Node> nodosnorton = new List<Node>();
+            //List<Node> nodoscalculables = new List<Node>();
+            //List<SpecialComponentInfo> especialcomponents;
+            Voltages = new Dictionary<Complex32, Dictionary<string, Complex32>>();
+            Currents = new Dictionary<Complex32, Dictionary<string, Complex32>>();
+            WfromIndexes = new Dictionary<Tuple<int, int>, Complex32>();
+            SolveInfo solveinfo = new SolveInfo();
 
-            nodos.AddRange(cir.Nodes.Values);
-            nodos.Remove(cir.Reference);
+            PreAnalizeToSolve(cir, nodos, solveinfo);
 
-            List<Node> nodosnorton = new List<Node>();
-            List<Node> nortoncopia = new List<Node>();
-
-            foreach (var nodo in nodos)
-            {
-                if (nodo.TypeOfNode == Node.NodeType.MultibranchCurrentNode ||
-                    nodo.TypeOfNode == Node.NodeType.VoltageLinkedNode ||
-                    nodo.TypeOfNode == Node.NodeType.VoltageFixedNode ||
-                    nodo.TypeOfNode == Node.NodeType.VoltageDivideNode)
-                    nodosnorton.Add(nodo);
-            }
 
             ComplexPlainAnalysis analis = ana as ComplexPlainAnalysis;
             double w, sig, wi, wf, deltaw, deltasig, sigmamin, sigmamax;
@@ -63,9 +58,6 @@ namespace ElectricalAnalysis.Analysis.Solver
             deltaw = (wf - wi) / analis.Points;
             deltasig = (sigmamax - sigmamin) / analis.Points;
 
-            Voltages = new Dictionary<Complex32, Dictionary<string, Complex32>>();
-            Currents = new Dictionary<Complex32, Dictionary<string, Complex32>>();
-            WfromIndexes = new Dictionary<Tuple<int, int>, Complex32>();
             Complex32 W = Complex32.Zero;
 
             for (int i = 0; i <= analis.Points; i++)
@@ -73,15 +65,9 @@ namespace ElectricalAnalysis.Analysis.Solver
 
                 for (int j = 0; j <= analis.Points; j++)
                 {
-                    nortoncopia.Clear();
-                    foreach (var item in nodosnorton)
-                    {
-                        nortoncopia.Add(item);
-                    }
-
                     //Calculo de tensiones de nodos
                     W = new Complex32((float)(sigmamin + j * deltasig), (float)(wi + i * deltaw));
-                    ACSweepSolver.Calculate(nortoncopia, W);
+                    ACSweepSolver.Calculate(solveinfo, W);
                     
                     //          Node    Voltage
                     Dictionary<string, Complex32> result = new Dictionary<string, Complex32>();
@@ -118,6 +104,36 @@ namespace ElectricalAnalysis.Analysis.Solver
             return true;
         }
 
+
+        public System.Drawing.Bitmap TakeSnapShot(Node node)
+        {
+            SelectedNode = node;
+            ComplexPlainAnalysis SnapAnalysis = (ComplexPlainAnalysis)CurrentAnalysis;//.Clone();
+            //SnapAnalysis.Points = 300;
+            //Solve(CurrentCircuit, SnapAnalysis);
+
+            System.Drawing.Bitmap bmp = FileUtils.DrawImage(func, SnapAnalysis.Points, SnapAnalysis.Points);
+
+            return bmp;
+        }
+
+
+        Complex32 func(int x, int y)
+        {
+            Complex32 W = WfromIndexes[new Tuple<int, int>(x, y)];
+            foreach (var node in Voltages[W])
+            {
+                if (node.Key == SelectedNode.Name)
+                {
+                    return node.Value;
+                }
+            }
+            return Complex32.Zero;
+        }
+
+        //override Clone()
+
+
         /// <summary>
         /// Almacena las corrientes del W actual
         /// </summary>
@@ -136,12 +152,12 @@ namespace ElectricalAnalysis.Analysis.Solver
         }
 
 
-        public override void ExportToCSV(string FileName)
+        public void ExportToCSV(string FileName, int SelectedNodeIndex = 0)
         {
             if (SelectedNode == null)
             {
                 Node[] arr = CurrentCircuit.Nodes.Values.ToArray<Node>();
-                SelectedNode = arr[0];
+                SelectedNode = arr[SelectedNodeIndex];
             }
 
             using (var writer = new CsvFileWriter(FileName))

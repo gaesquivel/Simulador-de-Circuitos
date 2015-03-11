@@ -38,5 +38,16 @@ namespace ElectricalAnalysis
             Solver= new ACSweepSolver();
         }
 
+
+        public override object Clone()
+        {
+            ACAnalysis clon = new ACAnalysis();
+            clon.EndFrequency = EndFrequency;
+            clon.ScanType = ScanType;
+            clon.StartFrequency = StartFrequency;
+            //clon. = EndFrequency;
+            clon.Points = Points;
+            return clon;
+        }
     }
 }

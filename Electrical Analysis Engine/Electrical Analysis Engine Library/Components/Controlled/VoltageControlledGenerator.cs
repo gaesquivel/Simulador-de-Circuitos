@@ -7,7 +7,7 @@ using System.Threading.Tasks;
 
 namespace ElectricalAnalysis.Components.Controlled
 {
-    public class VoltageControlledGenerator:ACVoltageGenerator
+    public class VoltageControlledGenerator:VoltageGenerator, ControlledVoltageGenerator, ControllerOpenCircuit
     {
         double gain;
         bool wasparsed;

@@ -111,8 +111,8 @@
     <Compile Include="FrequencyWindow.xaml.cs">
       <DependentUpon>FrequencyWindow.xaml</DependentUpon>
     </Compile>
-    <Compile Include="Plain2DAnalizer.xaml.cs">
-      <DependentUpon>Plain2DAnalizer.xaml</DependentUpon>
+    <Compile Include="TestPlotter1.xaml.cs">
+      <DependentUpon>TestPlotter1.xaml</DependentUpon>
     </Compile>
     <Compile Include="Plain2DViewer.xaml.cs">
       <DependentUpon>Plain2DViewer.xaml</DependentUpon>
@@ -126,7 +126,7 @@
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow.xaml">
+    <Page Include="TransientViewer.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -134,11 +134,11 @@
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="MainWindow.xaml.cs">
-      <DependentUpon>MainWindow.xaml</DependentUpon>
+    <Compile Include="TransientViewer.xaml.cs">
+      <DependentUpon>TransientViewer.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Page Include="Plain2DAnalizer.xaml">
+    <Page Include="TestPlotter1.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
@@ -177,6 +177,12 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Circuits\RCLhi.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\RCLpihi.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\RCLpi.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Circuits\vsingain.net">

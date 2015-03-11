@@ -19,7 +19,9 @@ namespace ComplexPlainVisualizer
         /// <summary>
         /// Color code by gradient in y-direction using a gradient brush with white ambient light
         /// </summary>
-        ByGradientY
+        ByGradientY,
+
+        Custom
     }
 
     public class MainViewModel : INotifyPropertyChanged

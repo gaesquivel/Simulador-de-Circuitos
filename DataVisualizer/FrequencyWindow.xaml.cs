@@ -91,7 +91,7 @@ namespace DataVisualizer
                     {
                         Tuple<double, double> p = new Tuple<double, double>(data.Key, item.Value.Magnitude);
                         source1.Collection.Add(p);
-                        p = new Tuple<double, double>(data.Key, 90 * item.Value.Phase / Math.PI);
+                        p = new Tuple<double, double>(data.Key, 180 * item.Value.Phase / Math.PI);
                         source2.Collection.Add(p);
                         break;
                     }
@@ -225,6 +225,8 @@ namespace DataVisualizer
         {
             if (source1 != null)
                 source1.Collection.Clear();
+            if (source2 != null)
+                source2.Collection.Clear();
             // Start computation process in second thread
             //Thread simThread = new Thread(new ThreadStart(Simulate));
             //simThread.IsBackground = true;
@@ -248,11 +250,6 @@ namespace DataVisualizer
             Refresh();
         }
 
-        private void Button_Zoom(object sender, RoutedEventArgs e)
-        {
-           
-            //propgrid.SelectedObject = linegraph;
-        }
 
         private void lbComponents_SelectionChanged(object sender, SelectionChangedEventArgs e)
         {
@@ -286,10 +283,6 @@ namespace DataVisualizer
             
         }
 
-        private void BtnDeleteLine(object sender, RoutedEventArgs e)
-        {
-
-        }
 
 
         private void Button_AnalysisSetup(object sender, RoutedEventArgs e)
@@ -306,7 +299,7 @@ namespace DataVisualizer
         {
             SaveFileDialog save = new SaveFileDialog();
             save.InitialDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location); ;
-            save.Filter = "Circuit Net List files (*.csv)|*.net|All files (*.*)|*.*";
+            save.Filter = "Circuit Net List files (*.csv)|*.csv|All files (*.*)|*.*";
             if (save.ShowDialog() == true)
             {
                 //CsvFileWriter writer = new CsvFileWriter(save.FileName);

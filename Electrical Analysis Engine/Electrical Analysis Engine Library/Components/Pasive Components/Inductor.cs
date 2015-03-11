@@ -48,7 +48,7 @@ namespace ElectricalAnalysis.Components
             }
             previoustime = t;
             //recalculo la corriente
-            double deltai = voltage(referenceNode).Real * deltat / Value;
+            double deltai = voltage(referenceNode, t) * deltat / Value;
             double i = _current.Real - deltai;
             if (referenceNode == Nodes[0])
                 _current = new Complex32((float)-i, 0);

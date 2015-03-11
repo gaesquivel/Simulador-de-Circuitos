@@ -25,6 +25,15 @@ namespace ElectricalAnalysis.Analysis
             Solver = new ComplexPlainSolver();
         }
 
-
+        public override object Clone()
+        {
+            ComplexPlainAnalysis clon = new ComplexPlainAnalysis();
+            clon.WMax = WMax;
+            clon.WMin = WMin;
+            clon.SigmaMax = SigmaMax;
+            clon.SigmaMin = SigmaMin;
+            clon.Points = Points;
+            return clon;
+        }
     }
 }

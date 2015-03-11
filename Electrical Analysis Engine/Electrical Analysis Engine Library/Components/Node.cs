@@ -36,10 +36,7 @@ namespace ElectricalAnalysis.Components
             /// Node where can apply Norton Theorem
             /// </summary>
             MultibranchCurrentNode,
-            /// <summary>
-            /// Node where the voltage is well known
-            /// </summary>
-            VoltageFixedNode,
+
             /// <summary>
             /// Node where voltage es directly dependent of 
             /// other floating node
@@ -50,10 +47,14 @@ namespace ElectricalAnalysis.Components
             /// voltage pasive divider ecuation
             /// </summary>
             VoltageDivideNode,
+            ///// <summary>
+            ///// In this case the voltage can be calculated with some formulae
+            ///// </summary>
+            //VoltageVariableNode,
             /// <summary>
-            /// In this case the voltage can be calculated with some formulae
+            /// Node where the voltage is well known
             /// </summary>
-            VoltageVariableNode
+            VoltageFixedNode   
         }
 
         [Browsable(false)]
@@ -63,7 +64,7 @@ namespace ElectricalAnalysis.Components
             { return typeofnode; }
             set
             {
-                if (value == NodeType.VoltageLinkedNode && typeofnode == NodeType.VoltageFixedNode)
+                if (value < typeofnode)
                     return;
                 typeofnode = value;
             }
@@ -135,6 +136,11 @@ namespace ElectricalAnalysis.Components
         public void Reset()
         {
             Voltage = Complex32.Zero;
+        }
+
+        public override string ToString()
+        {
+            return "Node " + Name + ", Voltage " + Voltage.ToString();
         }
     }
 }

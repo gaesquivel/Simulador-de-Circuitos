@@ -7,9 +7,13 @@ using System.Threading.Tasks;
 
 namespace ElectricalAnalysis
 {
-    public abstract class BasicAnalysis:Item
+    public abstract class BasicAnalysis:Item, ICloneable
     {
         public CircuitSolver Solver { get; protected set; }
+
+        public abstract object Clone();
+        
+
 
     }
 }

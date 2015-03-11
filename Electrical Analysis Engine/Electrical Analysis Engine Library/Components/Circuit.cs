@@ -18,6 +18,9 @@ namespace ElectricalAnalysis.Components
             Empty, FileLoaded, Optimized, Solved
         }
 
+        public Circuit OriginalCircuit { get; protected set; }
+        public Circuit OptimizedCircuit { get; internal set; }
+
         public CircuitState State { get; set; }
         public List<BasicAnalysis> Setup { get; protected set; }
         public List<Dipole> Components { get; protected set; }
@@ -189,6 +192,7 @@ namespace ElectricalAnalysis.Components
                     Components.Add(comp);
                 }
                 State = CircuitState.FileLoaded;
+                OriginalCircuit = this;
             }
             catch (Exception ex)
             {
@@ -213,15 +217,20 @@ namespace ElectricalAnalysis.Components
 
         public bool Solve()
         {
+            if (State >= CircuitState.Optimized)
+            {
+                OptimizedCircuit = this;
+            }
+
             switch (State)
             {
                 case CircuitState.Empty:
                     HasErrors = true;
                     break;
                 case CircuitState.FileLoaded:
-                    
                     break;
                 case CircuitState.Optimized:
+
                     break;
                 case CircuitState.Solved:
                     break;
@@ -256,6 +265,8 @@ namespace ElectricalAnalysis.Components
             }
         }
 
+
+
         public object Clone()
         {
             Circuit cir = new Circuit();
@@ -269,7 +280,7 @@ namespace ElectricalAnalysis.Components
                 comp.OwnerCircuit = cir;
             }
             cir.Reference = Reference;
-
+            cir.OriginalCircuit = this;
             return cir;
         }
     }

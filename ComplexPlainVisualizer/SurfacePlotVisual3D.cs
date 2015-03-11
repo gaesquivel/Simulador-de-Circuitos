@@ -42,6 +42,8 @@ namespace ComplexPlainVisualizer
             Children.Add(visualChild);
         }
 
+        public ColorCoding ColorCoding { get; set; }
+
         /// <summary>
         /// Gets or sets the points defining the surface.
         /// </summary>
@@ -72,6 +74,7 @@ namespace ComplexPlainVisualizer
             set { SetValue(SurfaceBrushProperty, value); }
         }
 
+        public Point4D[,] OriginalData { get; set; }
 
         // todo: make Dependency properties
         public double ScaleX { get; set; }
@@ -116,11 +119,11 @@ namespace ComplexPlainVisualizer
             //double RealminZ = double.MaxValue;
             //double RealmaxZ = double.MinValue;
 
+        
+            #region Color things
             double minColorValue = double.MaxValue;
             double maxColorValue = double.MinValue;
 
-        
-            #region Color things
 
             for (int i = 0; i < rows; i++)
                 for (int j = 0; j < columns; j++)
@@ -151,15 +154,31 @@ namespace ComplexPlainVisualizer
 
             // set the texture coordinates by z-value or ColorValue
             var texcoords = new Point[rows,columns];
-            for (int i = 0; i < rows; i++)
-                for (int j = 0; j < columns; j++)
-                {
-                    double u = (Points[i, j].Z - minZ)/(maxZ - minZ);
-                    if (ColorValues != null)
-                        u = (ColorValues[i, j] - minColorValue)/(maxColorValue - minColorValue);
-                    texcoords[i, j] = new Point(u, u);
-                }
+            if (OriginalData == null || ColorCoding != ComplexPlainVisualizer.ColorCoding.Custom)
+            {
+                for (int i = 0; i < rows; i++)
+                    for (int j = 0; j < columns; j++)
+                    {
 
+                        double u = (Points[i, j].Z - minZ) / (maxZ - minZ);
+                        //double v = 
+                        if (ColorValues != null)
+                            u = (ColorValues[i, j] - minColorValue) / (maxColorValue - minColorValue);
+                        texcoords[i, j] = new Point(u, u);
+                    }
+            }
+            else
+            {
+                for (int i = 0; i < rows; i++)
+                    for (int j = 0; j < columns; j++)
+                    {
+                        double u = MathUtil.Scale(minZ, maxZ, Math.Log10(OriginalData[i, j].Z), 0.5);
+                        double v = OriginalData[i, j].W;
+                        double uu = 0.5 + u * Math.Cos(v);
+                        double vv = 0.5 + u * Math.Sin(v);
+                        texcoords[i, j] = new Point(uu, vv);
+                    }
+            }
 
             if (AutoScale)
             {

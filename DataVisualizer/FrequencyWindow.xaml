@@ -109,7 +109,26 @@
         </xcad:DockingManager>
 
         <StatusBar Grid.Row="2">
-            <TextBlock  Name="TxtStatus" Text="Circuits/RCLhi.net"/>
+            <StatusBarItem>
+                <TextBlock  Name="TxtStatus" Text="Circuits/RCLpi.net" ToolTip="Name of simulated circuit"/>
+            </StatusBarItem>
+            <Separator Width="1"/>
+            <StatusBarItem>
+              
+                <TextBlock Name="txtPlotted" Text="out" ToolTip="last plotted signal"/>
+            </StatusBarItem>
+            <!--<Border Background="GhostWhite" BorderBrush="DodgerBlue" BorderThickness="2,1,2,1">
+            </Border>-->
+            <!--<StackPanel Orientation="Horizontal">
+                <TextBlock Name="txtTally1" Text="some"/>
+                <TextBlock Name="txtTally2" Text="some"/>
+
+            </StackPanel>-->
+            <Separator Width="1"/>
+
+            <StatusBarItem>
+                <TextBlock Name="txtTally" Text="some"/>
+            </StatusBarItem>
 
         </StatusBar>
     </Grid>

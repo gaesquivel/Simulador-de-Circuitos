@@ -117,6 +117,7 @@ namespace ElectricalAnalysis.Components
             Complex32 v = 0, z = 0;
             Dipole compo1 = null;
             Node node1 = null;
+            //encuentro el componente unido al nodo de referencia
             foreach (var item in Components)
             {
                 if (item.Nodes[0] == referenceNode || item.Nodes[1] == referenceNode)
@@ -125,13 +126,17 @@ namespace ElectricalAnalysis.Components
                     break;
                 }
             }
+
+            //a partir del nodo y el componente, escaneo la ramaenbusca de la Vthevenin y la Rthevenin
             node1 = referenceNode;
             do
             {
                 if (compo1 is Branch)
                     v += ((Branch)compo1).TheveninVoltage(node1, W);
-                else
+                else if(compo1 is ACVoltageGenerator)
                     v += compo1.voltage(node1, W);
+
+                //los componentes pasivos no tienen tension en barrido en frecuencia
                 z += compo1.Impedance(W);
                 node1 = compo1.OtherNode(node1);
                 compo1 = node1.OtherComponent(compo1);
@@ -178,25 +183,31 @@ namespace ElectricalAnalysis.Components
                 else
                 {
                     //hay que buscar nodo a nodo 
-                    throw new NotImplementedException();
+                    Node nodo = FindComponentNode(referenceNode, CurrentImposser);
+                    i = CurrentImposser.Current(nodo, t);
                 }
             }
             else
             {
-                foreach (var item in Components)
+                foreach (var comp in Components)
                 {
                     //los generadores de corriente imponen la corriente en una rama!
-                    if (item is CurrentGenerator)
+                    if (comp is CurrentGenerator)
                     {
-                        CurrentImposser = item;
-                        i = item.Current(referenceNode, t);
+                        CurrentImposser = comp;
+                        i = comp.Current(referenceNode, t);
                         break;
                     }
                     //si no hay generadores de corriente la corriente la imponen lo inductores
-                    else if (item is Inductor)
+                    else if (comp is Inductor)
                     {
-                        CurrentImposser = item;
-                        i = item.Current(referenceNode, t);
+                        CurrentImposser = comp;
+                        i = comp.Current(referenceNode, t);
+                    }
+                    else if (comp is Resistor)
+                    {
+                        CurrentImposser = comp;
+                        i = comp.Current(referenceNode, t);
                     }
                 }
             }
@@ -257,6 +268,96 @@ namespace ElectricalAnalysis.Components
         {
             previoustime = 0;
             base.Reset();
+        }
+
+
+        /// <summary>
+        /// Dado 1 nodo extremo de la rama, busca el nodo mas cercano al componente
+        /// </summary>
+        /// <param name="externalnode">one of two exterior branch nodes</param>
+        /// <returns></returns>
+        public Node FindComponentNode(Node externalnode, Dipole component)
+        {
+            Node n = null;
+            if (!Nodes.Contains(externalnode))
+            {
+                //la rama no contiene al nodo indicado, probablemene un error
+                return null;
+            }
+
+            Dipole comp = null;
+            //if (Nodes.Contains(originalnode))
+
+            //identifico al componente que contiene el nodo externo
+            foreach (var comp1 in Components)
+            {
+                if (comp1.Nodes[0] == externalnode || comp1.Nodes[1] == externalnode)
+                {
+                    comp = comp1;
+                    break;
+                }
+            }
+
+            n = externalnode;
+            do
+            {
+                if (comp == component)
+                {
+                    return n;
+                }
+                //busco componente a componente, nodo a nodo
+                n = comp.OtherNode(n);
+                comp = n.OtherComponent(comp);
+
+            } while (InternalNodes.Contains(n));
+
+            //error, no se encontro elcompente que contine el nodo!
+            return null;
+        }
+
+
+        /// <summary>
+        /// Dado 1 nodo interno de la rama, busca el nodo externo mas cercano al componente
+        /// </summary>
+        /// <param name="internalnode"></param>
+        /// <returns></returns>
+        public Node FindBranchExternalNode(Node internalnode, Dipole component)
+        {
+            if (!InternalNodes.Contains(internalnode))
+            {
+                //la rama no contiene al nodo indicado, probablemene un error
+                return null;
+            }
+            if (!component.Nodes.Contains(internalnode))
+            {
+                //el componente no contiene el nodo, un error
+                return null;
+            }
+
+            Dipole comp = null, comp2 = null;
+
+            Node n = null;
+            n = internalnode;
+            throw new NotImplementedException();
+            while (!Nodes.Contains(n))
+            {
+                //busco componente a componente, nodo a nodo
+                comp2 = n.OtherComponent(comp);
+                n = comp2.OtherNode(n);
+
+            }
+
+            return n;
+        }
+
+        public override string ToString()
+        {
+            string s = base.ToString();
+            foreach (var comp in Components)
+            {
+                s += ", " + comp.Name;
+            }
+            return s;
         }
 
     }

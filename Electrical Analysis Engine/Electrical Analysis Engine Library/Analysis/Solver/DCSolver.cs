@@ -84,6 +84,11 @@ namespace ElectricalAnalysis.Analysis.Solver
             return br;
         }
 
+        /// <summary>
+        /// optimize a recent loaded circuit leaving ready for simulation
+        /// </summary>
+        /// <param name="cir"></param>
+        /// <returns></returns>
         public static bool Optimize(Circuit cir)
         {
             List<Dipole> yaanalizados = new List<Dipole>();
@@ -229,7 +234,7 @@ namespace ElectricalAnalysis.Analysis.Solver
             //    AddComponentNodes(cir, rama);
             //}
             cir.State = Circuit.CircuitState.Optimized;
-
+            cir.OptimizedCircuit = cir;
             return true;
         }
 

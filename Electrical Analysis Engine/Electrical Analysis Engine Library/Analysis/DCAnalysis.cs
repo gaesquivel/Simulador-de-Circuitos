@@ -17,5 +17,10 @@ namespace ElectricalAnalysis
             Solver = new DCSolver();
         }
 
+        public override object Clone()
+        {
+            return new DCAnalysis();
+        }
+
     }
 }

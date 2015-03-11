@@ -29,7 +29,7 @@ namespace DataVisualizer
     /// <summary>
     /// Lógica de interacción para MainWindow.xaml
     /// </summary>
-    public partial class MainWindow :  System.Windows.Window
+    public partial class TransientViewer :  System.Windows.Window
     {
         ObservableDataSource<Tuple<double, double>> source1 = null;
         //ObservableDataSource<Tuple<double, double>> sourcevoltage = null;
@@ -37,7 +37,7 @@ namespace DataVisualizer
         Circuit cir2;
         TransientAnalysis ac5;
 
-        public MainWindow()
+        public TransientViewer()
         {
             InitializeComponent();
             this.Loaded += Window_Loaded;
@@ -49,7 +49,7 @@ namespace DataVisualizer
             cir.ReadCircuit(circuitname);
             cir2 = (Circuit)cir.Clone();
             cir2.Setup.RemoveAt(0);
-            if (ac5 == null)
+            if (ac5 == null || cir2.Setup.Count == 0)
             {
                 ac5 = new TransientAnalysis();
                 ac5.Step = "200n";
@@ -162,10 +162,7 @@ namespace DataVisualizer
             Refresh();
         }
 
-        private void Button_Zoom(object sender, RoutedEventArgs e)
-        {
-           
-        }
+        
 
         private void Button_Bode(object sender, RoutedEventArgs e)
         {
@@ -231,7 +228,7 @@ namespace DataVisualizer
         {
             SaveFileDialog save = new SaveFileDialog();
             save.InitialDirectory = System.IO.Path.GetDirectoryName(System.Reflection.Assembly.GetEntryAssembly().Location); ;
-            save.Filter = "Circuit Net List files (*.csv)|*.net|All files (*.*)|*.*";
+            save.Filter = "Circuit Net List files (*.csv)|*.csv|All files (*.*)|*.*";
             if (save.ShowDialog() == true)
             {
                 ACSweepSolver sol5 = (ACSweepSolver)cir2.Setup[0].Solver;

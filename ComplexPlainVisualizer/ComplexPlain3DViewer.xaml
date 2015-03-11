@@ -32,17 +32,18 @@
                 <Image Source="Images/line-chart.png" />
             </Button>
 
-            <!--<Button >
-                <Image Source="Images/chart.png" />
-            </Button>-->
-            <!--<Button Click="Button_Click_4" ToolTip="FFT Inversa + Filtro Pasa Alto">
-                <Image Source="Images/chart.png" />
-            </Button>-->
+ 
             <Button ToolTip="Analysis Setup" Click="Button_AnalysisSetup">
                 <Image Source="Images/edit.png" />
             </Button>
             <Button ToolTip="Export To CSV Excel File" Click="BtnExport">
                 <Image Source="Images/export_excel.png" />
+            </Button>
+            <Button Click="ButtonExportPhase">
+                <Image Source="Images/planocomplejo.jpg" />
+            </Button>
+            <Button Click="ButtonColorize" ToolTip="Colorize the plain with custom color">
+                <Image Source="Images/chart.png" />
             </Button>
         </ToolBar>
 
@@ -76,7 +77,7 @@
                                                  CanClose="False" CanFloat="False" >
                               
                                 
-                                <h:HelixViewport3D ZoomExtentsWhenLoaded="True" ShowCoordinateSystem="True">
+                                <h:HelixViewport3D ZoomExtentsWhenLoaded="True" ShowCoordinateSystem="True" MouseDoubleClick="PlainDoubleClick">
                                     <h:HelixViewport3D.Camera>
                                         <!-- HelixViewport3D.ZoomExtentsWhenLoaded will figure out the position of the Camera -->
                                         <PerspectiveCamera LookDirection="5,10,-10" UpDirection="0,0,1"/>
@@ -86,12 +87,19 @@
                                     <ModelVisual3D Content="{Binding Lights}" />
 
                                     <!-- The plot visual (surface, axes and labels) -->
-                                    <local:SurfacePlotVisual3D x:Name="surface" Points="{Binding Data}" ColorValues="{Binding ColorValues}" SurfaceBrush="{Binding SurfaceBrush}"/>
+                                    <local:SurfacePlotVisual3D x:Name="surface" Points="{Binding Data}" ColorValues="{Binding ColorValues}" 
+                                                               SurfaceBrush="{Binding SurfaceBrush}"   />
 
                                 </h:HelixViewport3D>
                                 
                                 
                             </xcad:LayoutDocument>
+
+                            <xcad:LayoutDocument ContentId="document2" Title="Plain Snap Shot" IconSource="Images/document.png">
+                                <Image Name="image" />
+                            </xcad:LayoutDocument>
+                            
+                            
                         </xcad:LayoutDocumentPane>
                     </xcad:LayoutDocumentPaneGroup >
                     <xcad:LayoutAnchorablePaneGroup DockWidth="100">
@@ -119,7 +127,21 @@
         </xcad:DockingManager>
 
         <StatusBar Grid.Row="2">
-            <TextBlock Text="Hello"/>
+            <StatusBarItem>
+                <TextBlock  Name="TxtCircuitFile" Text="Circuits/RCL.net" ToolTip="Name of simulated circuit"/>
+            </StatusBarItem>
+            
+            <Separator Width="1"/>
+            
+            <StatusBarItem>
+                <TextBlock Name="txtPlotted" Text="out" ToolTip="last plotted signal"/>
+            </StatusBarItem>
+           
+            <Separator Width="1"/>
+
+            <StatusBarItem>
+                <TextBlock Name="txtTally" Text="some" Background="{Binding ElementName=surface, Path=SurfaceBrush}" />
+            </StatusBarItem>
 
         </StatusBar>
     </Grid>

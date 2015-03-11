@@ -83,11 +83,12 @@ namespace ElectricalAnalysis.Components
 
         public virtual Complex32 voltage(Node ReferenceNode, Complex32 ?W = null)
         {
-            if (ReferenceNode == Nodes[0])
-                return Voltage;
-            if (ReferenceNode == Nodes[1])
-                return -Voltage;
-            return Complex32.NaN;
+            return 0;
+            //if (ReferenceNode == Nodes[0])
+            //    return Voltage;
+            //if (ReferenceNode == Nodes[1])
+            //    return -Voltage;
+            //return Complex32.NaN;
         }
 
         /// <summary>
@@ -138,6 +139,11 @@ namespace ElectricalAnalysis.Components
         {
             //Voltage = Complex32.Zero;
             _current = Complex32.Zero;
+        }
+
+        public override string ToString()
+        {
+            return "Component " + Name + ", Current " + current.ToString();
         }
 
     }

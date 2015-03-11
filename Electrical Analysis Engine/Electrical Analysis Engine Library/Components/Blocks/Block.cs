@@ -30,5 +30,7 @@ namespace ElectricalAnalysis.Components
             }
         }
 
+
+
     }
 }

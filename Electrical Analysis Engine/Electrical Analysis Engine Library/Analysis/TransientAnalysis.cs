@@ -20,6 +20,13 @@ namespace ElectricalAnalysis.Analysis
             Solver = new TransientSolver();
         }
 
+        public override object Clone()
+        {
+            TransientAnalysis clon = new TransientAnalysis();
+            clon.Step = Step;
+            clon.FinalTime = FinalTime;
 
+            return clon;
+        }
     }
 }
