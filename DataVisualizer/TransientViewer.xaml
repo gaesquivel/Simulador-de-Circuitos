@@ -107,7 +107,7 @@
 
         <StatusBar Grid.Row="2">
             <Border Background="GhostWhite" BorderBrush="DodgerBlue" BorderThickness="2,1,2,1">
-                <TextBlock Name="txtCircuitName" Text="Circuits/RCL.net" ToolTip="Last simulated circuit"/>
+                <TextBlock Name="txtCircuitName" Text="Circuits/RCLhi.net" ToolTip="Last simulated circuit"/>
             </Border>
             <Border Background="GhostWhite" BorderBrush="DodgerBlue" BorderThickness="2,1,2,1">
                 <TextBlock Name="txtPlotted" Text="out" ToolTip="last plotted magnitude"/>

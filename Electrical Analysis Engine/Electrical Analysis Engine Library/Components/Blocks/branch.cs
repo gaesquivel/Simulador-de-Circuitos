@@ -178,7 +178,10 @@ namespace ElectricalAnalysis.Components
                 if (CurrentImposser.Nodes.Contains(referenceNode))
                 {
                     i = CurrentImposser.Current(referenceNode, t);
-                    _current = new Complex32((float)i, 0);
+                    if (referenceNode  == Nodes[0])
+                        _current = new Complex32((float)i, 0);
+                    else
+                        _current = new Complex32((float)-i, 0);
                 }
                 else
                 {

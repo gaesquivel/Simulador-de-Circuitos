@@ -179,6 +179,9 @@
     <None Include="Circuits\RCLhi.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Circuits\RLCLpi.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Circuits\RCLpihi.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

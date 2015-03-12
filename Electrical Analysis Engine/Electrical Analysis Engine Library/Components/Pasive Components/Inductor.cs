@@ -54,6 +54,16 @@ namespace ElectricalAnalysis.Components
                 _current = new Complex32((float)-i, 0);
             else if (referenceNode == Nodes[1])
                 _current = new Complex32((float)i, 0);
+            else if (Owner is Branch)
+            {
+                Node nodo = ((Branch)Owner).FindComponentNode(referenceNode, this);
+                if (nodo == null)
+                    throw new NotImplementedException();
+                if (nodo == Nodes[0])
+                    _current = new Complex32((float)-i, 0);
+                else if (nodo == Nodes[1])
+                    _current = new Complex32((float)i, 0);
+            }
             else
                 throw new NotImplementedException();
             return _current.Real;

@@ -45,6 +45,7 @@ namespace DataVisualizer
 
         public void Simulate(string circuitname)
         {
+            propgrid.SelectedObject = null;
             cir = new Circuit();
             cir.ReadCircuit(circuitname);
             cir2 = (Circuit)cir.Clone();
@@ -52,20 +53,64 @@ namespace DataVisualizer
             if (ac5 == null || cir2.Setup.Count == 0)
             {
                 ac5 = new TransientAnalysis();
-                ac5.Step = "200n";
+                ac5.Step = "50n";
                 ac5.FinalTime = "50u";
                 cir2.Setup.Add(ac5);
             }
             TransientSolver sol5 = (TransientSolver)ac5.Solver;
             TransientSolver.Optimize(cir2);
             Refresh();
+            lbComponents.ItemsSource = cir.Components;
+            lbNodes.ItemsSource = cir.Nodes.Values;
+
         }
 
         private void Refresh()
         {
             //TransientSolver sol5 = (TransientSolver)cir2.Setup[0].Solver;
+            if (cir2 == null)
+            {
+                return;
+            }
+            cir2.Reset();
             cir2.Solve();
             Redraw();
+        }
+
+        private void Redraw()
+        {
+            if (cir2 == null || propgrid.SelectedObject == null)
+                return;
+
+            if (source1 != null)
+                source1.Collection.Clear();
+
+            TransientSolver sol5 = (TransientSolver)cir2.Setup[0].Solver;
+            if (propgrid.SelectedObject is Node)
+            {
+                //if (cir.Nodes.ContainsKey(txtPlotted.Text))
+                //{
+                //    DrawVoltage(sol5, txtPlotted.Text);
+                //}
+                //else
+                //{
+                DrawVoltage(sol5, ((Node)propgrid.SelectedObject).Name);
+                txtPlotted.Text = ((Node)propgrid.SelectedObject).Name;
+                //}
+            }
+            else if (propgrid.SelectedObject is Dipole)
+            {
+                DrawCurrent(sol5, ((Dipole)propgrid.SelectedObject).Name);
+                txtPlotted.Text = ((Dipole)propgrid.SelectedObject).Name;
+                //foreach (var item in cir.Components)
+                //{
+                //    if (item.Name == txtPlotted.Text)
+                //    {
+                //        DrawCurrent(sol5, item.Name);
+                //        txtPlotted.Text = item.Name;
+                //    }
+                //}
+            }
         }
 
         private void DrawVoltage(TransientSolver sol5, string name)
@@ -133,6 +178,7 @@ namespace DataVisualizer
             if (dlg.ShowDialog(this).Value == true)
             {
                 Simulate(dlg.FileName);
+                txtCircuitName.Text = dlg.FileName;
             }
         }
 
@@ -146,8 +192,6 @@ namespace DataVisualizer
             //simThread.Start();
             
             Simulate(txtCircuitName.Text);
-            lbComponents.ItemsSource = cir.Components;
-            lbNodes.ItemsSource = cir.Nodes.Values;
             DataContext = ((TransientSolver)ac5.Solver).Voltages;
         }
 
@@ -183,36 +227,6 @@ namespace DataVisualizer
             Redraw();
         }
 
-        private void Redraw()
-        {
-
-            if (cir2 == null)
-                return;
-
-            if (source1 != null)
-                source1.Collection.Clear();
-
-            TransientSolver sol5 = (TransientSolver)cir2.Setup[0].Solver;
-            if (propgrid.SelectedObject is Node)
-            {
-                //if (sourcevoltage != null)
-                //    sourcevoltage.Collection.Clear();
-                if (cir.Nodes.ContainsKey(txtPlotted.Text))
-                    DrawVoltage(sol5, txtPlotted.Text);
-
-//                DrawVoltage(sol5, ((Node)propgrid.SelectedObject).Name);
-            }
-            else if (propgrid.SelectedObject is Dipole)
-            {
-                foreach (var item in cir.Components)
-	            {
-                    if (item.Name == txtPlotted.Text)
-                        DrawCurrent(sol5, item.Name);
-                //DrawCurrent(sol5, ((Dipole)propgrid.SelectedObject).Name);
-		 
-	            }
-            }
-        }
 
         private void Button_AnalysisSetup(object sender, RoutedEventArgs e)
         {

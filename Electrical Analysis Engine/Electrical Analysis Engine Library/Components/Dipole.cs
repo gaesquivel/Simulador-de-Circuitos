@@ -42,7 +42,10 @@ namespace ElectricalAnalysis.Components
         /// <returns></returns>
         public virtual double Current(Node referenceNode, double CurrentTime)
         {
-            return _current.Real;
+            if (referenceNode == Nodes[0])
+                return _current.Real;
+            else
+                return -_current.Real;
         }
 
         public virtual double voltage(Node referenceNode, double CurrentTime)
