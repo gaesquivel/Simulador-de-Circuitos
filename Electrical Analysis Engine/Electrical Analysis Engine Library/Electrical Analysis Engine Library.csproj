@@ -50,6 +50,7 @@
   <ItemGroup>
     <Compile Include="Analysis\ACAnalysis.cs" />
     <Compile Include="Analysis\ComplexPlainSweep.cs" />
+    <Compile Include="Analysis\Solver\SuperNode.cs" />
     <Compile Include="Analysis\Solver\ComplexPlainSolver.cs" />
     <Compile Include="Analysis\Solver\Structs.cs" />
     <Compile Include="Analysis\Solver\TransientSolver.cs" />

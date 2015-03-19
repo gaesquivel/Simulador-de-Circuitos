@@ -101,9 +101,11 @@ namespace ElectricalAnalysis.Components
             {
                 if (compo1 is Branch)
                     v += ((Branch)compo1).TheveninVoltage(node1, t);
-                else
+                else if(compo1 is VoltageGenerator || compo1 is Capacitor)
                     v += compo1.voltage(node1, t);
-                z += compo1.Impedance().Real;
+                else if (compo1 is Resistor)
+                    z += compo1.Impedance().Real;
+                //v += compo1.voltage(node1, t);
                 node1 = compo1.OtherNode(node1);
                 compo1 = node1.OtherComponent(compo1);
             } while (InternalNodes.Contains(node1));

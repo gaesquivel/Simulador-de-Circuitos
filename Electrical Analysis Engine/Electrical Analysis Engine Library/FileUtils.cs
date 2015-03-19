@@ -27,7 +27,7 @@ namespace ElectricalAnalysis
             //double re_max = +3.0;
             //double im_min = -3.0;
             //double im_max = +3.0;
-
+            
             // get the function to evaluate
             // = functions[functionList.SelectedIndex].Function;
 

@@ -1,13 +1,14 @@
 ﻿
 
 
+using ElectricalAnalysis.Analysis.Solver;
 using ElectricalAnalysis.Components;
 using System.Collections.Generic;
 
 
 public class SpecialComponentInfo
 {
-    public  Dipole Component;
+    public Dipole Component;
     public List<Node> ImportantInputNodes { get; private set;}
     public List<Node> ImportantOutputNodes { get; private set; }
 
@@ -25,6 +26,7 @@ public class SolveInfo
     public List<Node> nortonnodes { get; private set; }
     public List<SpecialComponentInfo> specialcomponents { get; private set; }
     public List<Branch> ramas { get; private set; }
+    public List<SuperNode> supernodegroup { get; private set; }
 
     public int MatrixDimension
     {
@@ -46,6 +48,7 @@ public class SolveInfo
         nortonnodes = new List<Node>();
         specialcomponents = new List<SpecialComponentInfo>();
         ramas = new List<Branch>();
+        supernodegroup = new List<SuperNode>();
     }   
 
 }

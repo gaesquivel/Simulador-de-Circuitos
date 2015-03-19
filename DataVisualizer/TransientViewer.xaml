@@ -64,7 +64,7 @@
                     </xcad:LayoutAnchorablePane>
                     <xcad:LayoutDocumentPaneGroup >
                         <xcad:LayoutDocumentPane>
-                            <xcad:LayoutDocument ContentId="document1" Title="Bode Magnitude Simulation" IconSource="Images/oszillograph.png"
+                            <xcad:LayoutDocument ContentId="document1" Title="Transient" IconSource="Images/oszillograph.png"
                                                  CanClose="False" CanFloat="False" >
 
                                 <d3:ChartPlotter Name="plotter" >
