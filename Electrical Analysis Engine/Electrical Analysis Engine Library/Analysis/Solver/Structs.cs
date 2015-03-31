@@ -23,10 +23,12 @@ public class SpecialComponentInfo
 public class SolveInfo
 {
     public List<Node> calculablenodes { get; private set; }
+    public List<Node> calculatednodes { get; private set; }
     public List<Node> nortonnodes { get; private set; }
     public List<SpecialComponentInfo> specialcomponents { get; private set; }
     public List<Branch> ramas { get; private set; }
-    public List<SuperNode> supernodegroup { get; private set; }
+    public List<SuperNode> SuperNodes { get; private set; }
+
 
     public int MatrixDimension
     {
@@ -45,10 +47,11 @@ public class SolveInfo
     public SolveInfo()
     {
         calculablenodes = new List<Node>();
+        calculatednodes = new List<Node>();
         nortonnodes = new List<Node>();
         specialcomponents = new List<SpecialComponentInfo>();
         ramas = new List<Branch>();
-        supernodegroup = new List<SuperNode>();
+        SuperNodes = new List<SuperNode>();
     }   
 
 }

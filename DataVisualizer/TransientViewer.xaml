@@ -26,13 +26,14 @@
                 <Image Source="Images/line-chart.png" />
             </Button>
           
+            <Separator />
             <Button ToolTip="Analysis Setup" Click="Button_AnalysisSetup">
                 <Image Source="Images/edit.png" />
             </Button>
             
-            <Button Click="Button_Bode" ToolTip="Show Bode Example">
+            <!--<Button Click="Button_Bode" ToolTip="Show Bode Example">
                 <Image Source="Images/chart.png" />
-            </Button>
+            </Button>-->
             <Button ToolTip="Export To CSV Excel File" Click="BtnExport">
                 <Image Source="Images/export_excel.png" />
             </Button>
@@ -64,12 +65,14 @@
                     </xcad:LayoutAnchorablePane>
                     <xcad:LayoutDocumentPaneGroup >
                         <xcad:LayoutDocumentPane>
+                            
+                            
                             <xcad:LayoutDocument ContentId="document1" Title="Transient" IconSource="Images/oszillograph.png"
                                                  CanClose="False" CanFloat="False" >
 
                                 <d3:ChartPlotter Name="plotter" >
                                     <d3:LineGraph x:Name="linegraph" Stroke="Blue" StrokeThickness="3" Margin="0,1,0,-1"/>
-                                    <d3:VerticalAxisTitle  FontFamily="Arial" Content="{Binding ElementName=lbComponents, Path=SelectedItem.Name}"/>
+                                    <d3:VerticalAxisTitle  FontFamily="Arial" Content="{Binding ElementName=txtPlotted, Path=Text}"/>
                                     <d3:HorizontalAxisTitle FontFamily="Arial" Content="t [seg]"/>
                                 </d3:ChartPlotter>
 
@@ -112,8 +115,6 @@
             <Border Background="GhostWhite" BorderBrush="DodgerBlue" BorderThickness="2,1,2,1">
                 <TextBlock Name="txtPlotted" Text="out" ToolTip="last plotted magnitude"/>
             </Border>
-
-
             
         </StatusBar>
     </Grid>

@@ -162,6 +162,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\DataVisualizer\DataVisualizer.csproj">
+      <Project>{ea924ff5-0259-40f6-a778-98da4e2446d4}</Project>
+      <Name>DataVisualizer</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Electrical Analysis Engine\Electrical Analysis Engine Library\Electrical Analysis Engine Library.csproj">
       <Project>{c5a99e1a-8024-4101-9e21-9e90e1cda058}</Project>
       <Name>Electrical Analysis Engine Library</Name>
@@ -217,6 +221,9 @@
     <Resource Include="Images\planocomplejo.jpg">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </Resource>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\oszillograph.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

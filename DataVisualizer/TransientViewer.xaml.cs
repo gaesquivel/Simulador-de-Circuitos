@@ -58,7 +58,7 @@ namespace DataVisualizer
                 cir2.Setup.Add(ac5);
             }
             TransientSolver sol5 = (TransientSolver)ac5.Solver;
-            TransientSolver.Optimize(cir2);
+            sol5.Optimize(cir2);
             Refresh();
             lbComponents.ItemsSource = cir.Components;
             lbNodes.ItemsSource = cir.Nodes.Values;
@@ -245,7 +245,7 @@ namespace DataVisualizer
             save.Filter = "Circuit Net List files (*.csv)|*.csv|All files (*.*)|*.*";
             if (save.ShowDialog() == true)
             {
-                ACSweepSolver sol5 = (ACSweepSolver)cir2.Setup[0].Solver;
+                TransientSolver sol5 = (TransientSolver)cir2.Setup[0].Solver;
                 sol5.ExportToCSV(save.FileName);
             }
         }

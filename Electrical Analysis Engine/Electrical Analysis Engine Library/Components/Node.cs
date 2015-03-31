@@ -64,7 +64,7 @@ namespace ElectricalAnalysis.Components
             { return typeofnode; }
             set
             {
-                if (value < typeofnode)
+                if (value < typeofnode || IsReference)
                     return;
                 typeofnode = value;
             }

@@ -111,7 +111,12 @@ namespace ElectricalAnalysis
             if (multiplies.ContainsKey(pow2))
             {
                 number2 = number * Math.Pow(10, -pow2 * 3);
-                return number2.ToString() + multiplies[pow2];
+                return number2.ToString("0.00") + multiplies[pow2];
+            }
+            else if (multiplies.ContainsKey((pow - 1) / 3))
+            {
+                number2 = number * Math.Pow(10, -(pow2 - 1) * 3);
+                return number2.ToString("0.00") + multiplies[pow2 - 1];
             }
             else
                 return number.ToString("0.00");

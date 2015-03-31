@@ -1,0 +1,9 @@
+* Schematics Netlist *
+
+
+
+V_V2         s 0 DC 10V AC 10V 0
+C_C1         0 out  10n  
+R_R1         s mid  2  
+L_L1         mid out  10uH  
+C_C2         0 mid  50n  

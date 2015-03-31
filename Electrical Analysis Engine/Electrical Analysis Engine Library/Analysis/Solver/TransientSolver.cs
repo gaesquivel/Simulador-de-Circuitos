@@ -12,19 +12,21 @@ namespace ElectricalAnalysis.Analysis.Solver
     public class TransientSolver: CircuitSolver
     {
         Circuit circuit;
+        SolveInfo solveinfo;
 
 
         //                  time             nodes voltages
         public Dictionary<double, Dictionary<string, double>> Voltages { get; protected set; }
         public Dictionary<double, Dictionary<string, double>> Currents { get; protected set; }
 
-        public static bool Optimize(Circuit cir)
+        public bool Optimize(Circuit cir)
         {
             List<Dipole> yaanalizados = new List<Dipole>();
             List<ParallelBlock> paralelos = new List<ParallelBlock>();
-            List<Node> nodosnormales = new List<Node>();
-            List<Branch> ramas = new List<Branch>();
+            List<Node> nodosanalizados = new List<Node>();
+            //List<Branch> ramas = new List<Branch>();
             ParallelBlock para = null;
+            solveinfo = new SolveInfo();
 
             #region Chequeo de nodos sueltos o componentes colgantes
             foreach (var nodo in cir.Nodes.Values)
@@ -95,8 +97,8 @@ namespace ElectricalAnalysis.Analysis.Solver
             #endregion
 
             #region identifico la tierra
-            Node tierra = cir.Reference;
 
+            Node tierra = cir.Reference;
             if (tierra == null)
                 foreach (var item in cir.Nodes.Values)
                 {
@@ -107,31 +109,51 @@ namespace ElectricalAnalysis.Analysis.Solver
                         break;
                     }
                 }
+
             #endregion
 
             #region arranco desde tierra he identifico los nodos de tension fija,
-            //posibles nodos flotantes de corriente y ramas conectadas a tierra
 
             List<Dipole> componenttoearh = new List<Dipole>();
             componenttoearh.AddRange(tierra.Components);
+            SuperNode super = null;
             foreach (var compo in componenttoearh)
             {
-
                 //los nodos de tension fija 
                 if (compo is VoltageGenerator || compo is Capacitor)
                 { 
-                    Node other = compo.OtherNode(tierra);
-                    other.TypeOfNode = Node.NodeType.VoltageFixedNode;
-                    other.Voltage = compo.Voltage;
+                    Node nodo = compo.OtherNode(tierra);
+                    nodo.TypeOfNode = Node.NodeType.VoltageFixedNode;
+                    //other.Voltage = compo.Voltage;
+                    solveinfo.calculablenodes.Add(nodo);
+                    foreach (var comp1 in nodo.Components)
+                    {
+                        if (comp1 == compo)
+                            continue;
+
+                        if (comp1 is VoltageGenerator || comp1 is Capacitor)
+                        {
+                            if (super == null)
+                                super = new SuperNode();
+                            super.MainNode = nodo;
+                            super.Add(nodo);
+                            SuperNode.FindSuperNodeElements(nodo, comp1, super, nodosanalizados);
+                        }
+                    }
+                    solveinfo.SuperNodes.Add(super);
+                    super = null;
                 }
-                //if (compo is Capacitor)
-                //{
-                //    Node other = compo.OtherNode(tierra);
-                //    other.TypeOfNode = Node.NodeType.VoltageVariableNode;
-                //    other.Voltage = compo.Voltage;
-                //}
-                    
-                foreach (var rama in ramas)
+
+            }
+            
+            #endregion
+
+            #region posibles nodos flotantes de corriente y ramas conectadas a tierra
+
+            foreach (var compo in componenttoearh)
+            {
+
+                foreach (var rama in solveinfo.ramas)
                 {
                     if (rama.Components.Contains(compo))
                         goto end;
@@ -141,38 +163,39 @@ namespace ElectricalAnalysis.Analysis.Solver
                 //b: son nodos normales flotantes (se aplica teorema de nodo)
                 Branch br = FindBranch(cir, tierra, compo);
                 //si no forma parte de una rama, la rama de 1 elemento se desecha
-                ValidateBranch(yaanalizados, nodosnormales, ramas, tierra, compo, br);
+                ValidateBranch(yaanalizados, solveinfo, tierra, compo, br);
         end: ;
             }
             #endregion
 
             #region Analizo las ramas faltantes desde los nodos normales encontrados
 
-            foreach (var nodo in nodosnormales)
+            foreach (var nodo in solveinfo.nortonnodes)
             {
                 foreach (var compo in nodo.Components)
                 {
-                    if (ramas.Contains(compo) || yaanalizados.Contains(compo))
+                    if (solveinfo.ramas.Contains(compo) || yaanalizados.Contains(compo))
                         continue;
 
                     Branch br = FindBranch(cir, nodo, compo);
-                    ValidateBranch(yaanalizados, nodosnormales, ramas, nodo, compo, br);
+                    ValidateBranch(yaanalizados, solveinfo, nodo, compo, br);
                 }
             }
 
             #endregion
 
             //reemplazo los componentes que arman una rama por la propia rama
-            foreach (var rama in ramas)
+            foreach (var rama in solveinfo.ramas)
                 foreach (var compo in rama.Components)
                     cir.Components.Remove(compo);
 
 
-            cir.Components.AddRange(ramas);
+            cir.Components.AddRange(solveinfo.ramas);
             cir.State = Circuit.CircuitState.Optimized;
 
             return true;
         }
+
 
         protected static Branch FindBranch(Circuit cir, Node initialNode, Dipole Component)
         {
@@ -183,7 +206,7 @@ namespace ElectricalAnalysis.Analysis.Solver
             br.Nodes.Clear();
             //solo es valido si el circuito fue optimizado, y los paralelos
             //se reemplazaron por bloques paralelo
-            while (nodo.Components.Count == 2 && cir.Reference != nodo)
+            while (nodo.Components.Count == 2 && !nodo.IsReference)
             {
                 br.Components.Add(compo);
                 br.InternalNodes.Add(nodo);
@@ -197,6 +220,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                 initialNode.Components.Add(br);
                 nodo.Components.Remove(compo);
                 nodo.Components.Add(br);
+               // if (!nodo.IsReference)
                 nodo.TypeOfNode = Node.NodeType.MultibranchCurrentNode;
             }
             br.Nodes.Add(initialNode);
@@ -213,10 +237,14 @@ namespace ElectricalAnalysis.Analysis.Solver
                 }
                 else if (compo is VoltageGenerator || compo is Capacitor)
                 {
-                    if (nodo.TypeOfNode == Node.NodeType.Unknow)
+                    if (compo.IsConnectedToEarth)
+                    {
+                        nodo.TypeOfNode = Node.NodeType.VoltageFixedNode;
+                    }
+                    else if (nodo.TypeOfNode == Node.NodeType.Unknow)
                         nodo.TypeOfNode = Node.NodeType.VoltageLinkedNode;
                     else
-                        throw new NotImplementedException();
+                    { }// throw new NotImplementedException();
                 }
                 else if (compo is Resistor)
                 {
@@ -255,27 +283,29 @@ namespace ElectricalAnalysis.Analysis.Solver
         /// <param name="nodo"></param>
         /// <param name="compo"></param>
         /// <param name="br"></param>
-        protected static void ValidateBranch(List<Dipole> yaanalizados, List<Node> nodosnormales,
-                                            List<Branch> ramas, Node nodo, Dipole compo, Branch br)
+        protected static void ValidateBranch(List<Dipole> yaanalizados, SolveInfo solveinfo, 
+                                                Node nodo, Dipole compo, Branch br)
         {
             if (br.Components.Count <= 1)
             {
                 if (compo is PasiveComponent)
                 {
                     Node other = compo.OtherNode(nodo);
-                    other.TypeOfNode = Node.NodeType.MultibranchCurrentNode;
-                    if (!nodosnormales.Contains(other))
-                        nodosnormales.Add(other);
+                    if (!solveinfo.nortonnodes.Contains(other) && !other.IsReference)
+                    {
+                        other.TypeOfNode = Node.NodeType.MultibranchCurrentNode;
+                        solveinfo.nortonnodes.Add(other);
+                    }
                 }
                 yaanalizados.Add(compo);
             }
             else
             {
                 //rama valida
-                ramas.Add(br);
+                solveinfo.ramas.Add(br);
                 Node other = br.OtherNode(nodo);
-                if (!nodosnormales.Contains(other))
-                    nodosnormales.Add(other);
+                if (!solveinfo.nortonnodes.Contains(other) && !other.IsReference)
+                    solveinfo.nortonnodes.Add(other);
                 yaanalizados.AddRange(br.Components);
                 foreach (var comp in br.Components)
                 {
@@ -290,13 +320,11 @@ namespace ElectricalAnalysis.Analysis.Solver
             Voltages = new Dictionary<double, Dictionary<string, double>>();
             Currents = new Dictionary<double, Dictionary<string, double>>();
             circuit = cir;
+            solveinfo.calculatednodes.Clear();
+            nodos.AddRange(cir.Nodes.Values);
+            nodos.Remove(cir.Reference);
 
-            SolveInfo solveinfo = new SolveInfo();
-
-            //nodos.AddRange(cir.Nodes.Values);
-            //nodos.Remove(cir.Reference);
-           
-            PreAnalizeToSolve(cir, nodos, solveinfo);
+            //PreAnalizeToSolve(cir, nodos, solveinfo);
        
             TransientAnalysis analis = ana as TransientAnalysis;
             double t, tf, deltat;
@@ -340,6 +368,7 @@ namespace ElectricalAnalysis.Analysis.Solver
             return true;
         }
 
+        [Obsolete]
         private void PreAnalizeToSolve(Circuit cir, List<Node> nodos, SolveInfo solveinfo)
         {
             nodos.AddRange(cir.Nodes.Values);
@@ -368,29 +397,29 @@ namespace ElectricalAnalysis.Analysis.Solver
                 }
             }
 
-            foreach (var compo in cir.Components)
-            {
-                if (compo is Branch)
-                    solveinfo.ramas.Add((Branch)compo);
-            }
+            //foreach (var compo in cir.Components)
+            //{
+            //    if (compo is Branch)
+            //        solveinfo.ramas.Add((Branch)compo);
+            //}
 
-            foreach (var nodo in nodos)
-            {
-                //los nodos de salida de un dispositivo VcV deben resolverse mediante matrices
+            //foreach (var nodo in nodos)
+            //{
+            //    //los nodos de salida de un dispositivo VcV deben resolverse mediante matrices
               
-                if (solveinfo.nortonnodes.Contains(nodo))
-                    continue;
-                if (nodo.TypeOfNode == Node.NodeType.MultibranchCurrentNode ||
-                    nodo.TypeOfNode == Node.NodeType.VoltageLinkedNode
-                    )
-                    solveinfo.nortonnodes.Add(nodo);
-                else if (nodo.TypeOfNode == Node.NodeType.VoltageDivideNode ||
-                        nodo.TypeOfNode == Node.NodeType.VoltageFixedNode)
-                {
-                    solveinfo.calculablenodes.Add(nodo);
-                }
-            }
+            //    if (solveinfo.nortonnodes.Contains(nodo))
+            //        continue;
 
+            //    if (nodo.TypeOfNode == Node.NodeType.MultibranchCurrentNode ||
+            //        nodo.TypeOfNode == Node.NodeType.VoltageLinkedNode
+            //        )
+            //        solveinfo.nortonnodes.Add(nodo);
+            //    else if (nodo.TypeOfNode == Node.NodeType.VoltageDivideNode ||
+            //            nodo.TypeOfNode == Node.NodeType.VoltageFixedNode)
+            //    {
+            //        solveinfo.calculablenodes.Add(nodo);
+            //    }
+            //}
         }
 
         protected static void Calculate(SolveInfo solveinfo, double t)
@@ -400,6 +429,8 @@ namespace ElectricalAnalysis.Analysis.Solver
                 return;
 
             //tensiones que se calculan directamente
+            #region tensiones fijas y Supernodos
+
             foreach (var nodo in solveinfo.calculablenodes)
             {
                 if (nodo.TypeOfNode == Node.NodeType.VoltageFixedNode)
@@ -409,6 +440,17 @@ namespace ElectricalAnalysis.Analysis.Solver
                         if (compo.IsConnectedToEarth && (compo is VoltageGenerator || compo is Capacitor))
                         {
                             nodo.Voltage = new Complex32((float)compo.voltage(nodo, t), 0);   //el componente conectado a tierra debe ser Vdc o Vsin o capacitor
+                            solveinfo.calculatednodes.Add(nodo);
+
+                            foreach (var super in solveinfo.SuperNodes)
+                            {
+                                if (super.MainNode == nodo)
+                                {
+                                    super.CalculateLinkedVoltages(solveinfo, t);
+                                    break;
+                                }
+                            }
+
                             break;
                         }
                     }
@@ -416,6 +458,9 @@ namespace ElectricalAnalysis.Analysis.Solver
                 }
             }
 
+            #endregion
+
+            //ESTO HAY QUE ARREGLARLO
             #region Tensiones de nodos que se calculan mediante matriz
 
             if (solveinfo.nortonnodes.Count > 0)
@@ -431,15 +476,35 @@ namespace ElectricalAnalysis.Analysis.Solver
                         continue;
 
                     columna = fila = solveinfo.nortonnodes.IndexOf(nodo);
-                    double Z = 0, I = 0, Y = 0, V = 0;
                     solvednodes.Add(nodo);
-                    
-                    foreach (var comp in nodo.Components)
+                    //if (nodo.TypeOfNode == Node.NodeType.VoltageLinkedNode)
+                    //{
+                    //    foreach (var comp in nodo.Components)
+                    //    {
+                    //        if (comp is VoltageGenerator || comp is Capacitor)
+                    //            Currs[fila] = comp.voltage(nodo, t);
+
+                    //        A[fila, columna] = 1;
+                    //    }
+                        
+                    //}
+                    //else
+                    if (nodo.TypeOfNode == Node.NodeType.MultibranchCurrentNode ||
+                            nodo.TypeOfNode == Node.NodeType.VoltageDivideNode)
                     {
-                        SolveNortonNode(nodo, comp, solvednodes, ref Z, ref I, ref Y, ref V, t);
+                        double Z = 0, I = 0, Y = 0, V = 0;
+
+                        foreach (var comp in nodo.Components)
+                        {
+                            SolveNortonNode(nodo, comp, solvednodes, ref Z, ref I, ref Y, ref V, t);
+                        }
+                        Currs[fila] = I + V * Y / 2;
+                        A[fila, columna] = Y;
                     }
-                    Currs[fila] = I + V * Y / 2;
-                    A[fila, columna] = Y;
+                    else
+                    {
+                        throw new NotImplementedException();
+                    }
                 }
                 var x = A.Solve(Currs);
 
@@ -458,7 +523,9 @@ namespace ElectricalAnalysis.Analysis.Solver
             //existen nodos donde la tension se puede calcular casi directamente
             foreach (var nodo in solveinfo.calculablenodes)
             {
-               
+                if (solveinfo.calculatednodes.Contains(nodo))
+                    continue;
+
                 if (nodo.TypeOfNode == Node.NodeType.VoltageDivideNode)
                 {
                     Node nodo1 = nodo;
@@ -479,6 +546,13 @@ namespace ElectricalAnalysis.Analysis.Solver
                     NavigateBranch(nodo1, compo2, t, ref v2, ref z2);
                     nodo.Voltage = new Complex32((float) ((z2 * v1 + v2 * z1) / (z1 + z2)),0);
                 }
+                else if (nodo.TypeOfNode == Node.NodeType.VoltageLinkedNode)
+                {
+                
+                
+                }
+                //else 
+
             }
 
             #endregion
@@ -498,7 +572,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                         break;
                     }
                 }
-                if (nodo1 == null)
+                if (nodo1 == null || solveinfo.calculatednodes.Contains(nodo1))
                     continue;
 
                 double i = 0;
@@ -509,7 +583,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                 Dipole compo1 = null;
                 foreach (var compo in rama.Components)
 	            {
-                    //busco el componente hubicado en un extremo de la rama
+                    //busco el componente ubicado en un extremo de la rama
                     if (compo.Nodes[0] == nodo1 || compo.Nodes[1] == nodo1)
                     {
                         compo1 = compo;
@@ -775,6 +849,7 @@ namespace ElectricalAnalysis.Analysis.Solver
         /// <param name="results"></param>
         /// <param name="componames"></param>
         /// <param name="container"></param>
+        [Obsolete]
         private void ScanComponentBlockCurrents(List<string> results, List<string> componames, ComponentContainer container)
         {
             foreach (var compo in container.Components)

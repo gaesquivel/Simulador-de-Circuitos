@@ -24,9 +24,6 @@ namespace ElectricalAnalysis.Analysis.Solver
             Voltages = new Dictionary<double, Dictionary<string, Complex32>>();
             Currents = new Dictionary<double, Dictionary<string, Complex32>>();
 
-            //List<Node> nodosnorton;
-            //List<Node> nodoscalculables;
-            //List<SpecialComponentInfo> specialcomponents;
             SolveInfo solveinfo = new SolveInfo();
 
             PreAnalizeToSolve(cir, nodos, solveinfo);
@@ -96,10 +93,6 @@ namespace ElectricalAnalysis.Analysis.Solver
         {
             nodos.AddRange(cir.Nodes.Values);
             nodos.Remove(cir.Reference);
-
-            //nodosnorton = new List<Node>();
-            //nodoscalculables = new List<Node>();
-            //especialcomponents = new List<SpecialComponentInfo>();
 
             //guardo para futuro los nodos de los componentes especiales
             if (cir.OriginalCircuit != null)

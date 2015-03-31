@@ -18,6 +18,7 @@ using System.Windows.Media.Media3D;
 using Microsoft.Win32;
 using ElectricalAnalysis;
 using MathNet.Numerics;
+using DataVisualizer;
 
 namespace ComplexPlainVisualizer
 {
@@ -39,10 +40,6 @@ namespace ComplexPlainVisualizer
             model = new ComplexPlainViewModel();
 
             model.ColorCoding = ColorCoding.ByGradientY;
-           // model.SurfaceBitmap = (System.Drawing.Bitmap)System.Drawing.Bitmap.("Images/planocomplejo.jpg");// CreateBitmap();
-            //System.Drawing.Bitmap bmp = new System.Drawing.Bitmap(
-            //                                System.Reflection.Assembly.GetEntryAssembly().
-            //                                GetManifestResourceStream("MyProject.Resources.planocomplejo.png"));
             model.SurfaceBitmap = global::ComplexPlainVisualizer.Properties.Resources.planocomplejo; ;
             Simulate(TxtCircuitFile.Text);
         }
@@ -201,7 +198,33 @@ namespace ComplexPlainVisualizer
             return bmp;
         }
 
+        private void ButtonColorize(object sender, RoutedEventArgs e)
+        {
+            if (lbNodes.SelectedItem == null)
+                return;
+            surface.ColorCoding = model.ColorCoding = ColorCoding.Custom;
+            model.UpdateModel(false);
+        }
+
+        private void PlainDoubleClick(object sender, MouseButtonEventArgs e)
+        {
+            propgrid.SelectedObject = model;
+        }
+
+        private void ButtonShowBode(object sender, RoutedEventArgs e)
+        {
+            FrequencyWindow win = new FrequencyWindow();
+            win.Show();
+        }
+
+        private void ButtonShowTransient(object sender, RoutedEventArgs e)
+        {
+            TransientViewer win = new TransientViewer();
+            win.Show();
+        }
+
         #endregion
+
 
         Complex32 func(int x, int y)
         {
@@ -216,17 +239,5 @@ namespace ComplexPlainVisualizer
             return Complex32.Zero;
         }
 
-        private void ButtonColorize(object sender, RoutedEventArgs e)
-        {
-            if (lbNodes.SelectedItem == null)
-                return;
-            surface.ColorCoding = model.ColorCoding = ColorCoding.Custom;
-            model.UpdateModel(false);
-        }
-
-        private void PlainDoubleClick(object sender, MouseButtonEventArgs e)
-        {
-            propgrid.SelectedObject = model;
-        }
     }
 }

@@ -100,8 +100,6 @@ namespace ComplexPlainVisualizer
 
         private Model3D CreateModel()
         {
-           // if (Points ==null)
-
             var plotModel = new Model3DGroup();
 
             int rows = Points.GetUpperBound(0) + 1;
@@ -112,12 +110,6 @@ namespace ComplexPlainVisualizer
             double maxY = double.MinValue;
             double minZ = double.MaxValue;
             double maxZ = double.MinValue;
-            //double RealminX = double.MaxValue;
-            //double RealmaxX = double.MinValue;
-            //double RealminY = double.MaxValue;
-            //double RealmaxY = double.MinValue;
-            //double RealminZ = double.MaxValue;
-            //double RealmaxZ = double.MinValue;
 
         
             #region Color things
@@ -154,7 +146,19 @@ namespace ComplexPlainVisualizer
 
             // set the texture coordinates by z-value or ColorValue
             var texcoords = new Point[rows,columns];
-            if (OriginalData == null || ColorCoding != ComplexPlainVisualizer.ColorCoding.Custom)
+            if (OriginalData != null && ColorCoding == ComplexPlainVisualizer.ColorCoding.Custom)
+            {
+                for (int i = 0; i < rows; i++)
+                    for (int j = 0; j < columns; j++)
+                    {
+                        double u = MathUtil.Scale(minZ, maxZ, Math.Log10(OriginalData[i, j].Z), 0.5);
+                        double v = OriginalData[i, j].W;
+                        double uu = 0.5 + u * Math.Cos(v);
+                        double vv = 0.5 + u * Math.Sin(v);
+                        texcoords[i, j] = new Point(uu, vv);
+                    }
+            }
+            else
             {
                 for (int i = 0; i < rows; i++)
                     for (int j = 0; j < columns; j++)
@@ -165,18 +169,6 @@ namespace ComplexPlainVisualizer
                         if (ColorValues != null)
                             u = (ColorValues[i, j] - minColorValue) / (maxColorValue - minColorValue);
                         texcoords[i, j] = new Point(u, u);
-                    }
-            }
-            else
-            {
-                for (int i = 0; i < rows; i++)
-                    for (int j = 0; j < columns; j++)
-                    {
-                        double u = MathUtil.Scale(minZ, maxZ, Math.Log10(OriginalData[i, j].Z), 0.5);
-                        double v = OriginalData[i, j].W;
-                        double uu = 0.5 + u * Math.Cos(v);
-                        double vv = 0.5 + u * Math.Sin(v);
-                        texcoords[i, j] = new Point(uu, vv);
                     }
             }
 
@@ -195,13 +187,6 @@ namespace ComplexPlainVisualizer
                                                    MaterialHelper.CreateMaterial(SurfaceBrush, null, null, 1, 0));
             surfaceModel.BackMaterial = surfaceModel.Material;
 
- 
-            //RealmaxX = maxX;
-            //RealminX = minX;
-            //RealmaxY = maxY;
-            //RealminY = minY;
-            //RealmaxZ = maxZ;
-            //RealminZ = minZ;
             maxX *= ScaleX;
             minX *= ScaleX;
             maxY *= ScaleY;
@@ -233,15 +218,15 @@ namespace ComplexPlainVisualizer
 
                 axesMeshBuilder.AddTube(path, LineThickness, 9, false);
                 GeometryModel3D label = TextCreator.CreateTextLabelModel3D(StringUtils.CodeString(x / ScaleX), Brushes.Black, true, FontSize,
-                                                                           new Point3D(x, minY - FontSize * 2.5, minZ),
+                                                                           new Point3D(x, minY - FontSize * 2, minZ),
                                                                            new Vector3D(1, 0, 0), new Vector3D(0, 1, 0));
                 plotModel.Children.Add(label);
             }
 
             {
-                GeometryModel3D label = TextCreator.CreateTextLabelModel3D("X-axis", Brushes.Black, true, FontSize,
+                GeometryModel3D label = TextCreator.CreateTextLabelModel3D("σ axis", Brushes.Black, true, FontSize,
                                                                            new Point3D((minX + maxX)*0.5,
-                                                                                       minY - FontSize * 6, minZ),
+                                                                                       minY - FontSize * 4, minZ),
                                                                            new Vector3D(1, 0, 0), new Vector3D(0, 1, 0));
                 plotModel.Children.Add(label);
             }
@@ -267,13 +252,13 @@ namespace ComplexPlainVisualizer
 
                 axesMeshBuilder.AddTube(path, LineThickness, 9, false);
                 GeometryModel3D label = TextCreator.CreateTextLabelModel3D(StringUtils.CodeString(y / ScaleY), Brushes.Black, true, FontSize,
-                                                                           new Point3D(minX - FontSize * 3, y, minZ),
+                                                                           new Point3D(minX - FontSize * 2, y, minZ),
                                                                            new Vector3D(1, 0, 0), new Vector3D(0, 1, 0));
                 plotModel.Children.Add(label);
             }
             {
-                GeometryModel3D label = TextCreator.CreateTextLabelModel3D("Y-axis", Brushes.Black, true, FontSize,
-                                                                           new Point3D(minX - FontSize * 10,
+                GeometryModel3D label = TextCreator.CreateTextLabelModel3D("ω axis", Brushes.Black, true, FontSize,
+                                                                           new Point3D(minX - FontSize * 4,
                                                                                        (minY + maxY) * 0.5, minZ),
                                                                            new Vector3D(0, 1, 0), new Vector3D(-1, 0, 0));
                 plotModel.Children.Add(label);
@@ -291,13 +276,13 @@ namespace ComplexPlainVisualizer
             for (double z = z0; z <= maxZ + double.Epsilon; z += IntervalZ)
             {
                 GeometryModel3D label = TextCreator.CreateTextLabelModel3D(StringUtils.CodeString(z / ScaleZ), Brushes.Black, true, FontSize,
-                                                                           new Point3D(minX - FontSize * 3, maxY, z),
+                                                                           new Point3D(minX - FontSize * 2, maxY, z),
                                                                            new Vector3D(1, 0, 0), new Vector3D(0, 0, 1));
                 plotModel.Children.Add(label);
             }
             {
-                GeometryModel3D label = TextCreator.CreateTextLabelModel3D("Z-axis", Brushes.Black, true, FontSize,
-                                                                           new Point3D(minX - FontSize * 10, maxY,
+                GeometryModel3D label = TextCreator.CreateTextLabelModel3D("|Z| axis", Brushes.Black, true, FontSize,
+                                                                           new Point3D(minX - FontSize * 8, maxY,
                                                                                        (minZ + maxZ)*0.5),
                                                                            new Vector3D(0, 0, 1), new Vector3D(1, 0, 0));
                 plotModel.Children.Add(label);

@@ -41,7 +41,7 @@ namespace ElectricalAnalysis.Components
         }
 
         /// <summary>
-        /// Read a netlist file (.net) containing componentsdescription y nodes
+        /// Read a netlist file (.net) containing components description y nodes
         /// A Circuit object with components y nodes will be created 
         /// </summary>
         /// <param name="CircuitName"></param>

@@ -53,7 +53,11 @@ namespace ElectricalAnalysis.Analysis.Solver
                 }
                 else if (compo is VoltageGenerator)
                 {
-                    if (nodo.TypeOfNode == Node.NodeType.Unknow)
+                    if (compo.IsConnectedToEarth)
+                    {
+                        nodo.TypeOfNode = Node.NodeType.VoltageFixedNode;
+                    }
+                    else if (nodo.TypeOfNode == Node.NodeType.Unknow)
                     {
                         nodo.TypeOfNode = Node.NodeType.VoltageLinkedNode;
                     }
@@ -66,7 +70,6 @@ namespace ElectricalAnalysis.Analysis.Solver
                         nodo.TypeOfNode = Node.NodeType.VoltageDivideNode;
                     else
                         throw new NotImplementedException();
-
                 }
                 else
                 {
@@ -79,7 +82,6 @@ namespace ElectricalAnalysis.Analysis.Solver
                 compo = nodo.OtherComponent(compo);
                 nodo = compo.OtherNode(nodo);
             }
-
 
             return br;
         }
@@ -228,11 +230,7 @@ namespace ElectricalAnalysis.Analysis.Solver
             
 
             cir.Components.AddRange(ramas);
-
-            //foreach (var rama in ramas)
-            //{
-            //    AddComponentNodes(cir, rama);
-            //}
+           
             cir.State = Circuit.CircuitState.Optimized;
             cir.OptimizedCircuit = cir;
             return true;

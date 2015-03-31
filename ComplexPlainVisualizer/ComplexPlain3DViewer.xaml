@@ -29,10 +29,11 @@
                 <Image Source="Images/cpu_run.png" />
             </Button>
             <Button ToolTip="Draw Selected Item" Click="ButtonRedraw">
-                <Image Source="Images/line-chart.png" />
+                <Image Source="Images/refresh.png" />
             </Button>
 
- 
+            <Separator Width="1"/>
+
             <Button ToolTip="Analysis Setup" Click="Button_AnalysisSetup">
                 <Image Source="Images/edit.png" />
             </Button>
@@ -42,8 +43,17 @@
             <Button Click="ButtonExportPhase">
                 <Image Source="Images/planocomplejo.jpg" />
             </Button>
-            <Button Click="ButtonColorize" ToolTip="Colorize the plain with custom color">
+            <Button Click="ButtonColorize" ToolTip="Colorize the plain with custom color showing phase">
                 <Image Source="Images/chart.png" />
+            </Button>
+
+            <Separator Width="1"/>
+
+            <Button Click="ButtonShowBode" ToolTip="Show Bode Window">
+                <Image Source="Images/line-chart.png" />
+            </Button>
+            <Button Click="ButtonShowTransient" ToolTip="Show Transient Analysis Window">
+                <Image Source="Images/oszillograph.png" />
             </Button>
         </ToolBar>
 
