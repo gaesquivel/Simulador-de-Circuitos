@@ -35,22 +35,44 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <PropertyGroup>
-    <ApplicationIcon>planoCIco.ico</ApplicationIcon>
+    <ApplicationIcon>Images\planoC2.ico</ApplicationIcon>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="HelixToolkit">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\HelixToolkit.2015.1.474\lib\portable-net4+sl4+wp71+win8\HelixToolkit.dll</HintPath>
+    <Reference Include="DynamicDataDisplay, Version=0.4.0.0, Culture=neutral, PublicKeyToken=5b7d744a7263923f, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+      <HintPath>..\DataVisualizer\bin\Debug\DynamicDataDisplay.dll</HintPath>
     </Reference>
-    <Reference Include="HelixToolkit.Wpf">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\HelixToolkit.Wpf.2015.1.474\lib\net45\HelixToolkit.Wpf.dll</HintPath>
+    <Reference Include="DynamicDataDisplay.Maps">
+      <HintPath>..\DataVisualizer\bin\Debug\DynamicDataDisplay.Maps.dll</HintPath>
+    </Reference>
+    <Reference Include="DynamicDataDisplay.Markers">
+      <HintPath>..\DataVisualizer\bin\Debug\DynamicDataDisplay.Markers.dll</HintPath>
+    </Reference>
+    <Reference Include="DynamicDataDisplay.Markers2">
+      <HintPath>..\DataVisualizer\bin\Debug\DynamicDataDisplay.Markers2.dll</HintPath>
+    </Reference>
+    <Reference Include="HelixToolkit, Version=2015.1.621.0, Culture=neutral, PublicKeyToken=52aa3500039caf0d, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\HelixToolkit.2015.1.621\lib\portable-net4+sl4+wp71+win8\HelixToolkit.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="HelixToolkit.Wpf, Version=2015.1.621.0, Culture=neutral, PublicKeyToken=52aa3500039caf0d, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\HelixToolkit.Wpf.2015.1.621\lib\net45\HelixToolkit.Wpf.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="HelixToolkit.Wpf.SharpDX">
       <HintPath>..\Circuit Simulation Integrated Interface\packages\HelixToolkit.Wpf.SharpDX.2015.1.474\lib\net40\HelixToolkit.Wpf.SharpDX.dll</HintPath>
     </Reference>
-    <Reference Include="MathNet.Numerics">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\MathNet.Numerics.3.5.0\lib\net40\MathNet.Numerics.dll</HintPath>
+    <Reference Include="MathNet.Numerics, Version=3.7.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\MathNet.Numerics.3.7.0\lib\net40\MathNet.Numerics.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="RecentFileListLib">
+      <HintPath>..\..\Code externo\RecentFileList_bin\RecentFileListLib.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Activities" />
+    <Reference Include="System.Activities.Core.Presentation" />
+    <Reference Include="System.Activities.Presentation" />
     <Reference Include="System.Data" />
     <Reference Include="System.Drawing" />
     <Reference Include="System.Numerics" />
@@ -68,32 +90,29 @@
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
     <Reference Include="WPFToolkit, Version=3.5.40128.1, Culture=neutral, PublicKeyToken=31bf3856ad364e35, processorArchitecture=MSIL" />
-    <Reference Include="Xceed.Wpf.AvalonDock">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.AvalonDock.2.6.15111.10510\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock, Version=2.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\Extended.Wpf.Toolkit.2.5\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.AvalonDock.Themes.Aero.2.6.15111.10510\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=2.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\Extended.Wpf.Toolkit.2.5\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.AvalonDock.Themes.Metro.2.6.15111.10510\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro, Version=2.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\Extended.Wpf.Toolkit.2.5\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.MetroAccent">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.AvalonDock.Themes.MetroAccent.2.6.15111.10510\lib\net40\Xceed.Wpf.AvalonDock.Themes.MetroAccent.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010, Version=2.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\Extended.Wpf.Toolkit.2.5\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Office2007">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.AvalonDock.Themes.Office2007.2.6.15111.10510\lib\net40\Xceed.Wpf.AvalonDock.Themes.Office2007.dll</HintPath>
+    <Reference Include="Xceed.Wpf.DataGrid, Version=2.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\Extended.Wpf.Toolkit.2.5\lib\net40\Xceed.Wpf.DataGrid.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.AvalonDock.Themes.VS2010.2.6.15111.10510\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.Themes.Metro">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.Themes.Metro.2.6.15111.10510\lib\net40\Xceed.Wpf.Themes.Metro.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.Themes.Office2007">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.Themes.Office2007.2.6.15111.10510\lib\net40\Xceed.Wpf.Themes.Office2007.dll</HintPath>
-    </Reference>
-    <Reference Include="Xceed.Wpf.Toolkit">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.Toolkit.2.6.15111.10510\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+    <Reference Include="Xceed.Wpf.Toolkit, Version=2.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\Extended.Wpf.Toolkit.2.5\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -101,16 +120,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="ComplexPlain3DViewer.xaml.cs">
-      <DependentUpon>ComplexPlain3DViewer.xaml</DependentUpon>
+    <Compile Include="MVVM\ViewModel\ComplexPlainViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\MasterViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\SurfacePlotVisual3D.cs" />
+    <Compile Include="Window1.xaml.cs">
+      <DependentUpon>Window1.xaml</DependentUpon>
     </Compile>
-    <Compile Include="ComplexPlainViewModel.cs" />
-    <Compile Include="MainViewModel.cs" />
-    <Compile Include="SurfacePlotVisual3D.cs" />
-    <Page Include="ComplexPlain3DViewer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <Compile Include="WpfPropertyGrid.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -123,6 +139,10 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Window1.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -139,16 +159,89 @@
       <DesignTimeSharedInput>True</DesignTimeSharedInput>
     </Compile>
     <EmbeddedResource Include="Properties\Resources.resx">
-      <Generator>ResXFileCodeGenerator</Generator>
+      <Generator>PublicResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Circuits\RCLpi.net">
+    <None Include="Circuits\ComplexPlainAndBode\ClappBC.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Circuits\RCcharge.net">
+    <None Include="Circuits\ComplexPlainAndBode\ColpittsBC.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Circuits\RCL.net">
+    <None Include="Circuits\ComplexPlainAndBode\ColpittsEC.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\ComplexPlainAndBode\REsp.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\ComplexPlainAndBode\Amp3EtFullMos.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\ComplexPlainAndBode\AmpLaplaceFB.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\ComplexPlainAndBode\Amplificador.net" />
+    <None Include="Circuits\ComplexPlainAndBode\Amplificador3EtFB4.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\ComplexPlainAndBode\Amplificador3EtFB4compPoloCero.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\ComplexPlainAndBode\Amplificador3EtFB4compRC.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\ComplexPlainAndBode\Amplificador3EtFBmos.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\ComplexPlainAndBode\AmpLaplace.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\ComplexPlainAndBode\AmpPoleSplitting.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\ComplexPlainAndBode\Cascode.net" />
+    <None Include="Circuits\ComplexPlainAndBode\EC.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\ComplexPlainAndBode\BipolarSmallSignal3Et.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\integrador.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\derivador.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\ComplexPlainAndBode\L-RC.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\ComplexPlainAndBode\RCLhi.net" />
+    <None Include="Circuits\ComplexPlainAndBode\RCLpi.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\Transient\RCcharge.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\ComplexPlainAndBode\RCL.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\ComplexPlainAndBode\RCLpihi.net" />
+    <None Include="Circuits\ComplexPlainAndBode\RLCLpi.net" />
+    <None Include="Circuits\Transient\RCL.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\Transient\RCLlow.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\Transient\RLC.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\Transient\RLcharge.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\vsingain.net" />
+    <None Include="MVVM\ViewModel\MVVM.cd" />
+    <None Include="CustomHighlighting.xshd">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="packages.config" />
@@ -162,6 +255,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CircuitMVVMBase\CircuitMVVMBase.csproj">
+      <Project>{744be2c7-a979-460c-ae3e-1ecf7df9ab3c}</Project>
+      <Name>CircuitMVVMBase</Name>
+    </ProjectReference>
     <ProjectReference Include="..\DataVisualizer\DataVisualizer.csproj">
       <Project>{ea924ff5-0259-40f6-a778-98da4e2446d4}</Project>
       <Name>DataVisualizer</Name>
@@ -206,10 +303,7 @@
     <Resource Include="Images\document_chart.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\planoCIco.png" />
-  </ItemGroup>
-  <ItemGroup>
-    <Resource Include="planoCIco.ico" />
+    <Resource Include="Images\planoCIco.ico" />
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\export_excel.png" />
@@ -218,12 +312,82 @@
     <Resource Include="Images\line-chart.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\planocomplejo.jpg">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </Resource>
+    <Resource Include="Images\oszillograph.png" />
   </ItemGroup>
   <ItemGroup>
-    <Resource Include="Images\oszillograph.png" />
+    <Resource Include="Images\planoCsmall.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\planocomplejosmall.jpg" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Animation\media_beginning.png" />
+    <Resource Include="Images\Animation\media_end.png" />
+    <Resource Include="Images\Animation\media_fast_forward.png" />
+    <Resource Include="Images\Animation\media_pause.png" />
+    <Resource Include="Images\Animation\media_play.png" />
+    <Resource Include="Images\Animation\media_play_green.png" />
+    <Resource Include="Images\Animation\media_rewind.png" />
+    <Resource Include="Images\Animation\media_step_back.png" />
+    <Resource Include="Images\Animation\media_step_forward.png" />
+    <Resource Include="Images\Animation\media_stop.png" />
+    <Resource Include="Images\Animation\media_stop_red.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Animation\gear_run.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\save_as.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\disk_blue.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\help.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\history2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\clipboard.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Sin fase2.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\chart_line.png" />
+    <Resource Include="Images\chart_line_add.png" />
+    <Resource Include="Images\chart_line_delete.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\fase4.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\fase5.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\chart_line_edit.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\Sin fase3.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\AzulModulo.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FaseAzul.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\FaseLvl.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\modulofire.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Resources\ModuloLvl.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\planoC2.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

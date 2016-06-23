@@ -1,0 +1,16 @@
+* oscilador Colpitss Emisor comun *
+
+
+
+V_V1		s	0	DC	0	AC	1
++SIN 1 1 1k 0 0 0
+R_Rs		s	in	1K
+R_Ri		in	e	5K
+C_Ce		in	e	14p
+G_G1		out e	in	e	20m
+R_Re		e	0	1
+C_Cc		out	in	1p
+C_C1		out	0	47p
+C_C2		in	0	1500p
+L_L1		out	in	5400n
+R_RL		out	0	4k 

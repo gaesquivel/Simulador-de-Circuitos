@@ -1,9 +1,6 @@
 ﻿using MathNet.Numerics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 
 namespace ElectricalAnalysis.Components
 {
@@ -16,7 +13,7 @@ namespace ElectricalAnalysis.Components
 
 
 
-        public override Complex32 Voltage
+        public override Complex Voltage
         {
             get
             {
@@ -36,7 +33,7 @@ namespace ElectricalAnalysis.Components
         }
 
 
-        public override Complex32 current
+        public override Complex current
         {
             get
             {
@@ -59,16 +56,16 @@ namespace ElectricalAnalysis.Components
 
 
 
-        //public override Complex32 Impedance(double W = 0)
+        //public override Complex Impedance(double W = 0)
         //{
-        //    Complex32 Y = Complex32.Zero;
-        //    Complex32 Z2 = Complex32.Zero;
+        //    Complex Y = Complex.Zero;
+        //    Complex Z2 = Complex.Zero;
 
         //    foreach (var item in Components)
         //    {
         //        Z2 = item.Impedance(W);
         //        if (Z2.IsZero())
-        //            return Complex32.PositiveInfinity;
+        //            return Complex.PositiveInfinity;
         //        Y += 1 / Z2;
         //    }
 
@@ -76,16 +73,16 @@ namespace ElectricalAnalysis.Components
         //}
 
 
-        public override Complex32 Impedance(Complex32 ?W = null)
+        public override Complex Impedance(Complex ?W = null)
         {
-            Complex32 Y = Complex32.Zero;
-            Complex32 Z2 = Complex32.Zero;
+            Complex Y = Complex.Zero;
+            Complex Z2 = Complex.Zero;
 
             foreach (var item in Components)
             {
                 Z2 = item.Impedance(W);
                 if (Z2.IsZero())
-                    return Complex32.PositiveInfinity;
+                    return Double.PositiveInfinity;
                 Y += 1 / Z2;
             }
 

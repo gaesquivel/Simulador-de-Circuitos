@@ -1,20 +1,14 @@
-﻿using MathNet.Numerics;
-using System;
-using System.Collections.Generic;
+﻿using System.Collections.Generic;
 using System.ComponentModel;
 using System.Diagnostics;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 
 namespace ElectricalAnalysis.Components
 {
     public abstract class Dipole: Item
     {
 
-        protected Complex32 _current;//, voltage;
-
-
+        protected Complex _current;//, voltage;
 
         [Browsable(false)]
         public ComponentContainer Owner { get; set; }
@@ -40,7 +34,7 @@ namespace ElectricalAnalysis.Components
         /// <param name="referenceNode"></param>
         /// <param name="CurrentTime"></param>
         /// <returns></returns>
-        public virtual double Current(Node referenceNode, double CurrentTime)
+        public virtual double Current(NodeSingle referenceNode, double CurrentTime)
         {
             if (referenceNode == Nodes[0])
                 return _current.Real;
@@ -48,14 +42,8 @@ namespace ElectricalAnalysis.Components
                 return -_current.Real;
         }
 
-        public virtual double voltage(Node referenceNode, double CurrentTime)
-        {
-            if (referenceNode == Nodes[0])
-                return Voltage.Real;
-            return -Voltage.Real;
-        }
 
-        public virtual Complex32 Current(Node referenceNode, Complex32? W = null)
+        public virtual Complex Current(NodeSingle referenceNode, Complex? W = null)
         {
             //el signo contrario al pensado, entra por neagtivo y sale por positivo
             if (referenceNode == Nodes[0])
@@ -65,10 +53,10 @@ namespace ElectricalAnalysis.Components
         }
 
         /// <summary>
-        /// Valor de la corriente de continua
+        /// Valor de la corriente de continua medida en el terminal 0
         /// </summary>
         [Browsable(false)]
-        public virtual Complex32 current
+        public virtual Complex current
         {
             get
             {
@@ -81,34 +69,45 @@ namespace ElectricalAnalysis.Components
         }
 
 
-      
 
+        /// <summary>
+        /// Voltage at the time CurrentTime with this reference node 
+        /// </summary>
+        /// <param name="referenceNode"></param>
+        /// <param name="CurrentTime"></param>
+        /// <returns></returns>
+        public virtual double voltage(NodeSingle referenceNode, double CurrentTime)
+        {
+            if (referenceNode == Nodes[0])
+                return Voltage.Real;
+            return -Voltage.Real;
+        }
 
-        public virtual Complex32 voltage(Node ReferenceNode, Complex32 ?W = null)
+        /// <summary>
+        /// Voltage at angular rate W with this reference node 
+        /// </summary>
+        /// <param name="ReferenceNode"></param>
+        /// <param name="W"></param>
+        /// <returns></returns>
+        public virtual Complex voltage(NodeSingle ReferenceNode, Complex ?W = null)
         {
             return 0;
-            //if (ReferenceNode == Nodes[0])
-            //    return Voltage;
-            //if (ReferenceNode == Nodes[1])
-            //    return -Voltage;
-            //return Complex32.NaN;
         }
 
         /// <summary>
         /// DC operating voltage
         /// </summary>
         [Browsable(false)]
-        public virtual Complex32 Voltage
+        public virtual Complex Voltage
         {
             get { return Nodes[0].Voltage - Nodes[1].Voltage; }
-            //set { voltage = value; }
         }
 
         /// <summary>
         /// Listado de nodos de un componente. son 2 nada mas
         /// </summary>
         [Browsable(false)]
-        public List<Node> Nodes { get; protected set; }
+        public List<NodeSingle> Nodes { get; protected set; }
 
 
         [Browsable(false)]
@@ -117,31 +116,31 @@ namespace ElectricalAnalysis.Components
         public Dipole(ComponentContainer owner)
             : base()
         {
-            Nodes = new List<Node>();
-            Nodes.Add(new Node());
-            Nodes.Add(new Node());
+            Nodes = new List<NodeSingle>();
+            Nodes.Add(new NodeSingle());
+            Nodes.Add(new NodeSingle());
             Owner = owner;
             if (owner is Circuit)
                 OwnerCircuit = (Circuit)owner;
         }
 
          [DebuggerStepThrough]
-        public Node OtherNode(Node thisnode)
+        public NodeSingle OtherNode(NodeSingle thisnode)
         {
             if (thisnode == Nodes[0])
                 return Nodes[1];
             return Nodes[0];
         }
 
-        public virtual Complex32 Impedance(Complex32? W = null)
+        public virtual Complex Impedance(Complex? W = null)
         {
-            return Complex32.Zero;
+            return Complex.Zero;
         }
 
         public virtual void Reset()
         {
-            //Voltage = Complex32.Zero;
-            _current = Complex32.Zero;
+            //Voltage = Complex.Zero;
+            _current = Complex.Zero;
         }
 
         public override string ToString()

@@ -1,52 +1,75 @@
-﻿using MathNet.Numerics;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 
 namespace ElectricalAnalysis.Components.Controlled
 {
-    public class VoltageControlledGenerator:VoltageGenerator, ControlledVoltageGenerator, ControllerOpenCircuit
+    public class VoltageControlledGenerator:VoltageGenerator, ControlledVoltageGenerator, 
+        ControllerOpenCircuit
     {
-        double gain;
-        bool wasparsed;
+        protected double gain;
+        //bool wasparsed;
+        string _gain;
 
-        public List<Node> InputNodes { get; protected set; }
-        public string Gain { get; set; }
+        protected override string DefaultName { get { return "Av"; } }
+        public List<NodeSingle> InputNodes { get; protected set; }
+
+        /// <summary>
+        /// DC, AC & Transient constant Voltage Gain
+        /// </summary>
+        public string Gain
+        {
+            get { return _gain; }
+            set
+            {
+                double v;
+                if (StringUtils.DecodeString(value, out v))
+                {
+                    _gain = value;
+                    gain = v;
+                    //wasparsed = RaisePropertyChanged(v, ref gain);
+                }
+            }
+        }
 
         public VoltageControlledGenerator(ComponentContainer owner, string name)
             : base(owner)
         {
-            InputNodes = new List<Node>();
+            InputNodes = new List<NodeSingle>();
             Initialize(name);
-            Gain = "10";
+            //Gain = "10";
         }
 
-        public override MathNet.Numerics.Complex32 voltage(Node referenceNode, MathNet.Numerics.Complex32? W = null)
+        //private void CheckParsing()
+        //{
+        //    if (!wasparsed)
+        //    {
+        //        gain = StringUtils.DecodeString(Gain);
+        //        wasparsed = true;
+        //    }
+        //}
+
+        public override Complex voltage(NodeSingle referenceNode, Complex? W = null)
         {
-            Complex32 v = InputNodes[0].Voltage;
+            Complex v = InputNodes[0].Voltage;
             if (InputNodes.Count > 1)
             {
                 //si no esta una entrada a tierra hay que hacer la diferencia
                 v -= InputNodes[1].Voltage;
             }
-            v = v * new Complex32((float)gain, 0);
+            v = v * new Complex(gain, 0);
             if (referenceNode == Nodes[0])
                 return v;
             else if (referenceNode == Nodes[1])
                 return -v;
             else
-                return Complex32.NaN;
+                return double.NaN;
         }
 
-        public override double voltage(Node referenceNode, double t)
+        public override double voltage(NodeSingle referenceNode, double t)
         {
-            if (!wasparsed)
-            {
-                gain = StringUtils.DecodeString(Gain);
-                wasparsed = true;
-            }
+           // CheckParsing();
+
             double v = InputNodes[0].Voltage.Real;
             if (InputNodes.Count > 1)
             {
@@ -65,9 +88,37 @@ namespace ElectricalAnalysis.Components.Controlled
 
         public override void Reset()
         {
-            wasparsed = false;
+            //wasparsed = false;
             base.Reset();
         }
 
+        public virtual Complex ControllerEquationValue(object node, object e, bool isinput = false)
+        {
+            if (node is NodeSingle)
+            { 
+                NodeSingle nodo1 = node as NodeSingle;
+                if (Nodes.Contains(nodo1) && !isinput)
+                {
+                    if (Nodes[0] == nodo1)
+                        return 1;
+                    else
+                        return -1;
+                }
+                else if (InputNodes.Contains(nodo1) && isinput)
+                {
+                    if (InputNodes[0] == nodo1)
+                        return -gain;
+                    else
+                        return gain;
+                }
+                else
+                    throw new NotImplementedException();
+            }
+            else if (node is int && (int)node == 0)
+            {
+                return Complex.Zero;
+            }
+            throw new NotImplementedException();
+        }
     }
 }

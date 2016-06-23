@@ -1,0 +1,195 @@
+﻿<Window x:Class="DataVisualizer.TransientPlotter"
+         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
+        xmlns:s="clr-namespace:System;assembly=mscorlib"
+        xmlns:wpg="clr-namespace:System.Windows.Controls"
+        xmlns:local="clr-namespace:DataVisualizer.MVVM.ViewModel" 
+        xmlns:d3="http://research.microsoft.com/DynamicDataDisplay/1.0"
+        Title="Transient Plotter" Height="550" Width="800"
+        Icon="Images/line-chart.png">
+    <Window.DataContext>
+        <local:TransientViewModel x:Name="plano" />
+    </Window.DataContext>
+    <Grid>
+        
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+
+        <ToolBar>
+            <Button Command="{Binding OpenFileCommand}" ToolTip="Open .Net Pspice File">
+                <Image Source="Images/folder.png" />
+            </Button>
+
+            <Button Command="{Binding SimulateCommand}" ToolTip="Refresh Simulation">
+                <Image Source="Images/cpu_run.png" />
+            </Button>
+            <Button Command="{Binding DrawSelectedCommand}" ToolTip="Draw Selected Item"  >
+                <Image Source="Images/refresh.png" />
+            </Button>
+
+            <Separator Width="1"/>
+
+            <Button ToolTip="Analysis Setup"  >
+                <Image Source="Images/edit.png" />
+            </Button>
+            <Button ToolTip="Export To CSV Excel File"  >
+                <Image Source="Images/export_excel.png" />
+            </Button>
+           
+
+            <Separator Width="2"/>
+
+
+            <Button Command="{Binding AnimateCommand}" 
+                    ToolTip="Start an new sweept animation">
+                <Image Source="Images/Animation/gear_run.png" />
+            </Button>
+            <Button Command="{Binding RunAnimationCommand}" 
+                    ToolTip="Run sweept animation">
+                <Image Source="Images/Animation/media_play.png" />
+            </Button>
+            <Button Command="{Binding PauseAnimationCommand}" 
+                    ToolTip="Pause current sweept animation">
+                <Image Source="Images/Animation/media_pause.png" />
+            </Button>
+        </ToolBar>
+
+
+        <xcad:DockingManager Grid.Row="1"
+                           AllowMixedOrientation="True"
+                           BorderBrush="Black"
+                           BorderThickness="1"
+                             
+                           >
+            <xcad:DockingManager.DocumentHeaderTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{Binding IconSource}" Margin="0,0,4,0"/>
+                        <TextBlock Text="{Binding Title}" TextWrapping="Wrap" />
+                    </StackPanel>
+                </DataTemplate>
+            </xcad:DockingManager.DocumentHeaderTemplate>
+
+            <xcad:LayoutRoot x:Name="_layoutRoot">
+                <xcad:LayoutPanel Orientation="Horizontal">
+                    <xcad:LayoutAnchorablePane DockWidth="200">
+                        <xcad:LayoutAnchorable ContentId="properties" Title="Properties"
+                                               CanHide="False" CanClose="False"
+                                            AutoHideWidth="240" IconSource="Images/preferences.png">
+                            <wpg:WpfPropertyGrid x:Name="propgrid" 
+                                                 SelectedObject="{Binding SelectedObject}"/>
+
+                        </xcad:LayoutAnchorable>
+                    </xcad:LayoutAnchorablePane>
+
+
+                    <xcad:LayoutDocumentPaneGroup >
+                        <xcad:LayoutDocumentPane>
+                            <xcad:LayoutDocument ContentId="document1" 
+                                                 Title="Transient" 
+                                                 IconSource="Images/line-chartsmall.png"
+                                                 CanClose="False" CanFloat="False" >
+
+                                <d3:ChartPlotter Name="plotter" >
+                                    <d3:LineGraph x:Name="linegraph" Stroke="Blue" StrokeThickness="3" Margin="0,1,0,-1"/>
+                                    <d3:VerticalAxisTitle  FontFamily="Arial" Content="{Binding ElementName=txtPlotted, Path=Text}"/>
+                                    <d3:HorizontalAxisTitle FontFamily="Arial" Content="t [seg]"/>
+                                </d3:ChartPlotter>
+
+
+
+                            </xcad:LayoutDocument>
+
+                          
+                            <xcad:LayoutDocument ContentId="document3" 
+                                                 Title="Circuit Editor" 
+                                                 IconSource="Images/edit.png">
+                                <TextBox Name="TxtEditor"
+                                         Text="{Binding CurrentCircuit.CircuitText, Mode=OneWay}"
+                                    AcceptsReturn="True" AcceptsTab="True"/>
+                            </xcad:LayoutDocument>
+                        </xcad:LayoutDocumentPane>
+
+                    </xcad:LayoutDocumentPaneGroup >
+
+
+                    <xcad:LayoutAnchorablePaneGroup DockWidth="100">
+                        <xcad:LayoutAnchorablePane>
+                            <xcad:LayoutAnchorable ContentId="Plotted" Title="Plot" 
+                                                   IconSource="Images/cpu_view.png"  >
+
+
+                                <StackPanel Orientation="Vertical">
+                                    <Label Content="Components"/>
+                                    <ListBox Name="lbComponents"
+                                             DisplayMemberPath="Name" 
+                                             ItemsSource="{Binding CurrentCircuit.Components}"
+                                             SelectedItem="{Binding SelectedObject, Mode=OneWayToSource}"
+                                             >
+
+                                    </ListBox>
+                                    <Label Content="nodes"/>
+                                    <ListBox Name="lbNodes"
+                                             DisplayMemberPath="Name" 
+                                             ItemsSource="{Binding CurrentCircuit.Nodes.Values}" 
+                                             SelectedItem="{Binding SelectedObject, Mode=OneWayToSource}"
+                                             >
+
+                                    </ListBox>
+                                </StackPanel>
+
+
+                            </xcad:LayoutAnchorable>
+
+                            <xcad:LayoutAnchorable ContentId="Setup" Title="Setup" 
+                                                   IconSource="Images/preferences.png">
+                                <StackPanel Orientation="Vertical">
+                                    <Label Content="Items"/>
+                                    <ListBox 
+                                             DisplayMemberPath="Name" 
+                                             ItemsSource="{Binding MainObjects}"
+                                             SelectedItem="{Binding SelectedObject, Mode=OneWayToSource}"
+                                             >
+
+                                    </ListBox>
+                                </StackPanel>
+                            </xcad:LayoutAnchorable>
+
+                        </xcad:LayoutAnchorablePane>
+
+                    </xcad:LayoutAnchorablePaneGroup>
+                </xcad:LayoutPanel>
+
+
+            </xcad:LayoutRoot>
+        </xcad:DockingManager>
+
+        <StatusBar Grid.Row="2">
+            <StatusBarItem>
+                <TextBlock  Name="tctFileName" 
+                            Text="{Binding CurrentCircuit.FileName, Mode=OneWay}" 
+                            ToolTip="Name of simulated circuit"/>
+            </StatusBarItem>
+
+            <Separator Width="1"/>
+
+            <StatusBarItem>
+                <TextBlock Name="txtPlotted" 
+                           Text="{Binding PlottedItem.Name}" 
+                           ToolTip="last plotted signal"/>
+            </StatusBarItem>
+
+            <Separator Width="1"/>
+
+            <StatusBarItem>
+                <TextBlock Name="txtStatus" Text="some" 
+                            />
+            </StatusBarItem>
+
+        </StatusBar>
+    </Grid>
+</Window>

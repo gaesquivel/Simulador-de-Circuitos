@@ -1,12 +1,9 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 
 namespace ElectricalAnalysis.Components.Generators
 {
-  
+
     public class SineVoltageGenerator : ACVoltageGenerator
     {
         double amplitude, w, thau, offset, phase;
@@ -30,20 +27,28 @@ namespace ElectricalAnalysis.Components.Generators
             Thau = "0";
             Delay = "10u";
             Offset = "0";
+            Value = 0;
         }
 
-        public override double voltage(Node referenceNode, double t)
+        public override Complex Voltage
+        {
+            get
+            {
+                if (!wasparsed)
+                {
+                    Parse();
+                }
+                return base.Voltage;
+            }
+        }
+
+        public override double voltage(NodeSingle referenceNode, double t)
         {
             if (!wasparsed )
             {
-                amplitude = StringUtils.DecodeString(Amplitude);
-                w = 2 * Math.PI * StringUtils.DecodeString(Frequency);
-                thau = StringUtils.DecodeString(Thau);
-                wasparsed = true;
-                offset = StringUtils.DecodeString(Offset);
-                phase = StringUtils.DecodeString(Phase);
+                Parse();
             }
-            
+
             double v = offset + amplitude * Math.Sin(w * t + phase / (2 * Math.PI));
             if (referenceNode ==  Nodes[0])
                 return v;
@@ -51,6 +56,15 @@ namespace ElectricalAnalysis.Components.Generators
                 return -v;
         }
 
+        protected virtual void Parse()
+        {
+            amplitude = StringUtils.DecodeString(Amplitude);
+            w = 2 * Math.PI * StringUtils.DecodeString(Frequency);
+            thau = StringUtils.DecodeString(Thau);
+            wasparsed = true;
+            offset = StringUtils.DecodeString(Offset);
+            phase = StringUtils.DecodeString(Phase);
+        }
 
         public override void Reset()
         {

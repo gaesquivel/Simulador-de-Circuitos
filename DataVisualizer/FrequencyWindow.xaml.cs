@@ -1,21 +1,8 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Shapes;
-using MathNet.Numerics;
 using Microsoft.Research.DynamicDataDisplay;
 using Microsoft.Research.DynamicDataDisplay.DataSources;
-
-using ElectricalAnalysis.Analysis;
 using ElectricalAnalysis.Analysis.Solver;
 using ElectricalAnalysis.Components;
 using ElectricalAnalysis;
@@ -32,11 +19,6 @@ namespace DataVisualizer
     {
         public static DependencyProperty dp = DependencyProperty.Register("SelectedObject", typeof(object),
             typeof(FrequencyWindow));//, new FrameworkPropertyMetadata(selectedobjectcallback));
-
-        //private static void selectedobjectcallback(DependencyObject d, DependencyPropertyChangedEventArgs e)
-        //{
-            
-        //}
 
         ObservableDataSource<Tuple<double, double>> source1 = null;
         ObservableDataSource<Tuple<double, double>> source2 = null;
@@ -70,7 +52,7 @@ namespace DataVisualizer
             cir2.Setup.RemoveAt(0);
             ACAnalysis ac = new ACAnalysis();
             cir2.Setup.Add(ac);
-            ACSweepSolver.Optimize(cir2);
+            //ACSweepSolver.Optimize(cir2);
            
             Refresh();
         }
@@ -78,6 +60,7 @@ namespace DataVisualizer
         private void Refresh()
         {
             ACSweepSolver sol5 = (ACSweepSolver)cir2.Setup[0].Solver;
+            //cir2.Reset();
             cir2.Solve();
         }
 
@@ -99,7 +82,7 @@ namespace DataVisualizer
             }
         }
 
-        private void AddCurren(ACSweepSolver sol5, string CurrentName)
+        private void AddCurrent(ACSweepSolver sol5, string CurrentName)
         {
             foreach (var data in sol5.Currents)
             {
@@ -278,7 +261,7 @@ namespace DataVisualizer
             }
             else if (propgrid.SelectedObject is Dipole)
             {
-                AddCurren(sol5, ((Dipole)propgrid.SelectedObject).Name);
+                AddCurrent(sol5, ((Dipole)propgrid.SelectedObject).Name);
             }
             
         }
@@ -305,7 +288,7 @@ namespace DataVisualizer
                 //CsvFileWriter writer = new CsvFileWriter(save.FileName);
                 //writer.Quote = ';';
                 ACSweepSolver sol5 = (ACSweepSolver)cir2.Setup[0].Solver;
-                sol5.ExportToCSV(save.FileName);
+                sol5.Export(save.FileName);
             }
         }
     }

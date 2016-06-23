@@ -1,0 +1,7 @@
+* source AMPLIGM1
+
+
+V_V1         s 0 DC 1 AC 1
++SIN 1 1 1K 0 0 0
+E_LAPLACE1         out 0 LAPLACE {V(s)} {(1)/(-100 + s)}
+R_RL         0 out  1k  

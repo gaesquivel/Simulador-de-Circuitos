@@ -1,94 +1,43 @@
-﻿using ElectricalAnalysis.Analysis;
+﻿using ComplexPlainVisualizer.MVVM.ViewModel;
+using DataVisualizer.MVVM.ViewModel;
+using ElectricalAnalysis.Analysis;
 using ElectricalAnalysis.Analysis.Solver;
 using ElectricalAnalysis.Components;
-//using MathNet.Numerics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
 using System.Windows.Media.Media3D;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
-namespace ComplexPlainVisualizer
+namespace DataVisualizer
 {
     /// <summary>
     /// Lógica de interacción para MainWindow.xaml
     /// </summary>
     public partial class MainWindow : Window
     {
-        ComplexPlainViewModel model;
-        Circuit cir2;
-        ComplexPlainSolver sol1;
-
+        MasterViewModel model;
+  
         public MainWindow()
         {
             InitializeComponent();
 
-            Button_Click(this, null);
-        }
+            model = plano;//new MasterViewModel();
+            //model.
+            //RegisterName()
+            model.ComplexVM.surface = surface1;
+            model.ComplexVM.ViewPort = viewport.Viewport;
 
-        private void Button_Click(object sender, RoutedEventArgs e)
-        {
-            model = new ComplexPlainViewModel();
-            model.ColorCoding = ColorCoding.ByLights;
+            model.BodeVM.phasegraph = phasegraph;
+            model.BodeVM.linegraph = linegraph;
+            model.BodeVM.ModulePlotter = plotter;
+            model.BodeVM.PhasePlotter = otherPlotter;
 
-            Circuit cir = new Circuit();
-            cir.ReadCircuit("Circuits/RCL.net");
-            cir2 = (Circuit)cir.Clone();
-            cir2.Setup.RemoveAt(0);
-            ComplexPlainAnalysis ac1 = new ComplexPlainAnalysis();
-            cir2.Setup.Add(ac1);
-            ACSweepSolver.Optimize(cir2);
-            cir2.Solve();
-            sol1 = (ComplexPlainSolver)ac1.Solver;
-
-            int scalefactor = 5000;
-            model.MinX = ac1.SigmaMin / scalefactor;
-            model.MaxX = ac1.SigmaMax / scalefactor;
-            model.MaxY = ac1.WMax / scalefactor;
-            model.MinY = ac1.WMin / scalefactor;
-            model.Columns = ac1.Points;
-            model.Rows = ac1.Points;
-            var data = new Point3D[model.Rows, model.Columns];
-            //public Tuple<Complex32, Complex32>[,] Results { get; set; }
-            MathNet.Numerics.Complex32 W;
-            for (int i = 0; i < model.Rows; i++)
-                for (int j = 0; j < model.Columns; j++)
-                {
-                    W = sol1.WfromIndexes[new Tuple<int, int>(i, j)];
-                    foreach (var node in sol1.Voltages[W])
-                    {
-                        if (node.Key == "out")
-                            data[i, j] = new Point3D(W.Real /scalefactor, 
-                                                    W.Imaginary /scalefactor,
-                                                    //node.Value.Magnitude);
-                                                    2 * Math.Log10(node.Value.Magnitude));
-                    }
-                }
-
-            model.Data = data;
-            model.UpdateModel(false);         
-            //model.CreateDataArray(ModuleInDB);
+            model.TransientVM.Plotter = tplotter;
+            model.TransientVM.linegraph = tlinegraph;
 
             DataContext = model;
-
         }
-
-        //private void lbComponents_SelectionChanged(object sender, SelectionChangedEventArgs e)
-        //{
-        //    if (sender == lbComponents)
-        //        propgrid.SelectedObject = lbComponents.SelectedItem;
-        //    else if (sender == lbNodes)
-        //        propgrid.SelectedObject = lbNodes.SelectedItem;
-        //}
+     
     }
 }

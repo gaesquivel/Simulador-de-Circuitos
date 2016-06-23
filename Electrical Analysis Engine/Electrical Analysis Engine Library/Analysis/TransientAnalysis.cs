@@ -1,9 +1,4 @@
 ﻿using ElectricalAnalysis.Analysis.Solver;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
 
 namespace ElectricalAnalysis.Analysis
 {
@@ -11,12 +6,13 @@ namespace ElectricalAnalysis.Analysis
     {
         public string Step { get; set; }
         public string FinalTime { get; set; }
+        protected override string DefaultName { get { return "Transient Analysis"; } }
 
         public TransientAnalysis()
             : base()
         {
-            Step = "1u";
-            FinalTime = "100u";
+            Step = "100u";
+            FinalTime = "10m";
             Solver = new TransientSolver();
         }
 

@@ -47,17 +47,19 @@
     <Reference Include="DynamicDataDisplay.Markers2">
       <HintPath>..\Circuit Simulation Integrated Interface\packages\DynamicDataDisplayWpf.0.4.0\lib\DynamicDataDisplay.Markers2.dll</HintPath>
     </Reference>
-    <Reference Include="MathNet.Numerics, Version=3.5.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <SpecificVersion>False</SpecificVersion>
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\MathNet.Numerics.3.5.0\lib\net40\MathNet.Numerics.dll</HintPath>
+    <Reference Include="MathNet.Numerics, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\MathNet.Numerics.3.8.0\lib\net40\MathNet.Numerics.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="Parser">
       <HintPath>..\Circuit Simulation Integrated Interface\packages\DynamicDataDisplayWpf.0.4.0\lib\Parser.dll</HintPath>
     </Reference>
     <Reference Include="System" />
+    <Reference Include="System.Activities" />
+    <Reference Include="System.Activities.Core.Presentation" />
+    <Reference Include="System.Activities.Presentation" />
     <Reference Include="System.Data" />
     <Reference Include="System.Numerics" />
-    <Reference Include="system.windows.controls.ribbon" />
     <Reference Include="System.Xml" />
     <Reference Include="Microsoft.CSharp" />
     <Reference Include="System.Core" />
@@ -71,35 +73,49 @@
     <Reference Include="WindowsBase" />
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />
-    <Reference Include="Xceed.Wpf.AvalonDock">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.AvalonDock.2.6.15111.10510\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock, Version=2.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\Extended.Wpf.Toolkit.2.5\lib\net40\Xceed.Wpf.AvalonDock.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.AvalonDock.Themes.Aero.2.6.15111.10510\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Aero, Version=2.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\Extended.Wpf.Toolkit.2.5\lib\net40\Xceed.Wpf.AvalonDock.Themes.Aero.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.AvalonDock.Themes.Metro.2.6.15111.10510\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Metro, Version=2.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\Extended.Wpf.Toolkit.2.5\lib\net40\Xceed.Wpf.AvalonDock.Themes.Metro.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.MetroAccent">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.AvalonDock.Themes.MetroAccent.2.6.15111.10510\lib\net40\Xceed.Wpf.AvalonDock.Themes.MetroAccent.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.MetroAccent, Version=2.8.15465.16500, Culture=neutral, PublicKeyToken=ba83ff368b7563c6, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.AvalonDock.Themes.MetroAccent.2.8.15465.16500\lib\net40\Xceed.Wpf.AvalonDock.Themes.MetroAccent.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Office2007">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.AvalonDock.Themes.Office2007.2.6.15111.10510\lib\net40\Xceed.Wpf.AvalonDock.Themes.Office2007.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.Office2007, Version=2.8.15465.16500, Culture=neutral, PublicKeyToken=ba83ff368b7563c6, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.AvalonDock.Themes.Office2007.2.8.15465.16500\lib\net40\Xceed.Wpf.AvalonDock.Themes.Office2007.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.AvalonDock.Themes.VS2010.2.6.15111.10510\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
+    <Reference Include="Xceed.Wpf.AvalonDock.Themes.VS2010, Version=2.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\Extended.Wpf.Toolkit.2.5\lib\net40\Xceed.Wpf.AvalonDock.Themes.VS2010.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.Themes">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.Themes.2.6.15111.10510\lib\net40\Xceed.Wpf.Themes.dll</HintPath>
+    <Reference Include="Xceed.Wpf.DataGrid, Version=2.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\Extended.Wpf.Toolkit.2.5\lib\net40\Xceed.Wpf.DataGrid.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.Themes.Metro">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.Themes.Metro.2.6.15111.10510\lib\net40\Xceed.Wpf.Themes.Metro.dll</HintPath>
+    <Reference Include="Xceed.Wpf.Themes, Version=2.8.15465.16500, Culture=neutral, PublicKeyToken=ba83ff368b7563c6, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.Themes.2.8.15465.16500\lib\net40\Xceed.Wpf.Themes.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.Themes.Office2007">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.Themes.Office2007.2.6.15111.10510\lib\net40\Xceed.Wpf.Themes.Office2007.dll</HintPath>
+    <Reference Include="Xceed.Wpf.Themes.Metro, Version=2.8.15465.16500, Culture=neutral, PublicKeyToken=ba83ff368b7563c6, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.Themes.Metro.2.8.15465.16500\lib\net40\Xceed.Wpf.Themes.Metro.dll</HintPath>
+      <Private>True</Private>
     </Reference>
-    <Reference Include="Xceed.Wpf.Toolkit">
-      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.Toolkit.2.6.15111.10510\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+    <Reference Include="Xceed.Wpf.Themes.Office2007, Version=2.8.15465.16500, Culture=neutral, PublicKeyToken=ba83ff368b7563c6, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\Xceed.Wpf.Themes.Office2007.2.8.15465.16500\lib\net40\Xceed.Wpf.Themes.Office2007.dll</HintPath>
+      <Private>True</Private>
+    </Reference>
+    <Reference Include="Xceed.Wpf.Toolkit, Version=2.5.0.0, Culture=neutral, PublicKeyToken=3e4669d2f30244f4, processorArchitecture=MSIL">
+      <HintPath>..\Circuit Simulation Integrated Interface\packages\Extended.Wpf.Toolkit.2.5\lib\net40\Xceed.Wpf.Toolkit.dll</HintPath>
+      <Private>True</Private>
     </Reference>
   </ItemGroup>
   <ItemGroup>
@@ -107,49 +123,13 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
-    <Compile Include="BodeViewModel.cs" />
-    <Compile Include="FrequencyWindow.xaml.cs">
-      <DependentUpon>FrequencyWindow.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="TestPlotter1.xaml.cs">
-      <DependentUpon>TestPlotter1.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Plain2DViewer.xaml.cs">
-      <DependentUpon>Plain2DViewer.xaml</DependentUpon>
-    </Compile>
-    <Compile Include="Simulator.xaml.cs">
-      <DependentUpon>Simulator.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Compile Include="ViewModel.cs" />
-    <Page Include="FrequencyWindow.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="TransientViewer.xaml">
-      <Generator>MSBuild:Compile</Generator>
-      <SubType>Designer</SubType>
-    </Page>
+    <Compile Include="MVVM\ViewModel\BodeViewModel.cs" />
     <Compile Include="App.xaml.cs">
       <DependentUpon>App.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
-    <Compile Include="TransientViewer.xaml.cs">
-      <DependentUpon>TransientViewer.xaml</DependentUpon>
-      <SubType>Code</SubType>
-    </Compile>
-    <Page Include="TestPlotter1.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Plain2DViewer.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
-    <Page Include="Simulator.xaml">
-      <SubType>Designer</SubType>
-      <Generator>MSBuild:Compile</Generator>
-    </Page>
+    <Compile Include="MVVM\ViewModel\Plotter2DViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\TransientViewModel.cs" />
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -169,28 +149,6 @@
       <Generator>ResXFileCodeGenerator</Generator>
       <LastGenOutput>Resources.Designer.cs</LastGenOutput>
     </EmbeddedResource>
-    <None Include="Circuits\Amplificador.net" />
-    <None Include="Circuits\derivador.net">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Circuits\RCcharge.net">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Circuits\RCLhi.net">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Circuits\RLCLpi.net">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Circuits\RCLpihi.net">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Circuits\RCLpi.net">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
-    <None Include="Circuits\vsingain.net">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
     <None Include="packages.config" />
     <None Include="Properties\Settings.settings">
       <Generator>SettingsSingleFileGenerator</Generator>
@@ -202,6 +160,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\CircuitMVVMBase\CircuitMVVMBase.csproj">
+      <Project>{744be2c7-a979-460c-ae3e-1ecf7df9ab3c}</Project>
+      <Name>CircuitMVVMBase</Name>
+    </ProjectReference>
     <ProjectReference Include="..\Electrical Analysis Engine\Electrical Analysis Engine Library\Electrical Analysis Engine Library.csproj">
       <Project>{c5a99e1a-8024-4101-9e21-9e90e1cda058}</Project>
       <Name>Electrical Analysis Engine Library</Name>
@@ -262,6 +224,45 @@
   </ItemGroup>
   <ItemGroup>
     <Resource Include="Images\table.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Animation\gear_run.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Animation\media_beginning.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Animation\media_end.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Animation\media_fast_forward.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Animation\media_pause.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Animation\media_play.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Animation\media_play_green.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Animation\media_rewind.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Animation\media_step_back.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Animation\media_step_forward.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Animation\media_stop.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\Animation\media_stop_red.png" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Circuits\" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

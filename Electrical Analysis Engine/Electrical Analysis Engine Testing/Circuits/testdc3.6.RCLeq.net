@@ -1,0 +1,8 @@
+* Equivalente de DC del RCL *
+
+
+
+V_V1         s		0	10V
+R_R1         s		m	1k  
+V_V3         m		out	5V
+I_I1         out	0	DC	1m

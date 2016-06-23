@@ -7,13 +7,13 @@ using System.Windows;
 // La información general sobre un ensamblado se controla mediante el siguiente 
 // conjunto de atributos. Cambie estos atributos para modificar la información
 // asociada con un ensamblado.
-[assembly: AssemblyTitle("ComplexPlainVisualizer")]
-[assembly: AssemblyDescription("")]
+[assembly: AssemblyTitle("Complex Plain Visualizer")]
+[assembly: AssemblyDescription("This application allow simulate .net circuit description files, and show singularities into the plain complex")]
 [assembly: AssemblyConfiguration("")]
-[assembly: AssemblyCompany("")]
-[assembly: AssemblyProduct("ComplexPlainVisualizer")]
+[assembly: AssemblyCompany("G & G Factory")]
+[assembly: AssemblyProduct("Complex Plain Circuit Visualizer")]
 [assembly: AssemblyCopyright("Copyright ©  2015")]
-[assembly: AssemblyTrademark("")]
+[assembly: AssemblyTrademark("G & G Factory")]
 [assembly: AssemblyCulture("")]
 
 // Si establece ComVisible como false, los tipos de este ensamblado no estarán visibles 

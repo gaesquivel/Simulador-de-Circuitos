@@ -1,19 +1,14 @@
 ﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
-using ElectricalAnalysis.Analysis;
 using ElectricalAnalysis.Analysis.Solver;
 
 namespace ElectricalAnalysis
 {
     public class ACAnalysis:BasicAnalysis
     {
-        protected ACAnalysisScan scantype;
 
         public enum ACAnalysisScan { Decade, Linear }
 
+        protected ACAnalysisScan scantype;
 
         public string StartFrequency { get; set; }
         public string EndFrequency { get; set; }
@@ -28,9 +23,11 @@ namespace ElectricalAnalysis
             } 
         }
 
+        protected override string DefaultName { get { return "AC Analysis"; } }
+
         public ACAnalysis():base()
         {
-            Name = "AC Analysis " + ID.ToString();
+            //Name = "AC Analysis " + ID.ToString();
             StartFrequency = "10";
             EndFrequency = "10Meg";
             Points = 101;

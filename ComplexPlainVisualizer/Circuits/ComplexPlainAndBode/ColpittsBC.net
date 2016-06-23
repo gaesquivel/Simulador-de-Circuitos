@@ -1,0 +1,16 @@
+* amplificador RE sin puentear *
+
+
+
+V_V1		s	0	DC	0	AC	1
++SIN 1 1 1k 0 0 0
+R_Rs		s	in	10
+R_Ri		in	e	5K
+C_Ce		in	e	14p
+G_G1		out e	in	e	40m
+R_Re		e	0	2200
+C_Cc		out	in	1p
+C_C1		out	e	100p
+C_C2		e	0	100p
+L_L1		out	0	150n
+R_RL		out	0	10k 

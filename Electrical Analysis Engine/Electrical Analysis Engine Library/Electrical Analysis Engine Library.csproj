@@ -31,10 +31,12 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
-    <Reference Include="MathNet.Numerics">
-      <HintPath>..\packages\MathNet.Numerics.3.5.0\lib\net40\MathNet.Numerics.dll</HintPath>
+    <Reference Include="MathNet.Numerics, Version=3.8.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Circuit Simulation Integrated Interface\packages\MathNet.Numerics.3.8.0\lib\net40\MathNet.Numerics.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="PresentationCore" />
+    <Reference Include="PresentationFramework" />
     <Reference Include="System" />
     <Reference Include="System.Core" />
     <Reference Include="System.Drawing" />
@@ -49,22 +51,28 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Analysis\ACAnalysis.cs" />
-    <Compile Include="Analysis\ComplexPlainSweep.cs" />
-    <Compile Include="Analysis\Solver\SuperNode.cs" />
-    <Compile Include="Analysis\Solver\ComplexPlainSolver.cs" />
-    <Compile Include="Analysis\Solver\Structs.cs" />
-    <Compile Include="Analysis\Solver\TransientSolver.cs" />
-    <Compile Include="Analysis\BasicAnalysis.cs" />
+    <Compile Include="Analysis\ComplexPlainAnalisys.cs" />
     <Compile Include="Analysis\Solver\ACSweepSolver.cs" />
-    <Compile Include="Analysis\Solver\CircuitSolver.cs" />
+    <Compile Include="Analysis\Solver\ComplexPlainSolver.cs" />
     <Compile Include="Analysis\Solver\DCSolver.cs" />
+    <Compile Include="Analysis\Solver\Structs.cs" />
+    <Compile Include="Analysis\BasicAnalysis.cs" />
+    <Compile Include="Analysis\Solver\CircuitSolver.cs" />
+    <Compile Include="Analysis\Solver\SuperNode.cs" />
+    <Compile Include="Analysis\Solver\TransientSolver.cs" />
     <Compile Include="Analysis\TransientAnalysis.cs" />
+    <Compile Include="Components\Blocks\SubCircuit.cs" />
     <Compile Include="Components\Controlled\ControlledDipole.cs" />
+    <Compile Include="Components\Controlled\LaplaceVoltageGenerator.cs" />
+    <Compile Include="Components\Controlled\TransConductanceGenerator.cs" />
     <Compile Include="Components\Controlled\VoltageControlledGenerator.cs" />
+    <Compile Include="Components\Generators\ACCurrentGenerator.cs" />
     <Compile Include="Components\Generators\ACVoltageGenerator.cs" />
     <Compile Include="Components\Blocks\Block.cs" />
     <Compile Include="Components\Blocks\branch.cs" />
     <Compile Include="Components\Generators\SineVoltageGenerator.cs" />
+    <Compile Include="Components\Model.cs" />
+    <Compile Include="Components\NodeSingle.cs" />
     <Compile Include="Components\Pasive Components\Capacitor.cs" />
     <Compile Include="Components\Circuit.cs">
       <SubType>Code</SubType>
@@ -86,7 +94,9 @@
     <Compile Include="Data\DCData.cs" />
     <Compile Include="FileUtils.cs" />
     <Compile Include="ImageUtils.cs" />
+    <Compile Include="Laplace\Singularity.cs" />
     <Compile Include="MathUtil.cs" />
+    <Compile Include="MVVM\CircuitSimulationViewModel.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Components\Pasive Components\Resistor.cs" />
     <Compile Include="StringUtils.cs" />
@@ -96,11 +106,21 @@
     <WCFMetadata Include="Service References\" />
   </ItemGroup>
   <ItemGroup>
-    <None Include="Components\ClassDiagram1.cd" />
+    <None Include="Analysis\Solver\Solvers.cd" />
+    <None Include="Components\Components.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Images\planocomplejo.bmp" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Analysis\older\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\..\CircuitMVVMBase\CircuitMVVMBase.csproj">
+      <Project>{744be2c7-a979-460c-ae3e-1ecf7df9ab3c}</Project>
+      <Name>CircuitMVVMBase</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

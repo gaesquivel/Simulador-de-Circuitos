@@ -1,0 +1,7 @@
+* source AMPLIGM1
+
+
+V_V1         N12077 0 DC 1 AC 1
++SIN 1 1 1K 0 0 0
+E_LAPLACE1         N12116 0 LAPLACE {V(N12077)} {(1)/(-100 + s)}
+R_R5         0 N12116  1k  

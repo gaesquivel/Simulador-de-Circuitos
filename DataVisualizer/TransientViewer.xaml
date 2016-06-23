@@ -4,6 +4,7 @@
         xmlns:d3="http://research.microsoft.com/DynamicDataDisplay/1.0"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"                
+        xmlns:wpg="clr-namespace:System.Windows.Controls"
 
         Title="2D Transient Viewer" Height="550" Width="800" Icon="Images/oszillograph.png">
     <Grid>
@@ -19,7 +20,7 @@
             <Button Click="ButtonUpdate" ToolTip="Run Simulation">
                 <Image Source="Images/cpu_run.png" />
             </Button>
-            <Button Click="ButtonRefresh" ToolTip="Refres Results">
+            <Button Click="ButtonRefresh" ToolTip="Refresh Results">
                 <Image Source="Images/Refresh.png" />
             </Button>
             <Button ToolTip="Draw Selected Item" Click="ButtonRedraw">
@@ -59,8 +60,8 @@
                     <xcad:LayoutAnchorablePane DockWidth="200">
                         <xcad:LayoutAnchorable ContentId="properties" Title="Properties" CanHide="False" CanClose="False"
                                             AutoHideWidth="240" IconSource="Images/preferences.png">
-                            <xctk:PropertyGrid Name="propgrid" NameColumnWidth="110"
-                        SelectedObject="{Binding ElementName=lbComponents, Path=SelectedItem}"/>
+                            <wpg:WpfPropertyGrid x:Name="propgrid" />
+
                         </xcad:LayoutAnchorable>
                     </xcad:LayoutAnchorablePane>
                     <xcad:LayoutDocumentPaneGroup >

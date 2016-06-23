@@ -1,564 +1,261 @@
-﻿using ElectricalAnalysis.Components;
-using MathNet.Numerics;
-using MathNet.Numerics.LinearAlgebra;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
+using ElectricalAnalysis.Components;
+using System.Numerics;
+using MathNet.Numerics.LinearAlgebra;
+using ElectricalAnalysis.Components.Controlled;
+using CircuitMVVMBase.MVVM;
+using CircuitMVVMBase;
 
 namespace ElectricalAnalysis.Analysis.Solver
 {
-    public class DCSolver: CircuitSolver
+    public class DCSolver : /*ViewModelBase,*/ CircuitSolver
     {
-        Circuit circuit;
-
-
-        protected static Branch FindBranch(Circuit cir, Node initialNode, Dipole Component)
+        public enum ExportFormats
         {
-            Branch br = new Branch(cir);
-            Dipole compo = Component;
-            Node nodo = Component.OtherNode(initialNode);
-            
-            br.Nodes.Clear();
-            //solo es valido si el circuito fue optimizado, y los paralelos
-            //se reemplazaron por bloques paralelo
-            while (nodo.Components.Count == 2 && cir.Reference != nodo)
-            {
-                br.Components.Add(compo);
-                br.InternalNodes.Add(nodo);
-                compo = nodo.OtherComponent(compo);
-                nodo = compo.OtherNode(nodo);
-            }
-            br.Components.Add(compo);
-            if (br.Components.Count > 1)
-            {
-                initialNode.Components.Remove(Component);
-                initialNode.Components.Add(br);
-                nodo.Components.Remove(compo);
-                nodo.Components.Add(br);
-                nodo.TypeOfNode = Node.NodeType.MultibranchCurrentNode;
-            }
-            br.Nodes.Add(initialNode);
-            br.Nodes.Add(nodo);
-
-            //hay que recorrer la rama para buscar los nodos intermedios flotantes 
-            //y aquellos dependientes de los flotantes
-            nodo = compo.OtherNode(nodo);
-            while (nodo != initialNode)
-            {
-                if (nodo.TypeOfNode == Node.NodeType.VoltageFixedNode)
-                {
-                    // nothing, node was calculated
-                }
-                else if (compo is VoltageGenerator)
-                {
-                    if (compo.IsConnectedToEarth)
-                    {
-                        nodo.TypeOfNode = Node.NodeType.VoltageFixedNode;
-                    }
-                    else if (nodo.TypeOfNode == Node.NodeType.Unknow)
-                    {
-                        nodo.TypeOfNode = Node.NodeType.VoltageLinkedNode;
-                    }
-                    else
-                        throw new NotImplementedException();
-                }
-                else if (compo is PasiveComponent)
-                { 
-                    if (nodo.TypeOfNode == Node.NodeType.Unknow)
-                        nodo.TypeOfNode = Node.NodeType.VoltageDivideNode;
-                    else
-                        throw new NotImplementedException();
-                }
-                else
-                {
-                    if (nodo.TypeOfNode == Node.NodeType.Unknow)
-                        nodo.TypeOfNode = Node.NodeType.InternalBranchNode;
-                    else
-                        throw new NotImplementedException();
-                }
-
-                compo = nodo.OtherComponent(compo);
-                nodo = compo.OtherNode(nodo);
-            }
-
-            return br;
+            CSV,
+            Bitmap
         }
 
-        /// <summary>
-        /// optimize a recent loaded circuit leaving ready for simulation
-        /// </summary>
-        /// <param name="cir"></param>
-        /// <returns></returns>
-        public static bool Optimize(Circuit cir)
-        {
-            List<Dipole> yaanalizados = new List<Dipole>();
-            List<ParallelBlock> paralelos = new List<ParallelBlock>();
-            List<Node> nodosnormales = new List<Node>();
-            List<Branch> ramas = new List<Branch>();
-            ParallelBlock para = null;
+        public Circuit CurrentCircuit { get; protected set; }
 
-            #region Chequeo de nodos sueltos o componentes colgantes
+       /* static int progress;
+        public int Progress
+        {
+            get { return progress; }
+            set {
+                if (value >=0 && value <= 100)
+                    RaisePropertyChanged(value, ref progress);
+            }
+        }*/
+
+        /// <summary>
+        /// Realize an analisys to find reelevant information to
+        /// aids before to solve
+        /// </summary>
+        protected virtual SolveInfo PreAnalizeToSolve(Circuit cir)
+        {
+            CurrentCircuit = cir;
+            SolveInfo solveinfo = new SolveInfo(cir);
+
+            #region node analisys
+
+            //Escaneo los nodos desde tierra para encontrar todos 
+            //los nodos de tension fija
+            ScanEarthSuperNode(cir.Reference, null);
+
+
+            #region special component zone
+
+            foreach (var comp in cir.Components)
+            {
+                if (comp is ControlledDipole)
+                {
+                    solveinfo.SpecialComponents.Add((ControlledDipole)comp);
+                    if (comp is ControlledCurrentGenerator)
+                        solveinfo.SpecialOutputCurrentComponents.Add(comp);
+                    if (comp is ControllerShortCircuit)
+                        solveinfo.SpecialInputCurrentComponents.Add(comp);
+
+                    if (comp is ControlledVoltageGenerator)
+                        foreach (var nodo in comp.Nodes)
+                        {
+                            if (nodo.IsReference)
+                                continue;
+                            nodo.TypeOfNode = NodeSingle.NodeType.VoltageDependentNode;
+                            solveinfo.SpecialComponentNodes.Add(nodo);
+                        }
+                }
+            }
+
+            #endregion
+
+
+            //aqui agrego los nodos de tension fija a la lista
             foreach (var nodo in cir.Nodes.Values)
             {
-                if (nodo.Components.Count == 0)
+                if (nodo.IsReference)
+                    continue;
+                //los nodos fijosde componentes especiales son incognitas
+                if  (solveinfo.SpecialComponentNodes.Contains(nodo))
+                    continue;
+
+                if (nodo.TypeOfNode == NodeSingle.NodeType.VoltageFixedNode)
                 {
-                    throw new NotImplementedException();
-                }
-                //componente con borne suelto
-                if (nodo.Components.Count == 1)
-                {
-                    throw new NotImplementedException();
+                    solveinfo.AutoCalculableNodes.Add(nodo);
+                    continue;
                 }
             }
-            #endregion
 
-            #region busco componentes en paralelo
-
-            if (false)
+            foreach (var nodo in cir.Nodes.Values)
             {
-                for (int i = 0; i < cir.Components.Count - 1; i++)
+                if (nodo.IsReference)
+                    continue;
+            
+                bool isnodesimple = true;
+                foreach (var compo in nodo.Components)
                 {
-                    if (yaanalizados.Contains(cir.Components[i]))
-                        continue;
-                    Dipole comp1 = cir.Components[i];
-
-                    for (int j = i + 1; j < cir.Components.Count; j++)
+                    if (IsPartOfSuperNode(compo))
                     {
-                        if (yaanalizados.Contains(cir.Components[j]))
-                            continue;
-                        Dipole comp2 = cir.Components[j];
-                        if ((comp1.Nodes[0] == comp2.Nodes[0] && comp1.Nodes[1] == comp2.Nodes[1]) ||
-                            (comp1.Nodes[0] == comp2.Nodes[1] && comp1.Nodes[1] == comp2.Nodes[0]))
-                        {
-                            if (para == null)
+                        if (compo.IsConnectedToEarth)
+                            if (compo is ControlledDipole)
                             {
-                                para = new ParallelBlock(cir, comp1, comp2);
-                                paralelos.Add(para);
-                                yaanalizados.Add(comp1);
-                                yaanalizados.Add(comp2);
+                                continue;
                             }
-                            else
-                            {
-                                para.Components.Add(comp2);
-                                yaanalizados.Add(comp2);
-                            }
-                        }
-                    }
-                }
-            }
-
-            #endregion
-
-            #region reemplazo los componentes paralelos separados por
-            //el correspondiente block paralelo
-            foreach (var para1 in paralelos)
-            {
-                foreach (var compo in para1.Components)
-                    cir.Components.Remove(compo);
-
-                cir.Components.Add(para1);
-            }
-            #endregion
-
-            #region identifico la tierra
-            Node tierra = cir.Reference;
-        
-            if (tierra == null)
-                foreach (var item in cir.Nodes.Values)
-                {
-                    if (item.IsReference)
-                    {
-                        tierra = item;
-                        cir.Reference = tierra;
+                        isnodesimple = false;
                         break;
                     }
                 }
-            #endregion
-
-            #region arranco desde tierra he identifico los nodos de tension fija, 
-            //posibles nodos flotantes de corriente y ramas conectadas a tierra
-
-            List<Dipole> componenttoearh = new List<Dipole>();
-            componenttoearh.AddRange(tierra.Components);
-            foreach (var compo in componenttoearh)
-            {
-                foreach (var rama in ramas)
-	            {
-                    if (rama.Components.Contains(compo))
-                        goto end;
-		 
-	            }
-                //los nodos de tension fija 
-                if (compo is VoltageGenerator)
+                //si es tipo Unknow, no es VoltageFixedNode!
+                if (nodo.TypeOfNode == NodeSingle.NodeType.Unknow)
                 {
-                    Node other = compo.OtherNode(tierra);
-                    other.TypeOfNode = Node.NodeType.VoltageFixedNode;
-                    other.Voltage = compo.Voltage;
-                }
-                //desde tierra los nodos son:
-                //a: pertenecen a una rama. hay que levantar dicha rama...
-                //b: son nodos normales flotantes (se aplica teorema de nodo)
-                Branch br = FindBranch(cir, tierra, compo);
-                //si no forma parte de una rama, la rama de 1 elemento se desecha
-                ValidateBranch(yaanalizados, nodosnormales, ramas, tierra, compo, br);
-           }
-        end: ;
-            #endregion
-
-            #region Analizo las ramas faltantes desde los nodos normales encontrados
-
-            foreach (var nodo in nodosnormales)
-            {
-                foreach (var compo in nodo.Components)
-                {
-                    if (ramas.Contains(compo) || yaanalizados.Contains(compo))
-                        continue;
-
-                    Branch br = FindBranch(cir, nodo, compo);
-                    ValidateBranch(yaanalizados, nodosnormales, ramas, nodo, compo, br);
+                    if (isnodesimple)
+                    {
+                        if (solveinfo.SpecialComponentNodes.Contains(nodo))
+                            continue;
+                        //es un nodo simple aislado
+                        nodo.TypeOfNode = NodeSingle.NodeType.NortonSingleNode;
+                        solveinfo.NortonNodes.Add(nodo);
+                        solveinfo.Nodes.Add(nodo);
+                    }
+                    else
+                    {
+                        //es parte de un supernodo
+                        SuperNode super = FindSuperNodeElements(nodo);
+                        solveinfo.SuperNodes.Add(super);
+                        solveinfo.Nodes.AddRange(super.Nodes);
+                        //nodo pertenece a un supernodo
+                    }
                 }
             }
 
             #endregion
 
-            //reemplazo los componentes que arman una rama por la propia rama
-            foreach (var rama in ramas)
-                foreach (var compo in rama.Components)
-                    cir.Components.Remove(compo);
-            
+            foreach (var snode in solveinfo.SuperNodes)
+            {
+                solveinfo.NodesInSupernodes.AddRange(snode.Nodes);
+                solveinfo.GeneratorInSupernodes.AddRange(snode.Components);
+            }
 
-            cir.Components.AddRange(ramas);
-           
-            cir.State = Circuit.CircuitState.Optimized;
-            cir.OptimizedCircuit = cir;
-            return true;
+
+            return solveinfo;
+        }
+
+
+        /// <summary>
+        /// Given a node, find all other nodes and components inner supernode structure
+        /// </summary>
+        /// <param name="FirstNode"></param>
+        protected virtual SuperNode FindSuperNodeElements(NodeSingle FirstNode, SuperNode super = null)
+        {
+            if (super == null)
+                super = new SuperNode();
+
+            try
+            {
+                super.Nodes.Add(FirstNode);
+                NodeSingle nodo = FirstNode;
+                //nodo.oe
+                nodo.TypeOfNode = NodeSingle.NodeType.SuperNodeMember;
+
+                foreach (var comp in nodo.Components)
+                {
+                    if (IsVoltageGenerator(comp))
+                    {
+                        if (super.Components.Contains(comp))
+                            continue;
+
+                        //agrego el componente 
+                        super.Components.Add(comp);
+                        if (comp.Nodes[0] == nodo)
+                        {
+                            if (!super.Nodes.Contains(comp.Nodes[1]))
+                                FindSuperNodeElements(comp.Nodes[1], super);
+                        }
+                        else
+                        {
+                            if (!super.Nodes.Contains(comp.Nodes[0]))
+                                FindSuperNodeElements(comp.Nodes[0], super);
+                        }
+                    }
+                }
+
+            }
+            catch (Exception ex)
+            {
+                ViewModelBase.Notifications.Add(new Notification(ex));
+            }
+            return super;
+        }
+
+
+        /// <summary>
+        /// Scan all nodes near reference node connected with
+        /// Voltage generators, finding then earth supernode
+        /// </summary>
+        /// <param name="node"></param>
+        /// <param name="previos"></param>
+        private void ScanEarthSuperNode(NodeSingle node, NodeSingle previos)
+        {
+            foreach (var comp in node.Components)
+            {
+                if (IsVoltageGenerator(comp))
+                {
+                    NodeSingle other = comp.OtherNode(node);
+                    if (other == previos)
+                        continue;
+                    if (other.IsReference)
+                        continue;
+                    other.TypeOfNode = NodeSingle.NodeType.VoltageFixedNode;
+                    
+                    ScanEarthSuperNode(other, node);
+                }
+            }
         }
 
         /// <summary>
-        /// Valida una rama y la agrega al circuito si corresponde
-        /// En caso contrario solo agrega el componente indicado
+        /// Nodes in a supernode are connected with voltage 
+        /// generators in most analisys
         /// </summary>
-        /// <param name="yaanalizados"></param>
-        /// <param name="nodosnormales"></param>
-        /// <param name="ramas"></param>
-        /// <param name="nodo"></param>
         /// <param name="compo"></param>
-        /// <param name="br"></param>
-        protected static void ValidateBranch(List<Dipole> yaanalizados, List<Node> nodosnormales, 
-                                            List<Branch> ramas, Node nodo, Dipole compo, Branch br)
+        /// <returns>Return True if compo is Voltage Generator</returns>
+        protected virtual bool IsPartOfSuperNode(Dipole compo)
         {
-            if (br.Components.Count <= 1)
-            {
-                if (compo is PasiveComponent)
-                {
-                    Node other = compo.OtherNode(nodo);
-                    other.TypeOfNode = Node.NodeType.MultibranchCurrentNode;
-                    if (!nodosnormales.Contains(other) && !other.IsReference)
-                        nodosnormales.Add(other);
-                }
-                yaanalizados.Add(compo);
-            }
-            else
-            {
-                //rama valida
-                ramas.Add(br);
-                Node other = br.OtherNode(nodo);
-                if (!nodosnormales.Contains(other) && !other.IsReference)
-                    nodosnormales.Add(other);
-                yaanalizados.AddRange(br.Components);
-                foreach (var comp in br.Components)
-                {
-                    comp.Owner = br;
-                }
-            }
+            return compo is VoltageGenerator || compo is Inductor;
         }
-
-        protected static void AddComponentNodes(Circuit ciroptimizado, Dipole rama)
-        {
-            if (!ciroptimizado.Nodes.ContainsValue(rama.Nodes[0]))
-                ciroptimizado.Nodes.Add(rama.Nodes[0].Name, rama.Nodes[0]);
-            if (!ciroptimizado.Nodes.ContainsValue(rama.Nodes[1]))
-                ciroptimizado.Nodes.Add(rama.Nodes[1].Name, rama.Nodes[1]);
-        }
-
 
         public virtual bool Solve(Circuit cir, BasicAnalysis ana)
         {
-            //int fila = 0;
-            List<Node> nodos = new List<Node>();
-            circuit = cir;
 
-            if (cir.Reference == null)
-            {
-                foreach (var nodo in cir.Nodes.Values)
-                {
-                    //creo una lista de nodos sin el nodo referencia
-                    if (!nodo.IsReference)
-                        nodos.Add(nodo);
-                } 
-            }
-            else
-            {
-                nodos.AddRange(cir.Nodes.Values);
-                nodos.Remove(cir.Reference);
-            }
-           
+            SolveInfo solveinfo = PreAnalizeToSolve(cir);
 
-            List<Node> nodosnorton = new List<Node>();
-            List<Node> nortoncopia = new List<Node>();
+            //se calculas las tensiones de nodos
+            #region fase 1
 
-            foreach (var nodo in nodos)
-            {
-                if (nodo.TypeOfNode == Node.NodeType.MultibranchCurrentNode ||
-                    nodo.TypeOfNode == Node.NodeType.VoltageLinkedNode ||
-                    nodo.TypeOfNode == Node.NodeType.VoltageDivideNode)
-                    nodosnorton.Add(nodo);
-            }
+            Calculate(solveinfo);
 
-            #region Calculo de tensiones de nodos
-
-            nortoncopia.Clear();
-            foreach (var item in nodosnorton)
-            {
-                nortoncopia.Add(item);
-            }
-
-            Calculate(nortoncopia);
             #endregion
 
-            //#region almacenamiento temporal
+            //Con las tensiones de nodos, se calculan las corrientes
+            #region fase 2
 
+            CalculateCurrents(CurrentCircuit, null);
 
-            //#endregion
-            
-            //calculo las corrientes:
-            CalculateCurrents(cir);
+            #endregion
 
-
-            cir.State = Circuit.CircuitState.Solved;
-            return true;
-        }
-
-        protected static void Calculate(List<Node> nodosnorton)
-        {
-           
-            if (nodosnorton.Count == 0)
-                return;
-
-            //existen nodos donde la tension se puede calcular directamente
-            List<Node> nodosCalculables = new List<Node>();
-
-            foreach (var nodo in nodosnorton)
-            {
-                if (nodo.TypeOfNode == Node.NodeType.VoltageDivideNode)
-                    nodosCalculables.Add(nodo);
-            }
-            foreach (var nodo in nodosCalculables)
-                nodosnorton.Remove(nodo);
-
-            //remuevo esos nodos de los que deben calcularse matricialmente
-
-            if (nodosnorton.Count > 0)
-            {
-                int fila = 0, columna = 0;
-                var v = Vector<Complex32>.Build.Dense(nodosnorton.Count);
-                var A = Matrix<Complex32>.Build.DenseOfArray(new Complex32[nodosnorton.Count, nodosnorton.Count]);
-
-                foreach (var nodo in nodosnorton)
-                {
-                    columna = fila = nodosnorton.IndexOf(nodo);
-                    Complex32 Z, V;
-                    if (nodo.TypeOfNode == Node.NodeType.MultibranchCurrentNode ||
-                        nodo.TypeOfNode == Node.NodeType.InternalBranchNode)
-                    {
-                        foreach (var rama in nodo.Components)
-                        {
-                            if (rama is Branch || rama is PasiveComponent)
-                            {
-                                columna = fila = nodosnorton.IndexOf(nodo);
-                                if (rama is Branch)
-                                    V = ((Branch)rama).NortonCurrent(nodo);
-                                else
-                                    V = rama.Current(nodo);
-                                v[fila] += V;
-                                Z = rama.Impedance();
-                                A[fila, columna] += 1/Z;
-                                Node nodo2 = rama.OtherNode(nodo);
-                                if (!nodo2.IsReference)
-                                {
-                                    columna = nodosnorton.IndexOf(nodo2);
-                                    A[fila, columna] -= 1 / Z;
-                                    
-                                }
-                            }
-                            else  if (rama is CurrentGenerator)
-                            {
-                                V = rama.Current(nodo);
-                                v[fila] += V;
-                            }
-                        }
-                    }
-                    else if (nodo.TypeOfNode == Node.NodeType.VoltageLinkedNode)
-                    {
-                        Dipole compo = nodo.Components[0];
-                        if (!(compo is VoltageGenerator))
-                            compo = nodo.Components[1];
-                        v[fila] = compo.Voltage.Real;
-                        A[fila, columna] = 1;
-                        columna = nodosnorton.IndexOf(compo.OtherNode(nodo));
-                        A[fila, columna] = -1;
-                    }
-                    else
-                        throw new NotImplementedException();
-                }
-                var x = A.Solve(v);
-
-                foreach (var nodo in nodosnorton)
-                {
-                    fila = nodosnorton.IndexOf(nodo);
-                    nodo.Voltage = x[fila];
-                }
-            }
-
-            foreach (var nodo in nodosCalculables)
-            {
-                if (nodo.TypeOfNode == Node.NodeType.VoltageDivideNode)
-                {
-                    Node nodo1 = nodo;
-                    Dipole compo1 = nodo.Components[0];
-                    Branch br = compo1.Owner as Branch;
-                    if (br == null)
-                    {
-                        throw new Exception();
-                    }
-                    Complex32 v1, v2, z1, z2;
-                    v1 = v2 = z1 = z2 = Complex32.Zero;
-                    //el nodo es interno en una rama, deberian los 2 componentes conectados
-                    //al nodo, 
-                    Dipole compo2 = nodo.Components[1];
-                    //hacia la izq (o derec)
-                    NavigateBranch(nodo1, compo1, ref v1, ref z1);
-                    //hacia el otro lado
-                    NavigateBranch(nodo1, compo2, ref v2, ref z2);
-                    nodo.Voltage = (z2 * v1 + v2 * z1) / (z1 + z2);
-                    //nodosCalculables.Add(nodo);
-                }
-            }
-
-            //return x;
+            return true;    
         }
 
         /// <summary>
-        /// barre una rama desde un nodo interno hacia la izquierda o derecha
-        /// calculando la suma de las tensiones de generadores V1
-        /// y la suma de impedancias Z1
+        /// Export Nodes and Currents to some file
         /// </summary>
-        /// <param name="nodo"></param>
-        /// <param name="compo1"></param>
-        /// <param name="v1"></param>
-        /// <param name="z1"></param>
-        private static void NavigateBranch(Node nodo, Dipole compo1, ref Complex32 v1, ref Complex32 z1)
-        {
-            Node nodo1 = nodo;
-
-            while (!(nodo1.TypeOfNode == Node.NodeType.MultibranchCurrentNode || nodo1.IsReference))
-            {
-                if (compo1 is PasiveComponent)
-                {
-                    z1 += compo1.Impedance();
-                }
-                else if (compo1 is VoltageGenerator)
-                {
-                    v1 += compo1.voltage(nodo1, null);
-                }
-                else
-                {
-                    throw new NotImplementedException();
-                }
-                nodo1 = compo1.OtherNode(nodo1);
-                compo1 = nodo1.OtherComponent(compo1);
-            }
-            if (nodo1.TypeOfNode == Node.NodeType.MultibranchCurrentNode)
-            {
-                v1 += nodo1.Voltage;
-            }
-        }
-
-
-        /// <summary>
-        /// Calculate Statics components currents
-        /// </summary>
-        /// <param name="container"></param>
-        private static void CalculateCurrents(ComponentContainer container)
-        {
-
-            foreach (var comp in container.Components)
-            {
-                //la corriente de DC de un capacitor es 0
-                if (comp is Capacitor)
-                    continue;
-
-                //la corriente en las resistencias se calcula directamente en ellas: es ley de Ohm:V/R
-                if (comp is Resistor || comp is CurrentGenerator)
-                {
-                    if (container is Branch)
-                    {
-                        Node nodo = comp.Nodes[0];
-                        ((Branch)container).current = comp.Current(nodo);
-                    }
-                    continue;
-                }
-               
-
-                //en los Generadores de tension hay que calcular la corriente en 1 u ambos nodos
-                if (comp is VoltageGenerator || comp is Inductor)
-                {
-                    foreach (var nodo in comp.Nodes)
-                    {
-                        Dipole comp2 = nodo.OtherComponent(comp);
-                        //si tiene solo un resistor en serie es automatico el valor de corriente
-                        if (nodo.Components.Count == 2 && (comp2 is Resistor || comp2 is CurrentGenerator))
-                        {
-                            //Node nodo2 = com
-                            comp.current = comp2.Current(nodo);
-                        
-                            if (container is Branch)
-                                ((Branch)container).current = comp.Current(nodo);
-                            goto out1;
-                        }
-                    }
-                    //si no tiene solo una resistencias en serie, es decir, un nodo de multiples ramas
-                    //se aplica 2da de Kirchoff para el supernodo
-                    throw new NotImplementedException();
-                    foreach (var nodo in comp.Nodes)
-                    {
-                        Complex32 i;
-                        foreach (var comp2 in nodo.Components)
-                        {
-
-                        }
-                    }
-                }
-                else if (comp is Branch)
-                {
-                    CalculateCurrents((Branch)comp);
-                    continue;
-                }
-
-                else if (comp is ParallelBlock)
-                {
-                    CalculateCurrents((ParallelBlock)comp);
-                    continue;
-                }
-
-            out1: ;
-            }
-        }
-
-
-        public virtual void ExportToCSV(string FileName)
+        /// <param name="FileName"></param>
+        /// <param name="format"></param>
+        /// <returns></returns>
+        public virtual bool Export(string FileName, ExportFormats format = ExportFormats.CSV)
         {
             //se guarda las tensiones
             //     N1  N2 .... Nn 
@@ -573,14 +270,14 @@ namespace ElectricalAnalysis.Analysis.Solver
             {
                 writer.Delimiter = ';';
                 List<string> results = new List<string>();
-                foreach (var node in circuit.Nodes)
+                foreach (var node in CurrentCircuit.Nodes)
                 {
                     results.Add(node.Key.ToString());
                 }
                 writer.WriteRow(results);
                 results.Clear();
 
-                foreach (var node in circuit.Nodes)
+                foreach (var node in CurrentCircuit.Nodes)
                 {
                     results.Add(node.Value.Voltage.ToString());
                 }
@@ -588,13 +285,11 @@ namespace ElectricalAnalysis.Analysis.Solver
                 results.Clear();
 
                 List<string> componames = new List<string>();
-                ScanComponentBlockCurrents(results, componames, circuit);
+                ScanComponentBlockCurrents(results, componames, CurrentCircuit);
                 writer.WriteRow(componames);
                 writer.WriteRow(results);
-
+                return true;
             }
-       
-        
         }
 
         /// <summary>
@@ -616,5 +311,402 @@ namespace ElectricalAnalysis.Analysis.Solver
                 }
             }
         }
+
+        /// <summary>
+        /// Calculate Nodes Voltages 
+        /// </summary>
+        /// <param name="solveinfo"></param>
+        /// <param name="e"></param>
+        protected virtual void Calculate(SolveInfo solveinfo, object e = null)
+        {
+
+
+            // Fixed Voltage Nodes
+            FindFixedVoltages(solveinfo, solveinfo.Circuit.Reference, null, e);
+
+
+            //matrix solving region
+            if (solveinfo.RowCount > 0)
+            {
+                int fila = 0, columna = 0;
+
+                var v = Vector<Complex>.Build.Dense(solveinfo.RowCount);
+                var A = Matrix<Complex>.Build.DenseOfArray(new Complex[solveinfo.RowCount, 
+                                                        solveinfo.ColumnsCount]);
+
+                #region nodos normales
+
+                foreach (var nodo in solveinfo.NortonNodes)
+                {
+                    fila = solveinfo.RowIndexOf(nodo);
+                    CalculateNodeImpedances(solveinfo, fila, A, v, nodo, e);
+                }
+
+                #endregion
+
+                #region supernodos
+
+                foreach (var snode in solveinfo.SuperNodes)
+                {
+                    #region ecuaciones de supernodos
+
+                    fila = solveinfo.RowIndexOf(snode);
+                    CalculateNodeImpedances(solveinfo, fila, A, v, snode, e);
+
+                    #endregion
+
+                    #region Ecuaciones de tensiones en par de nodos
+
+                    foreach (var V in snode.Components)
+                    {
+                        columna = solveinfo.ColumnIndexOf(V.Nodes[0]);
+                        fila = solveinfo.RowIndexOf(V);
+                        v[fila] = GetVoltage(V, V.Nodes[0], e);
+                        A[fila, columna] = 1;
+                        columna = solveinfo.ColumnIndexOf(V.Nodes[1]);
+                        A[fila, columna] = -1;
+                    }
+
+                    #endregion
+                }
+
+                #endregion
+
+                #region special controlled component
+
+                foreach (Dipole comp in solveinfo.SpecialComponents)
+                {
+                    //ecuacion del componente
+                    fila = solveinfo.RowIndexOf(comp);
+                    if (comp is ControlledVoltageGenerator)
+                        foreach (var nodo in comp.Nodes)
+                        {
+                            if (nodo.IsReference)
+                                continue;
+                            columna = solveinfo.ColumnIndexOf(nodo);
+                            A[fila, columna] = ((ControlledDipole)comp).ControllerEquationValue(nodo, e, false);
+                        }
+                    v[fila] = ((ControlledDipole)comp).ControllerEquationValue(0, e, false);
+
+                    List<NodeSingle> inputnodes = new List<NodeSingle>();
+                    if (comp is ControllerShortCircuit)
+                        //proceso las filas: corrientes en la entrada
+                        inputnodes = ((ControllerShortCircuit)comp).InputNodes;
+                    else if (comp is ControllerOpenCircuit)
+                        inputnodes = ((ControllerOpenCircuit)comp).InputNodes;
+
+                    if (comp is ControlledCurrentGenerator)
+                    {
+                        inputnodes = ((ControllerOpenCircuit)comp).InputNodes;
+                        columna = solveinfo.ColumnIndexOf(comp, null);
+                        A[fila, columna] = Complex.One;
+                    }
+                    
+                    foreach (var nodo in inputnodes)
+                    {
+                        if (nodo.IsReference)
+                            continue;
+                        columna = solveinfo.ColumnIndexOf(nodo);
+                        A[fila, columna] = ((ControlledDipole)comp).ControllerEquationValue(nodo, e, true);
+                    }
+                }
+
+
+                #endregion
+
+
+                var x = A.Solve(v);
+
+                //saving nodes voltages
+                foreach (var nodo in solveinfo.Nodes)
+                {
+                    fila = solveinfo.ColumnIndexOf(nodo);
+                    nodo.Voltage = x[fila];
+                }
+                foreach (var nodo in solveinfo.SpecialComponentNodes)
+                {
+                    fila = solveinfo.ColumnIndexOf(nodo);
+                    nodo.Voltage = x[fila];
+                }
+            }
+        }
+
+        /// <summary>
+        /// Find all voltage generator connected to earth reference
+        /// and calculate then each node voltage of this earth supernode
+        /// </summary>
+        /// <param name="solveinfo"></param>
+        /// <param name="nodo"></param>
+        /// <param name="previousnode"></param>
+        /// <param name="e"></param>
+        protected virtual void FindFixedVoltages(SolveInfo solveinfo, NodeSingle nodo, 
+                                                    NodeSingle previousnode,object e)
+        {
+            foreach (var comp in nodo.Components)
+            {
+                if (IsPartOfSuperNode(comp))
+                {
+                    NodeSingle other = comp.OtherNode(nodo);
+                    if (other == previousnode)
+                        continue;
+                    other.Voltage = nodo.Voltage + GetVoltage(comp, other, e);
+                    FindFixedVoltages(solveinfo, other, nodo, e);
+                }
+            }
+        }
+
+        protected virtual Complex GetVoltage(Dipole V, NodeSingle nodo, object e)
+        {
+            if (e is double)
+                return V.voltage(nodo, (double)e);
+            if (V.Nodes[0] == nodo)
+                return V.Voltage;
+            return -V.Voltage;
+        }
+
+        private SuperNode super;
+
+        /// <summary>
+        /// Calculate SUM(1/Ri) in equation given for fila and nodes 
+        /// asociated with nodo
+        /// </summary>
+        /// <param name="solveinfo"></param>
+        /// <param name="fila"></param>
+        /// <param name="A"></param>
+        /// <param name="nodo"></param>
+        protected virtual void CalculateNodeImpedances(SolveInfo solveinfo, int fila,
+                                                        Matrix<Complex> A, Vector<Complex> v,
+                                                        Node nodo,
+                                                        object e = null)
+        {
+            
+            if (nodo is SuperNode)
+            {
+                super = nodo as SuperNode;
+                foreach (var nodo1 in ((SuperNode)nodo).Nodes)
+                {
+                    CalculateNodeImpedances(solveinfo, fila, A, v, nodo1, e);
+                }
+                super = null;
+            }
+            else
+            {
+                int columna = solveinfo.ColumnIndexOf((NodeSingle)nodo);
+                foreach (var comp in nodo.Components)
+                {
+                    //SUM(1/Ri)
+                    //deberian ser todos pasivos
+                    if (IsImpedance(comp))
+                    {
+                        columna = solveinfo.ColumnIndexOf((NodeSingle)nodo);
+                        A[fila, columna] += 1 / GetImpedance(comp, e);
+
+                        NodeSingle other = comp.OtherNode((NodeSingle)nodo);
+
+                        if (other.IsReference)
+                            continue;
+                        if (solveinfo.AutoCalculableNodes.Contains(other))
+                        {
+                            columna = solveinfo.ValueIndexOf(other);
+
+                            v[fila] += other.Voltage / GetImpedance(comp, e);
+                        }
+                        else if (solveinfo.NortonNodes.Contains(other))
+                        {
+                            columna = solveinfo.ColumnIndexOf(other);
+                            A[fila, columna] -= 1 / GetImpedance(comp, e);
+
+                        }
+                        else if (solveinfo.NodesInSupernodes.Contains(other))
+                        {
+                            columna = solveinfo.ColumnIndexOf(other);
+                            if (super != null && super.Nodes.Contains(other))
+                                A[fila, columna] += 1 / GetImpedance(comp, e);
+                            else
+                                A[fila, columna] -= 1 / GetImpedance(comp, e);
+
+                        }
+                        else if (solveinfo.SpecialComponentNodes.Contains(other))
+                        {
+                            columna = solveinfo.ColumnIndexOf(other);
+                            A[fila, columna] -= 1 / GetImpedance(comp, e);
+                        }
+                        else
+                        {
+                            throw new NotImplementedException();
+                        }
+                    }
+                    else if (comp is ControlledCurrentGenerator)
+                    {
+                        columna = solveinfo.ColumnIndexOf(comp, nodo);
+                        A[fila, columna] = ((ControlledDipole)comp).ControllerEquationValue(nodo, e, false);
+                    }
+                    else if (comp is ControlledCurrentGenerator)
+                    {
+                        throw new NotImplementedException();
+                    }
+                    else if (IsCurrentGenerator(comp))
+                    {
+                        //columna = solveinfo.ColumnIndexOf(nodo);
+                        //NodeSingle other = comp.OtherNode(nodo as NodeSingle);
+                        var i = GetCurrent(comp, nodo as NodeSingle, e);
+                        v[fila] -= i;
+                    }
+                }
+            }
+        }
+
+        protected virtual Complex GetCurrent(Dipole comp, NodeSingle nodo, object e)
+        {
+            if (e is Complex)
+                return comp.Current(nodo, e as Complex?);
+            if (e is Double)
+                return comp.Current(nodo, (double)e);
+            if (e == null)
+                return comp.current;
+            throw new NotSupportedException();
+        }
+
+        protected virtual Complex GetImpedance(Dipole comp, object e)
+        {
+            if (e is Complex)
+                return comp.Impedance(e as Complex?);
+            return comp.Impedance();
+        }
+
+
+        /// <summary>
+        /// Calculate Statics components currents
+        /// </summary>
+        /// <param name="container"></param>
+        protected virtual void CalculateCurrents(ComponentContainer container,
+                                                object e)
+        {
+            foreach (var comp in container.Components)
+            {
+                //la corriente de DC de un capacitor es 0
+                if (IsOpenCircuit(comp))
+                {
+                    comp.current = 0;
+                    continue;
+                }
+
+                //la corriente en las resistencias se calcula directamente en ellas: es ley de Ohm:V/R
+                if (IsImpedance(comp) || IsCurrentGenerator(comp))
+                {
+                    NodeSingle nodo = comp.Nodes[0];
+                    Complex i = GetCurrent(comp, nodo, e);
+                    if (container is Branch)
+                    {
+                        ((Branch)container).current = i;
+                    }
+                    continue;
+                }
+
+
+                //en los Generadores de tension hay que calcular la corriente en 1 u ambos nodos
+                if (IsVoltageGenerator(comp) || IsShortCircuit(comp))
+                {
+                    foreach (var nodo in comp.Nodes)
+                    {
+                        Dipole comp2 = nodo.OtherComponent(comp);
+                        //si tiene solo un resistor en serie es automatico el valor de corriente
+                        if (nodo.Components.Count == 2 && 
+                            (IsImpedance(comp2) || IsCurrentGenerator(comp2)))
+                        {
+                            comp.current = -GetCurrent(comp2, nodo, e);
+                       
+                            //if (container is Branch)
+                            //    ((Branch)container).current = GetCurrent(comp, nodo, e);
+                            goto out1;
+                        }
+                    }
+                    //si no tiene solo una resistencias en serie, es decir, un nodo de multiples ramas
+                    //se aplica 2da de Kirchoff para el supernodo
+                    // throw new NotImplementedException();
+                    foreach (var nodo in comp.Nodes)
+                    {
+                        if (nodo.IsReference)
+                        {
+                            continue;
+                        }
+                        Complex i = Complex.Zero;
+                        i = CalculateSupernodeCurrent(nodo, e, comp);
+                        comp.current = i;
+                        break;
+                    }
+                }
+                else if (comp is Branch)
+                {
+                    CalculateCurrents((Branch)comp, e);
+                    continue;
+                }
+
+                else if (comp is ParallelBlock)
+                {
+                    CalculateCurrents((ParallelBlock)comp, e);
+                    continue;
+                }
+
+                out1:;
+            }
+        }
+
+        protected virtual bool IsCurrentGenerator(Dipole comp)
+        {
+            return comp is CurrentGenerator;
+        }
+
+        protected virtual bool IsImpedance(Dipole comp)
+        {
+            return comp is Resistor;
+        }
+
+        protected virtual bool IsShortCircuit(Dipole comp)
+        {
+            return comp is Inductor;
+        }
+
+        protected virtual bool IsVoltageGenerator(Dipole comp)
+        {
+            return (comp is VoltageGenerator || comp is Inductor) && !(comp is ControlledDipole);
+        }
+
+        protected virtual bool IsOpenCircuit(Dipole comp)
+        {
+            return comp is Capacitor;
+        }
+
+
+        /// <summary>
+        /// Dado un supernodo, recorre todas sus ramas para hallar la 
+        /// corriente en una de ellas
+        /// </summary>
+        /// <param name="nodo"></param>
+        /// <param name="W"></param>
+        /// <returns></returns>
+        protected virtual Complex CalculateSupernodeCurrent(NodeSingle nodo, 
+                                                            object e, 
+                                                            Dipole comp)
+        {
+            Complex i = Complex.Zero;
+            foreach (var comp2 in nodo.Components)
+            {
+                if (comp2 == comp)
+                {
+                    continue;
+                }
+                if (IsVoltageGenerator(comp2))
+                {
+                    NodeSingle nodo1 = comp2.OtherNode(nodo);
+                    i += CalculateSupernodeCurrent(nodo1, e, comp2);
+                }
+                else
+                    i += GetCurrent(comp, nodo, e);
+            }
+            return i;
+        }
+
+
     }
 }

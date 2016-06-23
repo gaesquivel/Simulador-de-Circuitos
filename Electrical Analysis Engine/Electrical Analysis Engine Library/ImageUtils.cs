@@ -1,11 +1,7 @@
-﻿using MathNet.Numerics;
-using System;
-using System.Collections.Generic;
+﻿using System;
 using System.Drawing;
 using System.IO;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 using System.Windows.Interop;
 using System.Windows.Media;
 using System.Windows.Media.Imaging;
@@ -26,7 +22,7 @@ namespace ElectricalAnalysis
         }
 
         [Obsolete]
-        public static BitmapImage Bitmap2BitmapImage(System.Drawing.Bitmap bitmap)
+        public static BitmapImage Bitmap2BitmapImage(Bitmap bitmap)
         {
             using (MemoryStream ms = new MemoryStream())
             {
@@ -41,7 +37,7 @@ namespace ElectricalAnalysis
             }
         }
 
-        public static System.Windows.Media.Brush CreateComplexBrush(System.Drawing.Bitmap bmp)
+        public static System.Windows.Media.Brush CreateComplexBrush(Bitmap bmp)
         {
 
             System.Windows.Media.Brush b = new ImageBrush(Bitmap2BitmapSource(bmp));
@@ -53,7 +49,7 @@ namespace ElectricalAnalysis
         // Claudio Rocchini used this color mapping
         // in his image at http://en.wikipedia.org/wiki/File:Color_complex_plot.jpg
         // for the Wikipedia article on "Complex Analysis"
-        public static Tuple<double, double, double> ComplexToHsv(Complex32 z)
+        public static Tuple<double, double, double> ComplexToHsv(Complex z)
         {
 
             // extract a phase 0 <= t < 2 pi

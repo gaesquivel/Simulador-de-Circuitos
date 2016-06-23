@@ -1,9 +1,6 @@
-﻿using MathNet.Numerics;
-using System;
+﻿using System;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 
 namespace ElectricalAnalysis.Components
 {
@@ -23,11 +20,11 @@ namespace ElectricalAnalysis.Components
         
         }
 
-        public virtual Complex32 TheveninVoltage(Node referenceNode, Complex32 ?W = null)
+        public virtual Complex TheveninVoltage(NodeSingle referenceNode, Complex ?W = null)
         {
-            Complex32 v = 0;
+            Complex v = 0;
             Dipole compo1 = null;
-            Node node1 = null;
+            NodeSingle node1 = null;
             foreach (var item in Components)
             {
                 if (item.Nodes[0] == referenceNode || item.Nodes[1] == referenceNode)
@@ -50,11 +47,11 @@ namespace ElectricalAnalysis.Components
             return v;
         }
 
-        public virtual double TheveninVoltage(Node referenceNode, double t)
+        public virtual double TheveninVoltage(NodeSingle referenceNode, double t)
         {
             double v = 0;
             Dipole compo1 = null;
-            Node node1 = null;
+            NodeSingle node1 = null;
             foreach (var item in Components)
             {
                 if (item.Nodes[0] == referenceNode || item.Nodes[1] == referenceNode)
@@ -78,7 +75,7 @@ namespace ElectricalAnalysis.Components
         }
 
 
-        public virtual double NortonCurrent(Node referenceNode, double t)
+        public virtual double NortonCurrent(NodeSingle referenceNode, double t)
         {
             if (CurrentImposser != null)
             {
@@ -87,7 +84,7 @@ namespace ElectricalAnalysis.Components
 
             double v = 0, z = 0;
             Dipole compo1 = null;
-            Node node1 = null;
+            NodeSingle node1 = null;
             foreach (var item in Components)
             {
                 if (item.Nodes[0] == referenceNode || item.Nodes[1] == referenceNode)
@@ -114,11 +111,11 @@ namespace ElectricalAnalysis.Components
         }
 
 
-        public virtual Complex32 NortonCurrent(Node referenceNode, Complex32 ?W = null)
+        public virtual Complex NortonCurrent(NodeSingle referenceNode, Complex ?W = null)
         {
-            Complex32 v = 0, z = 0;
+            Complex v = 0, z = 0;
             Dipole compo1 = null;
-            Node node1 = null;
+            NodeSingle node1 = null;
             //encuentro el componente unido al nodo de referencia
             foreach (var item in Components)
             {
@@ -147,11 +144,11 @@ namespace ElectricalAnalysis.Components
             return v / z;
         }
 
-        public override Complex32 Voltage
+        public override Complex Voltage
         {
             get
             {
-                Complex32 voltage = Complex32.Zero;
+                Complex voltage = Complex.Zero;
                 foreach (var item in Components)
                 {
                     voltage += item.Voltage;
@@ -161,7 +158,7 @@ namespace ElectricalAnalysis.Components
         }
 
         //la corriente puede variar en el tiempo
-        public override double Current(Node referenceNode, double t)
+        public override double Current(NodeSingle referenceNode, double t)
         {
             //si ya se calculo la corriente devuelvo la calculada
             if (previoustime > 0 && previoustime == t)
@@ -181,14 +178,14 @@ namespace ElectricalAnalysis.Components
                 {
                     i = CurrentImposser.Current(referenceNode, t);
                     if (referenceNode  == Nodes[0])
-                        _current = new Complex32((float)i, 0);
+                        _current = new Complex(i, 0);
                     else
-                        _current = new Complex32((float)-i, 0);
+                        _current = new Complex(-i, 0);
                 }
                 else
                 {
                     //hay que buscar nodo a nodo 
-                    Node nodo = FindComponentNode(referenceNode, CurrentImposser);
+                    NodeSingle nodo = FindComponentNode(referenceNode, CurrentImposser);
                     i = CurrentImposser.Current(nodo, t);
                 }
             }
@@ -228,7 +225,7 @@ namespace ElectricalAnalysis.Components
                 throw new NotImplementedException();
         } 
 
-        public override Complex32 current
+        public override Complex current
         {
             get
             {
@@ -258,9 +255,9 @@ namespace ElectricalAnalysis.Components
 
      
 
-        public override Complex32 Impedance(Complex32 ?W = null)
+        public override Complex Impedance(Complex ?W = null)
         {
-            Complex32 Z = Complex32.Zero;
+            Complex Z = Complex.Zero;
             foreach (var item in Components)
             {
                 Z += item.Impedance(W);
@@ -281,9 +278,9 @@ namespace ElectricalAnalysis.Components
         /// </summary>
         /// <param name="externalnode">one of two exterior branch nodes</param>
         /// <returns></returns>
-        public Node FindComponentNode(Node externalnode, Dipole component)
+        public NodeSingle FindComponentNode(NodeSingle externalnode, Dipole component)
         {
-            Node n = null;
+            NodeSingle n = null;
             if (!Nodes.Contains(externalnode))
             {
                 //la rama no contiene al nodo indicado, probablemene un error
@@ -326,7 +323,7 @@ namespace ElectricalAnalysis.Components
         /// </summary>
         /// <param name="internalnode"></param>
         /// <returns></returns>
-        public Node FindBranchExternalNode(Node internalnode, Dipole component)
+        public Node FindBranchExternalNode(NodeSingle internalnode, Dipole component)
         {
             if (!InternalNodes.Contains(internalnode))
             {
@@ -341,7 +338,7 @@ namespace ElectricalAnalysis.Components
 
             Dipole comp = null, comp2 = null;
 
-            Node n = null;
+            NodeSingle n = null;
             n = internalnode;
             throw new NotImplementedException();
             while (!Nodes.Contains(n))

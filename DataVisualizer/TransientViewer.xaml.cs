@@ -2,27 +2,12 @@
 using ElectricalAnalysis.Analysis;
 using ElectricalAnalysis.Analysis.Solver;
 using ElectricalAnalysis.Components;
-using MathNet.Numerics;
-using Microsoft.Research.DynamicDataDisplay;
 using Microsoft.Research.DynamicDataDisplay.Charts;
-using Microsoft.Research.DynamicDataDisplay.Charts.Shapes;
 using Microsoft.Research.DynamicDataDisplay.DataSources;
 using Microsoft.Win32;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading;
-using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Controls;
-using System.Windows.Data;
-using System.Windows.Documents;
-using System.Windows.Input;
-using System.Windows.Media;
-using System.Windows.Media.Imaging;
-using System.Windows.Navigation;
-using System.Windows.Shapes;
 
 namespace DataVisualizer
 {
@@ -34,7 +19,6 @@ namespace DataVisualizer
         ObservableDataSource<Tuple<double, double>> source1 = null;
         //ObservableDataSource<Tuple<double, double>> sourcevoltage = null;
         Circuit cir;
-        Circuit cir2;
         TransientAnalysis ac5;
 
         public TransientViewer()
@@ -48,17 +32,17 @@ namespace DataVisualizer
             propgrid.SelectedObject = null;
             cir = new Circuit();
             cir.ReadCircuit(circuitname);
-            cir2 = (Circuit)cir.Clone();
-            cir2.Setup.RemoveAt(0);
-            if (ac5 == null || cir2.Setup.Count == 0)
+            cir = (Circuit)cir.Clone();
+            cir.Setup.RemoveAt(0);
+            if (ac5 == null || cir.Setup.Count == 0)
             {
                 ac5 = new TransientAnalysis();
                 ac5.Step = "50n";
                 ac5.FinalTime = "50u";
-                cir2.Setup.Add(ac5);
+                cir.Setup.Add(ac5);
             }
             TransientSolver sol5 = (TransientSolver)ac5.Solver;
-            sol5.Optimize(cir2);
+            //sol5.Optimize(cir2);
             Refresh();
             lbComponents.ItemsSource = cir.Components;
             lbNodes.ItemsSource = cir.Nodes.Values;
@@ -68,24 +52,23 @@ namespace DataVisualizer
         private void Refresh()
         {
             //TransientSolver sol5 = (TransientSolver)cir2.Setup[0].Solver;
-            if (cir2 == null)
+            if (cir == null)
             {
                 return;
             }
-            cir2.Reset();
-            cir2.Solve();
+            cir.Solve();
             Redraw();
         }
 
         private void Redraw()
         {
-            if (cir2 == null || propgrid.SelectedObject == null)
+            if (cir == null || propgrid.SelectedObject == null)
                 return;
 
             if (source1 != null)
                 source1.Collection.Clear();
 
-            TransientSolver sol5 = (TransientSolver)cir2.Setup[0].Solver;
+            TransientSolver sol5 = (TransientSolver)cir.Setup[0].Solver;
             if (propgrid.SelectedObject is Node)
             {
                 //if (cir.Nodes.ContainsKey(txtPlotted.Text))
@@ -230,11 +213,11 @@ namespace DataVisualizer
 
         private void Button_AnalysisSetup(object sender, RoutedEventArgs e)
         {
-            if (cir2 == null)
+            if (cir == null)
             {
                 return;
             }
-            propgrid.SelectedObject = cir2.Setup[0];
+            propgrid.SelectedObject = cir.Setup[0];
         }
 
 
@@ -245,8 +228,8 @@ namespace DataVisualizer
             save.Filter = "Circuit Net List files (*.csv)|*.csv|All files (*.*)|*.*";
             if (save.ShowDialog() == true)
             {
-                TransientSolver sol5 = (TransientSolver)cir2.Setup[0].Solver;
-                sol5.ExportToCSV(save.FileName);
+                TransientSolver sol5 = (TransientSolver)cir.Setup[0].Solver;
+                sol5.Export(save.FileName);
             }
         }
     }
