@@ -1,4 +1,6 @@
-﻿using ElectricalAnalysis.Components;
+﻿using CircuitMVVMBase;
+using CircuitMVVMBase.MVVM;
+using ElectricalAnalysis.Components;
 using System;
 using System.Collections.Generic;
 using System.Numerics;
@@ -23,7 +25,7 @@ namespace ElectricalAnalysis.Analysis.Solver
 
         public override bool Solve(Circuit cir, BasicAnalysis ana)
         {
-            cir.State = Circuit.CircuitState.Solved;
+            cir.State = Circuit.CircuitState.Solving;
 
             SolveInfo solveinfo = PreAnalizeToSolve(cir);
             List<NodeSingle> nodos = new List<NodeSingle>();
@@ -58,6 +60,14 @@ namespace ElectricalAnalysis.Analysis.Solver
 
                 foreach (var nodo in cir.Nodes.Values)
                 {
+                    if (double.IsNaN(nodo.Voltage.Real))
+                    {
+                        NotificationsVM.Instance.Notifications.Add(
+                            new Notification("An invalid value was calculated at simulation at time " + t.ToString(), 
+                                                Notification.ErrorType.error));
+                        cir.State = Circuit.CircuitState.Solved;
+                        return false;
+                    }
                     result.Add(nodo.Name, nodo.Voltage.Real);
                 }
 

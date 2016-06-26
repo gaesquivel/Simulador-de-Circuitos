@@ -16,7 +16,7 @@ namespace CircuitMVVMBase.Converters
                 switch (err)
                 {
                     case Notification.ErrorType.info:
-                        return new SolidColorBrush(Colors.LightYellow);
+                        return new SolidColorBrush(Colors.LightGoldenrodYellow);
                     case Notification.ErrorType.warning:
                         return new SolidColorBrush(Colors.Orange);
                     case Notification.ErrorType.error:

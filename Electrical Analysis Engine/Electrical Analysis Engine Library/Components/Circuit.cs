@@ -20,7 +20,7 @@ namespace ElectricalAnalysis.Components
     {
         public enum CircuitState
         { 
-            Empty, FileLoaded, Optimized, Solved
+            Empty, FileLoaded, Optimized, Solving, Solved
         }
 
         private string circuitfilename = "", circuittxt = "";
@@ -75,7 +75,7 @@ namespace ElectricalAnalysis.Components
             if (!File.Exists(CircuitName))
             {
                 HasErrors = true;
-                Notifications.Add(new Notification("File Not Found!", Notification.ErrorType.error));
+                NotificationsVM.Instance.Notifications.Add(new Notification("File Not Found!", Notification.ErrorType.error));
                 return;
             }
             try
@@ -96,7 +96,7 @@ namespace ElectricalAnalysis.Components
             catch (Exception ex)
             {
                 HasErrors = true;
-                Notifications.Add(new Notification(ex));
+                NotificationsVM.Instance.Notifications.Add(new Notification(ex));
             }
         }
 
@@ -156,7 +156,7 @@ namespace ElectricalAnalysis.Components
                                 double v1 = 0, v2 = 0;
                                 if (!StringUtils.DecodeString(elemn[6], out v1))
                                 {
-                                    Notifications.Add(new Notification("Error to parse: " + elemn[6], Notification.ErrorType.error));
+                                    NotificationsVM.Instance.Notifications.Add(new Notification("Error to parse: " + elemn[6], Notification.ErrorType.error));
                                     return false;
                                 }
                                 if (elemn.Length == 8 &&  StringUtils.DecodeString(elemn[7], out v2))
@@ -178,11 +178,11 @@ namespace ElectricalAnalysis.Components
                                 if (StringUtils.DecodeString(elemn[6], out val))
                                     vsin.ACVoltage = new Complex(val, 0);
                                 else
-                                    Notifications.Add(new Notification("Invalid value:" + elemn[6], Notification.ErrorType.error));
+                                    NotificationsVM.Instance.Notifications.Add(new Notification("Invalid value:" + elemn[6], Notification.ErrorType.error));
                                 if (StringUtils.DecodeString(elemn[4], out val))    //DC
                                     vsin.Value = val;
                                 else
-                                    Notifications.Add(new Notification("Invalid value:" + elemn[4], Notification.ErrorType.error));
+                                    NotificationsVM.Instance.Notifications.Add(new Notification("Invalid value:" + elemn[4], Notification.ErrorType.error));
                                 vsin.Amplitude = elemn[9];
                                 vsin.Offset = elemn[8];
                                 vsin.Frequency = elemn[10];
@@ -268,7 +268,7 @@ namespace ElectricalAnalysis.Components
                     {
                         if (com.Name == comp.Name)
                         {
-                            Notifications.Add(
+                            NotificationsVM.Instance.Notifications.Add(
                                 new Notification("Component already exist: " + com.Name, 
                                                     Notification.ErrorType.error));
                             return false;
@@ -320,9 +320,12 @@ namespace ElectricalAnalysis.Components
             }
             catch (Exception ex)
             {
-                Notifications.Add(new Notification(ex));
+                NotificationsVM.Instance.Notifications.Add(new Notification(ex));
                 return false;
             }
+            if (OriginalCircuit != null)
+                OriginalCircuit.CircuitText = this.CircuitText;
+
             return true;
         }
 
@@ -419,6 +422,7 @@ namespace ElectricalAnalysis.Components
             }
             cir.Reference = Reference;
             cir.OriginalCircuit = this;
+            cir.CircuitText = CircuitText;
             return cir;
         }
 
@@ -443,7 +447,7 @@ namespace ElectricalAnalysis.Components
             }
             catch (Exception ex)
             {
-                Notifications.Add(new Notification(ex));
+                NotificationsVM.Instance.Notifications.Add(new Notification(ex));
                 return false;
             }
 

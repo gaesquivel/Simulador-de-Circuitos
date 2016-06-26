@@ -31,6 +31,8 @@ namespace ElectricalAnalysis.Analysis.Solver
 
         public override bool Solve(Circuit cir, BasicAnalysis ana)
         {
+            cir.State = Circuit.CircuitState.Solving;
+
             Voltages = new Dictionary<double, Dictionary<string, Complex>>();
             Currents = new Dictionary<double, Dictionary<string, Complex>>();
 
@@ -43,12 +45,12 @@ namespace ElectricalAnalysis.Analysis.Solver
 
             if (!StringUtils.DecodeString(analis.StartFrequency,out wi))
             {
-                ViewModelBase.Notifications.Add(new Notification("Error reading Wi", Notification.ErrorType.error));
+                NotificationsVM.Instance.Notifications.Add(new Notification("Error reading Wi", Notification.ErrorType.error));
                 return false;
             }
             if (!StringUtils.DecodeString(analis.EndFrequency, out wf))
             {
-                ViewModelBase.Notifications.Add(new Notification("Error reading Wf", Notification.ErrorType.error));
+                NotificationsVM.Instance.Notifications.Add(new Notification("Error reading Wf", Notification.ErrorType.error));
                 return false;
             }
             w = wi;

@@ -31,7 +31,9 @@ namespace ElectricalAnalysis.Analysis.Solver
 
         public override bool Solve(Circuit cir, BasicAnalysis ana)
         {
-            ViewModelBase.Notifications.Add(new Notification("Solving..."));
+            cir.State = Circuit.CircuitState.Solving;
+
+            NotificationsVM.Instance.Notifications.Add(new Notification("Solving..."));
             Voltages = new Dictionary<Complex, Dictionary<string, Complex>>();
             Currents = new Dictionary<Complex, Dictionary<string, Complex>>();
             WfromIndexes = new Dictionary<Tuple<int, int>, Complex>();
@@ -69,7 +71,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                 {
                     double sigma = (sigmamin + j * deltasig);
                     if (w == 0 && sigma == 0)
-                        ViewModelBase.Notifications.Add(
+                        NotificationsVM.Instance.Notifications.Add(
                                 new Notification("w = Cero: i=" + i.ToString() + ", j=" + j.ToString()));
                     //Calculo de tensiones de nodos
                     S = new Complex(sigma, w);
@@ -117,7 +119,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                     SelectedNode = CurrentCircuit.Nodes["out"];
                 else
                 {
-                    ViewModelBase.Notifications.Add(
+                    NotificationsVM.Instance.Notifications.Add(
                         new Notification("No node or component selected. must select one!", 
                                         Notification.ErrorType.error));
                     return false;

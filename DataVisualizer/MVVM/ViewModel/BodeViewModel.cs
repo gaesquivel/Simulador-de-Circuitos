@@ -37,7 +37,7 @@ namespace DataVisualizer.MVVM.ViewModel
 
         public BodeViewModel()
         {
-            Name = "Bode";
+            Name = "Bode/AC sweep";
             source1 = new ObservableDataSource<Tuple<double, double>>();
             source2 = new ObservableDataSource<Tuple<double, double>>();
 

@@ -17,7 +17,6 @@ namespace CircuitMVVMBase.MVVM
     {
         private static object _selectedobject;
 
-        RecentFileList recents;
 
         protected Timeline animation;
         protected Storyboard myStoryboard;
@@ -38,10 +37,19 @@ namespace CircuitMVVMBase.MVVM
             }
         }
 
-        public RecentFileList RecentFiles
-        {
+        static RecentFileList recents;
+        public RecentFileList RecentFiles {
             get { return recents; }
+            set {
+                if (value == null)
+                    throw new NullReferenceException();
+                if (value != recents)
+                    value.MenuClick += (s, e) => OpenFile(e.Filepath);
+                recents = value;
+            } 
         }
+
+
         //const string NoFile = "No file";
         ////const string NewFile = "New nameless file";
 
@@ -261,10 +269,10 @@ namespace CircuitMVVMBase.MVVM
         {
             if (MainObjects == null)
                 MainObjects = new ObservableCollection<object>();
-            if (recents == null)
-                recents = new RecentFileList();
+            if (RecentFiles == null)
+                RecentFiles = new RecentFileList();
             myStoryboard = new Storyboard();
-
+            RecentFiles.MenuClick += (s, e) => OpenFile(e.Filepath);
         }
 
         protected virtual void Animate(object obj)
@@ -282,16 +290,24 @@ namespace CircuitMVVMBase.MVVM
 
         protected virtual void OpenFile(object obj)
         {
-            OpenFileDialog dlg = new OpenFileDialog();
-            dlg.InitialDirectory = System.IO.Path.GetDirectoryName(
-                System.Reflection.Assembly.GetEntryAssembly().Location); ;
-            dlg.Filter = "Circuit Net List files (*.net)|*.net|All files (*.*)|*.*";
-            if (dlg.ShowDialog() == true)
+            if (obj is string)
             {
-                Simulate(dlg.FileName);
+                string Filename = obj as string;
+                Simulate(Filename);
             }
-            recents.InsertFile(dlg.FileName);
-
+            else
+            {
+                OpenFileDialog dlg = new OpenFileDialog();
+                dlg.InitialDirectory = System.IO.Path.GetDirectoryName(
+                    System.Reflection.Assembly.GetEntryAssembly().Location); ;
+                dlg.Filter = "Circuit Net List files (*.net)|*.net|All files (*.*)|*.*";
+                if (dlg.ShowDialog() == true)
+                {
+                    Simulate(dlg.FileName);
+                }
+                RecentFiles.InsertFile(dlg.FileName);
+           }
+            
         }
 
         protected abstract void Redraw(object obj);

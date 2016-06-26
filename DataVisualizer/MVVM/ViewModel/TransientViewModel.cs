@@ -84,6 +84,10 @@ namespace DataVisualizer.MVVM.ViewModel
                 CurrentCircuit = new Circuit();
                 //CurrentCircuit.Setup.RemoveAt(0);
             }
+            if (CurrentCircuit.IsChanged)
+            {
+                CurrentCircuit.Parse();
+            }
             ac1 = CurrentAnalisys() as TransientAnalysis;
             if (ac1 == null)
             {
@@ -123,32 +127,50 @@ namespace DataVisualizer.MVVM.ViewModel
 
         private void AddVoltage(TransientSolver sol5, string name)
         {
+            bool wasfinded = false;
             foreach (var data in sol5.Voltages)
             {
                 foreach (var item in data.Value)
                 {
                     if (item.Key == name)
                     {
+                        wasfinded = true;
                         Tuple<double, double> p = new Tuple<double, double>(data.Key, item.Value);
                         DataSource.Collection.Add(p);
                     }
                 }
             }
+            if (wasfinded)
+                PlottedItem = sol5.CurrentCircuit.Nodes[name] as Item;
+
         }
 
         private void AddCurrent(TransientSolver sol5, string name)
         {
+            bool wasfinded = false;
             foreach (var data in sol5.Currents)
             {
                 foreach (var item in data.Value)
                 {
                     if (item.Key == name)
                     {
+                        wasfinded = true;
                         Tuple<double, double> p = new Tuple<double, double>(data.Key, item.Value);
                         DataSource.Collection.Add(p);
                     }
                 }
+
             }
+            if (wasfinded)
+                foreach (var item in sol5.CurrentCircuit.Components)
+                {
+                    if (item.Name == name)
+                    {
+                        PlottedItem = item;
+                        break;
+                    }
+                }
+            //    PlottedItem = sol5.CurrentCircuit.Components[name] as Item;
         }
 
     }

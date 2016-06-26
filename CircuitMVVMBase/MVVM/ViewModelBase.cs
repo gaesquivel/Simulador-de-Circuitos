@@ -1,4 +1,5 @@
 ﻿using System.Collections.ObjectModel;
+using System.Collections.Specialized;
 using System.ComponentModel;
 using System.Runtime.CompilerServices;
 using System.Windows;
@@ -7,16 +8,17 @@ namespace CircuitMVVMBase.MVVM
 {
     public abstract class ViewModelBase : DependencyObject, INotifyPropertyChanged
     {
-        static ObservableCollection<Notification> notifications;
-        public static ObservableCollection<Notification> Notifications {
-            get {
-                if (notifications == null)
-                {
-                    notifications = new ObservableCollection<Notification>();
-                }
-                return notifications;
-            }
-        }
+        //static ObservableCollection<Notification> notifications;
+        //public ObservableCollection<Notification> Notifications {
+        //    get {
+        //        if (notifications == null)
+        //        {
+        //            notifications = new ObservableCollection<Notification>();
+        //            notifications.CollectionChanged += Notifications_CollectionChanged;
+        //        }
+        //        return notifications;
+        //    }
+        //}
 
         bool isbusy;
         public virtual bool IsBusy {
@@ -31,19 +33,19 @@ namespace CircuitMVVMBase.MVVM
         //    RaisePropertyChanged("LastNotification");
         //}
 
-        public Notification LastNotification {
-            get {
-                if (Notifications.Count == 0)
-                    return new Notification("...");
-                return Notifications[Notifications.Count - 1];
-            }
-        }
+        //public Notification LastNotification {
+        //    get {
+        //        if (Notifications.Count == 0)
+        //            return new Notification("...");
+        //        return Notifications[Notifications.Count - 1];
+        //    }
+        //}
 
         public event PropertyChangedEventHandler PropertyChanged;
 
         public ViewModelBase()
         {
-            Notifications.CollectionChanged += (x, y) => { RaisePropertyChanged("LastNotification"); };
+            //Notifications.CollectionChanged += (x, y) => { RaisePropertyChanged("LastNotification"); };
         }
 
 

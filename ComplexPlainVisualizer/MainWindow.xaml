@@ -5,11 +5,13 @@
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         xmlns:s="clr-namespace:System;assembly=mscorlib"
         xmlns:h="clr-namespace:HelixToolkit.Wpf;assembly=HelixToolkit.Wpf" 
+        xmlns:basevm="clr-namespace:CircuitMVVMBase.MVVM;assembly=CircuitMVVMBase" 
         xmlns:local1="clr-namespace:DataVisualizer.MVVM.ViewModel" 
         xmlns:local="clr-namespace:ComplexPlainVisualizer.MVVM.ViewModel" 
         xmlns:wpg="clr-namespace:System.Windows.Controls"
         xmlns:conv="clr-namespace:CircuitMVVMBase.Converters;assembly=CircuitMVVMBase"
         xmlns:d3="http://research.microsoft.com/DynamicDataDisplay/1.0"
+        xmlns:common="clr-namespace:Common;assembly=RecentFileListLib"
     
         Title="Complex Plain 3D Viewer" Height="500" Width="800" 
         Icon="Images/planoCsmall.png">
@@ -21,15 +23,17 @@
         <conv:ErrorToImageConverter x:Key="errtoimg"/>
         <conv:BoolToVisibilityConverter x:Key="visconv"/>
         <conv:LargeStringConverter x:Key="pathconv"/>
+        <basevm:NotificationsVM x:Key="news" />
     </Window.Resources>
     <Grid>
         <Grid.RowDefinitions>
+            <RowDefinition Height="20" />
             <RowDefinition Height="40" />
             <RowDefinition Height="*" />
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
 
-        <ToolBar>
+        <ToolBar Grid.Row="1">
             <Button Command="{Binding ComplexVM.NewFileCommand}" ToolTip="New Blank .Net Pspice File">
                 <Image Source="Images/document.png" />
             </Button>
@@ -119,8 +123,29 @@
 
         </ToolBar>
 
+        <Menu Grid.Row="0" Background="#FFA9D1F4">
+            <Menu.ItemsPanel>
+                <ItemsPanelTemplate>
+                    <DockPanel HorizontalAlignment="Stretch"/>
+                </ItemsPanelTemplate>
+            </Menu.ItemsPanel>
 
-        <xcad:DockingManager Grid.Row="1"
+            <MenuItem Header="_File">
+                <MenuItem Header="_New" Command="{Binding SelectedVM.NewFileCommand}" />
+                <MenuItem Header="_Open" Command="{Binding SelectedVM.OpenFileCommand}" />
+                <MenuItem Header="_Save" Command="{Binding SelectedVM.SaveFileCommand}" />
+                <MenuItem Header="Save _As" Command="{Binding SelectedVM.SaveAsFileCommand}" />
+                <common:RecentFileList x:Name="RecentFileList" />
+            </MenuItem>
+            <MenuItem Header="_Simulate">
+                <MenuItem Header="_Run" Command="{Binding SelectedVM.SimulateCommand}" />
+                <MenuItem Header="Re_fresh" Command="{Binding SelectedVM.DrawSelectedCommand}" />
+            </MenuItem>
+            <MenuItem Header="_Help" HorizontalAlignment="Right" >
+                <MenuItem Header="_About" Command="{Binding SelectedVM.AboutCommand}" />
+            </MenuItem>
+        </Menu>
+        <xcad:DockingManager Grid.Row="2"
                            AllowMixedOrientation="True"
                            BorderBrush="Black"
                            BorderThickness="1"
@@ -154,20 +179,24 @@
                                             AutoHideWidth="240" IconSource="Images/address_book.png">
 
                             <ItemsControl ScrollViewer.VerticalScrollBarVisibility="Auto"
-                                    ItemsSource="{Binding SelectedVM.Notifications}">
+                                    ItemsSource="{Binding Source={StaticResource news}, 
+                                                            Path=Instance.Notifications}">
                                 <ItemsControl.ItemTemplate>
                                     <DataTemplate>
                                         <Grid Margin="0,0,0,5">
                                             <Grid.ColumnDefinitions>
+                                                <ColumnDefinition Width="20" />
                                                 <ColumnDefinition Width="*" />
-                                                <ColumnDefinition Width="10" />
                                             </Grid.ColumnDefinitions>
-                                            <TextBlock Text="{Binding Message}"
-                                                        Background="{Binding Error, 
-                                                        Converter={StaticResource errconv}}"/>
-                                            <Image  Grid.Column="1" 
-                                                        Source="{Binding Error,
+                                            <Image  
+                                                        Source="{Binding Error, 
                                                         Converter={StaticResource errtoimg}}"/>
+                                            <TextBlock Grid.Column="1"  
+                                                       Text="{Binding Message}"
+                                                       TextWrapping="Wrap"
+                                                        Background="{Binding Error, 
+                                                                    Converter={StaticResource errconv}}"/>
+ 
                                         </Grid>
                                     </DataTemplate>
                                 </ItemsControl.ItemTemplate>
@@ -387,7 +416,7 @@
             </xcad:LayoutRoot>
         </xcad:DockingManager>
 
-        <StatusBar Grid.Row="2">
+        <StatusBar Grid.Row="3">
             <StatusBarItem>
                 <TextBlock  Name="tctFileName" 
                             Text="{Binding SelectedVM.CurrentCircuit.FileName, Mode=OneWay, Converter={StaticResource pathconv}}" 
@@ -411,13 +440,17 @@
 
             <StatusBarItem>
                 <StackPanel Orientation="Horizontal">
-                    <TextBlock Text="{Binding SelectedVM.LastNostification.Message}" 
-                           Background="{Binding SelectedVM.LastNostification.Error, 
-                                            Converter={StaticResource errconv}}" />
-                    <Image Source="{Binding SelectedVM.LastNostification.Error,
-                                            Converter={StaticResource errtoimg}}"/>
+                    <TextBlock  Text="{Binding Source={StaticResource news}, 
+                                        Path=Instance.LastNotification.Message}" 
+                                Background="{Binding Source={StaticResource news}, 
+                                        Path=Instance.LastNotification.Error, 
+                                        Converter={StaticResource errconv}}" />
+                    <Image Name="img1" Source="{Binding Source={StaticResource news}, 
+                                        Path=Instance.LastNotification.Error, 
+                                        Converter={StaticResource errtoimg}}" />
                 </StackPanel>
             </StatusBarItem>
+          
             <StatusBarItem>
                 <ProgressBar Margin="8,0,3,0"
                              Value="{Binding SelectedVM.Progress}"

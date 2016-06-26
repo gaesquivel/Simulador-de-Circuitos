@@ -258,7 +258,7 @@ namespace DataVisualizer.MVVM.ViewModel
 
         public ComplexPlainViewModel() : base()
         {
-            Name = "Complex Plain";
+            Name = "Complex Plain 3D View";
             ShortDescription = "";
             ColorCoding = ColorCoding.ByGradientY;
             //dataSource = new WarpedDataSource2D<double>(data, gridData);
@@ -384,7 +384,7 @@ namespace DataVisualizer.MVVM.ViewModel
             //if (CurrentCircuit.IsChanged)
             if (!CurrentCircuit.Parse())
             {
-                Notifications.Add(new CircuitMVVMBase.Notification("Error in parsing", CircuitMVVMBase.Notification.ErrorType.error));
+                NotificationsVM.Instance.Notifications.Add(new CircuitMVVMBase.Notification("Error in parsing", CircuitMVVMBase.Notification.ErrorType.error));
                 return;
             }
             IsBusy = CurrentCircuit.Solve(ac1);
@@ -460,7 +460,7 @@ namespace DataVisualizer.MVVM.ViewModel
                                 if (valor == 0)
                                 {
                                     FindLimitValue(sol1, nodename, i, j, Rows, Columns, ref valor, ref fase);
-                                    Notifications.Add(new CircuitMVVMBase.Notification(
+                                    NotificationsVM.Instance.Notifications.Add(new CircuitMVVMBase.Notification(
                                         "Zero in Log scale at i=" + i.ToString() +
                                         ", j=" + j.ToString()));
                                 }

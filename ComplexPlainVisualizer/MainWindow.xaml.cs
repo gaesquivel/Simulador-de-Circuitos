@@ -1,4 +1,5 @@
-﻿using ComplexPlainVisualizer.MVVM.ViewModel;
+﻿using CircuitMVVMBase.MVVM;
+using ComplexPlainVisualizer.MVVM.ViewModel;
 using DataVisualizer.MVVM.ViewModel;
 using ElectricalAnalysis.Analysis;
 using ElectricalAnalysis.Analysis.Solver;
@@ -23,11 +24,11 @@ namespace DataVisualizer
             InitializeComponent();
 
             model = plano;//new MasterViewModel();
-            //model.
-            //RegisterName()
+           // img1.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri("Images/Errors/note.png", UriKind.Relative));
+            
             model.ComplexVM.surface = surface1;
             model.ComplexVM.ViewPort = viewport.Viewport;
-
+            model.ComplexVM.RecentFiles = RecentFileList;
             model.BodeVM.phasegraph = phasegraph;
             model.BodeVM.linegraph = linegraph;
             model.BodeVM.ModulePlotter = plotter;
@@ -38,6 +39,7 @@ namespace DataVisualizer
 
             DataContext = model;
         }
-     
+
+    
     }
 }

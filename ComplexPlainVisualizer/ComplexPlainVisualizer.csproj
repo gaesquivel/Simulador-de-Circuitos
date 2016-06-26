@@ -121,6 +121,7 @@
       <SubType>Designer</SubType>
     </ApplicationDefinition>
     <Compile Include="MVVM\ViewModel\ComplexPlainViewModel.cs" />
+    <Compile Include="MVVM\ViewModel\DCViewModel.cs" />
     <Compile Include="MVVM\ViewModel\MasterViewModel.cs" />
     <Compile Include="MVVM\ViewModel\SurfacePlotVisual3D.cs" />
     <Compile Include="Window1.xaml.cs">
@@ -204,6 +205,9 @@
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Circuits\ComplexPlainAndBode\BipolarSmallSignal3Et.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\DCbias\DCAmplificadorFBmosET1.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Circuits\integrador.net">

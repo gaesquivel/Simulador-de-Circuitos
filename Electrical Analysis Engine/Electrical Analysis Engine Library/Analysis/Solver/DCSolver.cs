@@ -186,7 +186,7 @@ namespace ElectricalAnalysis.Analysis.Solver
             }
             catch (Exception ex)
             {
-                ViewModelBase.Notifications.Add(new Notification(ex));
+                NotificationsVM.Instance.Notifications.Add(new Notification(ex));
             }
             return super;
         }
@@ -229,6 +229,7 @@ namespace ElectricalAnalysis.Analysis.Solver
 
         public virtual bool Solve(Circuit cir, BasicAnalysis ana)
         {
+            cir.State = Circuit.CircuitState.Solving;
 
             SolveInfo solveinfo = PreAnalizeToSolve(cir);
 
@@ -245,6 +246,8 @@ namespace ElectricalAnalysis.Analysis.Solver
             CalculateCurrents(CurrentCircuit, null);
 
             #endregion
+
+            cir.State = Circuit.CircuitState.Solved;
 
             return true;    
         }

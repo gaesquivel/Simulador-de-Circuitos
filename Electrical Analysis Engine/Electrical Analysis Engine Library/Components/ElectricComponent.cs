@@ -1,6 +1,7 @@
 ﻿//using System.Numerics;
 
 using CircuitMVVMBase;
+using CircuitMVVMBase.MVVM;
 using System.Windows;
 
 namespace ElectricalAnalysis.Components
@@ -45,7 +46,7 @@ namespace ElectricalAnalysis.Components
                 if (StringUtils.DecodeString(value, out val))
                     Value = val;
                 else
-                    Notifications.Add(new Notification("Invalid value :" + 
+                    NotificationsVM.Instance.Notifications.Add(new Notification("Invalid value :" + 
                         value, Notification.ErrorType.warning));
             }
         }

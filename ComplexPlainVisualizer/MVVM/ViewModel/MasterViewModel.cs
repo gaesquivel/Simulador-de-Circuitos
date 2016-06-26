@@ -14,6 +14,7 @@ namespace ComplexPlainVisualizer.MVVM.ViewModel
         public ComplexPlainViewModel ComplexVM { get; set; }
         public BodeViewModel BodeVM { get; set; }
         public TransientViewModel TransientVM { get; set; }
+        public DCViewModel DCVM { get; set; }
 
         public ObservableCollection<ViewModelBase> Models { get; private set; }
 
@@ -32,6 +33,7 @@ namespace ComplexPlainVisualizer.MVVM.ViewModel
             Models.Add(ComplexVM);
             Models.Add(BodeVM);
             Models.Add(TransientVM);
+            //Models.Add(DCVM);
             SelectedVM = ComplexVM;
         }
 

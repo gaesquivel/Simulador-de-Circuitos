@@ -1,4 +1,5 @@
 ﻿using CircuitMVVMBase;
+using CircuitMVVMBase.MVVM;
 using ElectricalAnalysis.Laplace;
 using System;
 using System.Collections.Generic;
@@ -84,7 +85,7 @@ namespace ElectricalAnalysis.Components.Controlled
             }
             catch (Exception ex)
             {
-                Notifications.Add(new Notification(ex));
+                NotificationsVM.Instance.Notifications.Add(new Notification(ex));
             }
             return false;
         }
@@ -109,7 +110,7 @@ namespace ElectricalAnalysis.Components.Controlled
                     item.Remove(item.Length - 1);
                 else
                 {
-                    Notifications.Add(new Notification("Error on try parse expression: " + item));
+                    NotificationsVM.Instance.Notifications.Add(new Notification("Error on try parse expression: " + item));
                     return false;
                 }
                 char plus = '+';
@@ -155,7 +156,7 @@ namespace ElectricalAnalysis.Components.Controlled
                     if ((W.Value - sing.Value) == Complex.Zero)
                     {
                         v = new Complex(double.PositiveInfinity, double.PositiveInfinity);
-                        Notifications.Add(new Notification("Pole detected at " + sing.ToString()));
+                        NotificationsVM.Instance.Notifications.Add(new Notification("Pole detected at " + sing.ToString()));
                         break;
                     }
                     v = v / (W.Value - sing.Value);
