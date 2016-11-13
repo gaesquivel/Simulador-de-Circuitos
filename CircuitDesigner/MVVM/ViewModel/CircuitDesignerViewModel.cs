@@ -46,11 +46,18 @@ namespace CircuitDesigner.MVVM.ViewModel
             {
                 return;
             }
+            OpenCircuit();
+        }
+
+        public void OpenCircuit()
+        {
+            Shapes.Clear();
+            //StreamReader reader = File.OpenText("Circuits/test1.asc");
             StreamReader reader = File.OpenText("Circuits/svdt-mos2.asc");
             string cir = reader.ReadToEnd();
             reader.Close();
 
-            string []lines =  cir.Replace('\t', ' ').Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries); ;
+            string[] lines = cir.Replace('\t', ' ').Split("\r\n".ToCharArray(), StringSplitOptions.RemoveEmptyEntries); ;
 
             foreach (var line in lines)
             {
@@ -68,9 +75,13 @@ namespace CircuitDesigner.MVVM.ViewModel
                             rects.Add(o);
                         }
                     }
-                    Line lin = new Line() { X1 = rects[0], X2 = rects[2],
-                                            Y1 = rects[1], Y2 = rects[3],
-                                            Width = 2, Stroke = Brushes.Black,
+                    Line lin = new Line()
+                    {
+                        X1 = rects[0],
+                        X2 = rects[2],
+                        Y1 = rects[1],
+                        Y2 = rects[3],
+                        Stroke = Brushes.Black,
                         StrokeThickness = 2
                     };
                     Shapes.Add(lin);
@@ -91,35 +102,34 @@ namespace CircuitDesigner.MVVM.ViewModel
                     }
                     Ellipse lin = new Ellipse()
                     {
-                        Margin = new Thickness(rects[0],rects[1],0,0),
+                        Margin = new Thickness(rects[0], rects[1], 0, 0),
                         Width = 100,
                         Height = 100,
                         Stroke = Brushes.Blue,
                         StrokeThickness = 2
-                        
+
                     };
-                    
+
                     Shapes.Add(lin);
                 }
 
             }
-            Line lin2 = new Line()
-            {
-                X1 = 10,
-                X2 = 20,
-                Y1 = 10,
-                Y2 = 20,
-                Width = 2,
-                Stroke = Brushes.Red
-            };
-            Shapes.Add(lin2);
-            TextBox txt = new TextBox();
-            txt.Width = 100;
-            txt.Height = 100;
-            //txt.Margin=
-            txt.Text = "Hola";
-            Shapes.Add(txt);
+            //Line lin2 = new Line()
+            //{
+            //    X1 = 10,
+            //    X2 = 20,
+            //    Y1 = 10,
+            //    Y2 = 20,
+            //    Width = 2,
+            //    Stroke = Brushes.Red
+            //};
+            //Shapes.Add(lin2);
+            //TextBox txt = new TextBox();
+            //txt.Width = 100;
+            //txt.Height = 100;
+            ////txt.Margin=
+            //txt.Text = "Hola";
+            //Shapes.Add(txt);
         }
-
     }
 }

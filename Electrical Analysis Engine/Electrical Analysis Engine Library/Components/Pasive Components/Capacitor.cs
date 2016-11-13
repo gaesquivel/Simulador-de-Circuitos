@@ -34,7 +34,7 @@ namespace ElectricalAnalysis.Components
             //recalculo la corriente
             double i = 0;
            
-            i = -Current(referenceNode, t);
+            i = Current(referenceNode, t);
             //double vant = charge / Value;
             //if (referenceNode == Nodes[0])
             //    vant = -vant;
@@ -42,12 +42,12 @@ namespace ElectricalAnalysis.Components
             charge += q;
             double v = charge / Value;
 
-            if (referenceNode == Nodes[0])
-                return -v;
-            else if (referenceNode == Nodes[1])
+            //if (referenceNode == Nodes[0])
                 return v;
-            else
-                throw new InvalidOperationException();
+            //else if (referenceNode == Nodes[1])
+            //    return -v;
+            //else
+            //    throw new InvalidOperationException();
         }
 
         public override Complex Current(NodeSingle referenceNode, Complex? W = null)

@@ -37,8 +37,14 @@ namespace ElectricalAnalysis.Analysis.Solver
             
             #region time initialization
 
-            deltat = StringUtils.DecodeString(analis.Step);
-            tf = StringUtils.DecodeString(analis.FinalTime);
+            if (!StringUtils.DecodeString(analis.Step, out deltat))
+                NotificationsVM.Instance.Notifications.Add(
+                    new Notification("Error to parse Delta T: " + deltat.ToString()));
+            if (!StringUtils.DecodeString(analis.FinalTime, out tf))
+                NotificationsVM.Instance.Notifications.Add(
+                    new Notification("Error to parse Final Time: " + tf.ToString()));
+            //deltat = StringUtils.DecodeString(analis.Step);
+            //tf = StringUtils.DecodeString(analis.FinalTime);
             t = 0;
             cir.CircuitTime = t;
             cir.Reset();
@@ -198,7 +204,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                     return true;
                 case ExportFormats.Bitmap:
                     throw new NotImplementedException();
-                    break;
+                    //break;
                 default:
                     break;
             }

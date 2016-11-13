@@ -53,6 +53,23 @@ namespace ElectricalAnalysis.Components
         }
 
         /// <summary>
+        /// 
+        /// </summary>
+        /// <param name="value"></param>
+        /// <param name="referenceNode">
+        /// Reference node where the current flow in.
+        /// Null if the first node is assumed
+        /// </param>
+        public virtual void Current(Complex value, NodeSingle referenceNode = null)
+        {
+            //el signo contrario al pensado, entra por neagtivo y sale por positivo
+            if (referenceNode == null || referenceNode == Nodes[0])
+                current = value;
+            else
+                current = -value;
+        }
+
+        /// <summary>
         /// Valor de la corriente de continua medida en el terminal 0
         /// </summary>
         [Browsable(false)]
@@ -62,7 +79,7 @@ namespace ElectricalAnalysis.Components
             {
                 return _current;
             }
-            internal set
+            private set
             {
                 _current = value;
             }

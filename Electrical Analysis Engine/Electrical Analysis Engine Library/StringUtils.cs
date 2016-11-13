@@ -91,9 +91,15 @@ namespace ElectricalAnalysis
                                                                                     {-2, "u"},
                                                                                     {-3, "n"},
                                                                                     {-4, "p"},
-                                                                                    {-5, "a"}
+                                                                                    {-5, "a"},
+                                                                                    {-6, "f"}
                                                                                     };
-
+        /// <summary>
+        /// Given a number, convert its to engineering notation, p.e: 
+        /// 160,000 = 160K
+        /// </summary>
+        /// <param name="number">the numbre to convert to...</param>
+        /// <returns></returns>
         public static string CodeString(double number)
         {
             if (number == 0)
@@ -150,7 +156,9 @@ namespace ElectricalAnalysis
                                 { "m", 1E-3 },
                                 { "u", 1E-6 },
                                 { "n", 1E-9 },
-                                { "p", 1E-12 }
+                                { "p", 1E-12 },
+                                { "a", 1E-15 },
+                                { "f", 1E-18 },
             };
 
             var m = re.Match(measure);

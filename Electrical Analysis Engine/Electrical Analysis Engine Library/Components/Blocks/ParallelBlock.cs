@@ -39,10 +39,10 @@ namespace ElectricalAnalysis.Components
             {
                 return Voltage / Impedance();
             }
-            internal set
-            {
-                _current = value;
-            }
+            //internal set
+            //{
+            //    _current = value;
+            //}
         }
 
 

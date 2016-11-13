@@ -36,10 +36,10 @@ namespace ElectricalAnalysis.Components
             //si ya se calculo la corriente devuelvo la calculada
             if (deltat == 0)
             {
-                //if (referenceNode == Nodes[0])
-                //    return -_current.Real;
-                //else if (referenceNode == Nodes[1])
-                return _current.Real;
+                if (referenceNode == Nodes[0])
+                    return _current.Real;
+                else if (referenceNode == Nodes[1])
+                    return -_current.Real;
                 //else
                 //    throw new NotImplementedException();
             }
@@ -54,13 +54,15 @@ namespace ElectricalAnalysis.Components
             //if (referenceNode == Nodes[0])
             //    //_current = new Complex(-i, 0);
             //    i = 1 * i;
-            //else if (referenceNode == Nodes[1])
-            //    //_current = new Complex(i, 0);
+            //else
+            //if (referenceNode == Nodes[1])
+                //_current = new Complex(i, 0);
             //    i = -i;
             //else
             //    throw new NotImplementedException();
 
             _current = new Complex(i, 0);
+
             return _current.Real;
         }
 

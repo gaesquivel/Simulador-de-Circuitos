@@ -62,6 +62,12 @@
     <None Include="Circuits\Amplificador3Et.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Circuits\DC Bias\RVI.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\DC Bias\RIV.net">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    </None>
     <None Include="Circuits\derivador.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>

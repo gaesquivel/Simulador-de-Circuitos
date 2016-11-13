@@ -9,12 +9,13 @@ using CircuitMVVMBase.MVVM;
 using CircuitMVVMBase;
 using System.Windows;
 using System.Threading.Tasks;
+using ElectricalAnalysis.Analysis;
 
 namespace ElectricalAnalysis.Components
 {
     /// <summary>
     /// Represent a Electric Circuit, including all pasive
-    /// and activ components (like resistors)
+    /// and active components (like resistors)
     /// </summary>
     public class Circuit:Item, ICloneable, ComponentContainer
     {
@@ -104,7 +105,7 @@ namespace ElectricalAnalysis.Components
         /// Try to parse the current Circuit text
         /// </summary>
         /// <returns>Return false if parse fails</returns>
-        public bool Parse()
+        public virtual bool Parse()
         {
             HasErrors = false;
             try
@@ -118,6 +119,65 @@ namespace ElectricalAnalysis.Components
                     #region formating
 
                     string item = lines[i];
+                  
+
+                    if (item.StartsWith("*."))
+                    {
+                        //alguna opcion de analisis
+                        string [] anali = item.ToLower().Substring(2).Split(" ".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                        switch (anali[0])
+                        {
+                            case "tran":
+                                #region transient
+                                TransientAnalysis setup = null;
+
+                                foreach (var itm in Setup)
+                                {
+                                    if (itm is TransientAnalysis)
+                                    {
+                                        setup = itm as TransientAnalysis;
+                                        break;
+                                    }
+                                }
+                                if (setup == null)
+                                {
+                                    setup = new TransientAnalysis();
+                                    Setup.Add(setup);
+                                }
+                                if (anali.Length == 2)  //.tran 2m
+                                    setup.FinalTime = anali[1];
+                                else if (anali.Length == 3) //.tran 2m startup
+                                {
+                                    setup.FinalTime = anali[1];
+                                    setup.Step = anali[2];
+                                    //throw new NotImplementedException();
+                                }
+                                else if (anali.Length == 5) //.tran 0 2m 0 10u
+                                {
+                                    setup.FinalTime = anali[2];
+                                    setup.Step = anali[4];
+                                }
+                                else
+                                    NotificationsVM.Instance.Notifications.Add(
+                                        new Notification("Unknown analisys setup", Notification.ErrorType.warning));
+                                break;
+                            #endregion
+                            case "op":
+                                throw new NotImplementedException();
+                                //break;
+                            case "ac":
+                                throw new NotImplementedException();
+                            case "plain":
+                                throw new NotImplementedException();
+
+                            //break;
+                            default:
+                                break;
+                        }
+                        continue;
+                    }
+
+
                     //un comentario
                     if (item.StartsWith("*"))
                     {
@@ -125,6 +185,7 @@ namespace ElectricalAnalysis.Components
                             Description = lines[i];
                         continue;
                     }
+
 
                     int j = i + 1;
                     while (j < lines.Length && lines[j].StartsWith("+"))
@@ -150,8 +211,11 @@ namespace ElectricalAnalysis.Components
                         case "V":
                             if (elemn.Length == 4)
                                 comp = new VoltageGenerator(this, comp1[1], elemn[3]);
+                            else if (elemn.Length == 5)
+                                comp = new VoltageGenerator(this, comp1[1], elemn[4]);
                             else if (elemn.Length == 7 || elemn.Length == 8)
                             {
+                                #region AC
                                 ACVoltageGenerator ac = new ACVoltageGenerator(this, comp1[1], elemn[4]);
                                 double v1 = 0, v2 = 0;
                                 if (!StringUtils.DecodeString(elemn[6], out v1))
@@ -164,16 +228,20 @@ namespace ElectricalAnalysis.Components
                                 else
                                     ac.ACVoltage = new Complex(v1, 0);
                                 comp = (ACVoltageGenerator)ac;
+                                #endregion
                             }
-                            else if (elemn.Length > 8)
+                            //else if (elemn.Length > 8 && item.Contains("SIN"))
+                            else if (item.ToUpper().Contains("SIN"))
                             {
-                                //V_V1         $N_0001 0 DC 0 AC 1
+                                #region Vsin
+                                //ltspice
+                                //V1 s 0 SINE(0 10 1k 10u) AC 1
+
+                                //orcad
+                                //V_V1  n1 n2 DC 0 AC 1
                                 //+SIN 1 1 1k 0 0 0
                                 SineVoltageGenerator vsin = new SineVoltageGenerator(this, comp1[1]);
-                                //if (elemn.Length == 8)
-                                //vsin.ACVoltage = new Complex(StringUtils.DecodeString(elemn[6]),
-                                //                            StringUtils.DecodeString(elemn[6]));
-                                //else
+                               
                                 double val = 0;
                                 if (StringUtils.DecodeString(elemn[6], out val))
                                     vsin.ACVoltage = new Complex(val, 0);
@@ -190,19 +258,67 @@ namespace ElectricalAnalysis.Components
                                 vsin.Delay = elemn[11];
                                 vsin.Phase = elemn[13];
                                 comp = vsin;
+                                #endregion
+                            }
+                            else if (item.ToUpper().Contains("PULSE"))
+                            {
+                                #region V pulse
+
+                                //ltSpice
+                                //V1 s 0 PULSE(0 10 10u 1n 1n 500u 1m 6) AC 1
+
+                                //Me
+                                //V1 n1 n2 DC 0 AC 1 PULSE offset amplitude Frequency Ton Delay Trise Tfall Cicles
+                                //Default     0    1         0       1           1K    50   0     0    0     oo
+                                //V1 n1 n2 DC 0 AC 1 PULSE 0 10 10u 1n 1n 500u 1m 6
+                                PulseVoltageGenerator vpul = new PulseVoltageGenerator(this, comp1[1]);
+                                
+                                double val = 0;
+                                if (StringUtils.DecodeString(elemn[6], out val))
+                                    vpul.ACVoltage = new Complex(val, 0);
+                                else
+                                    NotificationsVM.Instance.Notifications.Add(new Notification("Invalid value:" + elemn[6], Notification.ErrorType.error));
+                                if (StringUtils.DecodeString(elemn[4], out val))    //DC
+                                    vpul.Value = val;
+                                else
+                                    NotificationsVM.Instance.Notifications.Add(new Notification("Invalid value:" + elemn[4], Notification.ErrorType.error));
+                                vpul.Offset = elemn[8];
+                                vpul.Amplitude = elemn[9];
+                                vpul.Frequency = elemn[10];
+                                if (elemn.Length > 9)
+                                {
+                                    if (StringUtils.DecodeString(elemn[11], out val))    //DC
+                                        vpul.OnTime = (float)val;
+                                    else
+                                        NotificationsVM.Instance.Notifications.Add(new Notification("Invalid value:" + elemn[11], Notification.ErrorType.error));
+                                //vpul.OnTime = elemn[11];
+                                    vpul.Delay = elemn[12];
+                                    vpul.RiseTime = elemn[13];
+                                    vpul.FallTime = elemn[14];
+                                    vpul.Cicles = elemn[15];
+                                }
+                               
+                                comp = vpul;
+
+                                #endregion
+
                             }
                             else
                             {
                                 throw new NotImplementedException();
                             }
                             break;
+
+
                         case "I":
                             if (elemn[3] == "DC")
                                 comp = new CurrentGenerator(this, comp1[1], elemn[4]);
+                            else if(elemn.Length == 4)
+                                comp = new CurrentGenerator(this, comp1[1], elemn[3]);
                             else
                                 //aun sin resolver para otros generadores
                                 throw new NotImplementedException();
-                            comp = new CurrentGenerator(this, comp1[1], elemn[4]);
+                            //comp = new CurrentGenerator(this, comp1[1], elemn[4]);
 
                             break;
 
@@ -426,7 +542,7 @@ namespace ElectricalAnalysis.Components
             return cir;
         }
 
-        public bool SaveCircuit(string filename = null)
+        public bool Save(string filename = null)
         {
             if (string.IsNullOrEmpty(filename))
             {
@@ -450,7 +566,8 @@ namespace ElectricalAnalysis.Components
                 NotificationsVM.Instance.Notifications.Add(new Notification(ex));
                 return false;
             }
-
+            OriginalCircuit = Clone() as Circuit;
+            FileName = filename;
             return true;
         }
     }

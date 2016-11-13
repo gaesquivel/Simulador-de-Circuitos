@@ -13,11 +13,6 @@ namespace ElectricalAnalysis.Components
             {
                 return new Complex(Value, 0);
             }
-            //set
-            //{
-            //    base.Voltage = value;
-            //    Value = value.Real;
-            //}
         }
 
          public ACVoltageGenerator(ComponentContainer owner, string name, string value = null):base(owner)

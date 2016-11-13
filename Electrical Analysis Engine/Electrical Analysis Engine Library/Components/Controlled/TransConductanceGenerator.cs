@@ -59,7 +59,7 @@ namespace ElectricalAnalysis.Components.Controlled
                 v -= InputNodes[1].Voltage;
             }
             //Iout = gm * vin
-            current = v * new Complex(gain, 0);
+            Current(v * new Complex(gain, 0), referenceNode);
             if (referenceNode == Nodes[0])
                 return -current;
             return current;

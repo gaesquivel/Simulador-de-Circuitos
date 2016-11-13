@@ -17,27 +17,27 @@ namespace DataVisualizer
     /// </summary>
     public partial class MainWindow : Window
     {
-        MasterViewModel model;
+        //MasterViewModel model;
   
         public MainWindow()
         {
             InitializeComponent();
 
-            model = plano;//new MasterViewModel();
-           // img1.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri("Images/Errors/note.png", UriKind.Relative));
-            
-            model.ComplexVM.surface = surface1;
-            model.ComplexVM.ViewPort = viewport.Viewport;
-            model.ComplexVM.RecentFiles = RecentFileList;
-            model.BodeVM.phasegraph = phasegraph;
-            model.BodeVM.linegraph = linegraph;
-            model.BodeVM.ModulePlotter = plotter;
-            model.BodeVM.PhasePlotter = otherPlotter;
+            //model = plano;//new MasterViewModel();
+                          // img1.Source = new System.Windows.Media.Imaging.BitmapImage(new Uri("Images/Errors/note.png", UriKind.Relative));
 
-            model.TransientVM.Plotter = tplotter;
-            model.TransientVM.linegraph = tlinegraph;
+            plano.ComplexVM.surface = surface1;
+            plano.ComplexVM.ViewPort = viewport.Viewport;
+            plano.ComplexVM.RecentFiles = RecentFileList;
+            plano.BodeVM.phasegraph = phasegraph;
+            plano.BodeVM.linegraph = linegraph;
+            plano.BodeVM.ModulePlotter = plotter;
+            plano.BodeVM.PhasePlotter = otherPlotter;
 
-            DataContext = model;
+            plano.TransientVM.Plotter = tplotter;
+            plano.TransientVM.linegraph = tlinegraph;
+
+            //DataContext = model;
         }
 
     

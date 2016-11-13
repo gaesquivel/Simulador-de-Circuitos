@@ -70,7 +70,10 @@
     <Compile Include="Components\Generators\ACVoltageGenerator.cs" />
     <Compile Include="Components\Blocks\Block.cs" />
     <Compile Include="Components\Blocks\branch.cs" />
+    <Compile Include="Components\Generators\GeneratorExtensionMethods.cs" />
+    <Compile Include="Components\Generators\PulseVoltageGenerator.cs" />
     <Compile Include="Components\Generators\SineVoltageGenerator.cs" />
+    <Compile Include="Components\Generators\TransientGenerator.cs" />
     <Compile Include="Components\Model.cs" />
     <Compile Include="Components\NodeSingle.cs" />
     <Compile Include="Components\Pasive Components\Capacitor.cs" />

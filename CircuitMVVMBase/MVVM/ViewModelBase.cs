@@ -69,10 +69,7 @@ namespace CircuitMVVMBase.MVVM
             if (newvalue != null && newvalue.Equals(oldvalue))
                 return false;
             oldvalue = newvalue;
-            if (PropertyChanged != null)
-            {
-                PropertyChanged(this, new PropertyChangedEventArgs(propertyname));
-            }
+            PropertyChanged?.Invoke(this, new PropertyChangedEventArgs(propertyname));
             return true;
         }
 

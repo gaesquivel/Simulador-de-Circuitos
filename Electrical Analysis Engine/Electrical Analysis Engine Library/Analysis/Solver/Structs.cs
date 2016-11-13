@@ -1,4 +1,6 @@
-﻿using ElectricalAnalysis.Analysis.Solver;
+﻿using CircuitMVVMBase;
+using CircuitMVVMBase.MVVM;
+using ElectricalAnalysis.Analysis.Solver;
 using ElectricalAnalysis.Components;
 using ElectricalAnalysis.Components.Controlled;
 using System;
@@ -156,16 +158,46 @@ public class SolveInfo
     /// <returns></returns>
     public int ColumnIndexOf(NodeSingle e)
     {
+        int column = 0;
+        //n = NortonNodes.Count + SuperNodes.Count +
+        //       SpecialOutputCurrentComponents.Count + SpecialComponentNodes.Count +
+        //       SpecialInputCurrentComponents.Count + GeneratorInSupernodes.Count;
         if (NortonNodes.Contains(e))
-            return NortonNodes.IndexOf(e);
+            column = NortonNodes.IndexOf(e);
         else if (NodesInSupernodes.Contains(e))
-            return NortonNodes.Count + NodesInSupernodes.IndexOf(e);
+            column = NortonNodes.Count + NodesInSupernodes.IndexOf(e);
         else if (SpecialComponentNodes.Contains(e))
-            return NortonNodes.Count + NodesInSupernodes.Count //+ SpecialOutputCurrentComponents.Count
+            column = NortonNodes.Count + NodesInSupernodes.Count //+ SpecialOutputCurrentComponents.Count
                  + SpecialComponentNodes.IndexOf(e);
-
+        else if (SpecialComponents.Count > 0)
+        {
+            foreach (ControlledDipole comp in SpecialComponents)
+            {
+                if (comp is VoltageControlledGenerator)
+                {
+                    VoltageControlledGenerator volt = comp as VoltageControlledGenerator;
+                    if (volt.InputNodes.Contains(e))
+                        column = NortonNodes.Count + SuperNodes.Count +
+                                SpecialOutputCurrentComponents.Count +
+                                SpecialComponents.IndexOf(comp) +
+                                //SpecialComponentNodes.IndexOf(e);
+                                volt.InputNodes.IndexOf(e);
+                }
+            }
+            //return NortonNodes.Count + SuperNodes.Count +
+            //   SpecialOutputCurrentComponents.Count + SpecialComponentNodes.Count +
+            //   SpecialInputCurrentComponents.Count + GeneratorInSupernodes.Count;
+    }
         else
             throw new NotImplementedException();
+
+        if (column >= ColumnsCount)
+        {
+            NotificationsVM.Instance.Notifications.Add(
+                    new Notification("Error in determinate column index: " + column.ToString()));
+            column = 0;
+        }
+        return column;
     }
 
     /// <summary>

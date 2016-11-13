@@ -26,11 +26,11 @@ namespace CircuitMVVMBase.MVVM.ViewModel
             };
             SaveFileCommand.CanExecuteTarget = (x) =>
             {
-                return cir != null && cir.OriginalCircuit != null && cir.OriginalCircuit.CircuitText != cir.CircuitText;
+                return cir != null && cir.IsChanged;
             };
             SaveAsFileCommand.CanExecuteTarget = (x) =>
             {
-                return cir != null && cir.OriginalCircuit != null  && cir.OriginalCircuit.CircuitText != cir.CircuitText;
+                return cir != null;
             };
         }
 
@@ -98,7 +98,7 @@ namespace CircuitMVVMBase.MVVM.ViewModel
 
         protected override void SaveFile(object obj)
         {
-            cir.SaveCircuit();
+            cir.Save();
         }
 
         protected override void SaveAsFile(object obj)
@@ -108,7 +108,7 @@ namespace CircuitMVVMBase.MVVM.ViewModel
             save.Filter = "Circuit Net List files (*.net)|*.net|All files (*.*)|*.*";
             if (save.ShowDialog() == true)
             {
-                cir.SaveCircuit(save.FileName);
+                cir.Save(save.FileName);
             }
         }
 

@@ -1,10 +1,12 @@
 ﻿using CircuitMVVMBase.Commands;
+using CircuitMVVMBase.Properties;
 using Common;
 using Gat.Controls;
 using Microsoft.Win32;
 using System;
 using System.Collections.ObjectModel;
 using System.ComponentModel;
+using System.Reflection;
 using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Input;
@@ -99,12 +101,19 @@ namespace CircuitMVVMBase.MVVM
 
         private void About(object obj)
         {
+            //AboutControlViewModel model = new AboutControlViewModel();
+            //Gat.Controls.About ab = new Gat.Controls.About();
+            //ab.vi
             AboutControlView about = new AboutControlView();
             AboutControlViewModel vm = (AboutControlViewModel)about.FindResource("ViewModel");
 
             // setting several properties here
             vm.ApplicationLogo = new BitmapImage(new Uri("pack://application:,,,/Images/planoCsmall.png"));
-            //vm.
+            vm.Publisher = "Gabriel Esquivel";
+            vm.Title = "Complex Plain 3D Viewer";
+            vm.Version = Assembly.GetExecutingAssembly().GetName().Version.ToString();
+            vm.AdditionalNotes = "Created by Gabriel Esquivel... gaesquivel99@gmail.com";
+            //Assembly.
             // ...
 
             vm.Window.Content = about;

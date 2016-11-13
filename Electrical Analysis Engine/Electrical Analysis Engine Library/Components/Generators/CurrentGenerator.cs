@@ -18,10 +18,10 @@ namespace ElectricalAnalysis.Components
             {
                 return new Complex(Value, 0);
             }
-            internal set
-            {
-                _current = value;
-            }
+            //internal set
+            //{
+            //    _current = value;
+            //}
         }
 
         //public override Complex NortonCurrent(Node referenceNode, Complex? W = null)

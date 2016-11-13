@@ -17,7 +17,7 @@ namespace ElectricalAnalysis_Test
 
         static void Main(string[] args)
         {
-            int i = 11;
+            int i = 4;
            
             switch (i)
             {
@@ -37,7 +37,9 @@ namespace ElectricalAnalysis_Test
                     #region testidc
                     //cir.ReadCircuit("circuits/testidc.net");
                     //cir.ReadCircuit("circuits/testdc3.6.net");  //ok
-                    cir.ReadCircuit("circuits/testdc3.6.RCLeq.net");  //ok
+                    //cir.ReadCircuit("circuits/testdc3.6.RCLeq.net");  //ok
+                    //cir.ReadCircuit("circuits/DC Bias/RIV.net");  //ok
+                    cir.ReadCircuit("circuits/DC Bias/RVI.net");  //ok
                     DCAnalysis ac3 = (DCAnalysis)cir.Setup[0];
                     DCSolver solver3 = (DCSolver)ac3.Solver;
                     cir.Solve();
@@ -74,10 +76,13 @@ namespace ElectricalAnalysis_Test
                     break;
                 case 4:
                     #region RL, RC, RCL transitorio
-                    cir.ReadCircuit("circuits/RLcharge.net");
+                    //cir.ReadCircuit("circuits/RCL.net");
+                    cir.ReadCircuit("circuits/RLC.net");
+                    //cir.ReadCircuit("circuits/RLcharge.net");
                     cir.Setup.RemoveAt(0);
                     TransientAnalysis ac5 = new TransientAnalysis();
                     ac5.Step = "10n";
+                    ac5.FinalTime = "10u";
                     cir.Setup.Add(ac5);
                     TransientSolver sol5 = (TransientSolver)ac5.Solver;
                     cir.Solve();

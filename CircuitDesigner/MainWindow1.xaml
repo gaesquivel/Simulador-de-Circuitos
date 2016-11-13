@@ -16,24 +16,34 @@
     </Window.Resources>
     <Grid  >
         <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
             <RowDefinition Height="301*"/>
             <RowDefinition Height="22"/>
         </Grid.RowDefinitions>
-        <Controls:ZoomControl Name="zoom" ModifierMode="Pan" >
+        <ToolBar>
+            <Button Width="60" Click="Button_Click">
+                "Reload"
+            </Button>
+        </ToolBar>
+        
+        <Controls:ZoomControl Name="zoom" ModifierMode="Pan" Grid.Row="1">
             <Controls:ZoomControl.Resources>
                 <Style TargetType="{x:Type Rectangle}">
                     <Setter Property="extbehaviour:DragBehaviour.IsDragEnabled"
                                     Value="True" />
                     <Setter Property="extbehaviour:DragBehaviour.X"
-                                    Value="{Binding RelativeSource={RelativeSource Self},Path=(Canvas.Left)}" />
+                                    Value="{Binding RelativeSource={RelativeSource Self},
+                                            Path=(Canvas.Left)}" />
                     <Setter Property="extbehaviour:DragBehaviour.Y"
-                                    Value="{Binding RelativeSource={RelativeSource Self},Path=(Canvas.Top)}" />
+                                    Value="{Binding RelativeSource={RelativeSource Self},
+                                            Path=(Canvas.Top)}" />
                 </Style>
             </Controls:ZoomControl.Resources>
             <Grid Height="1000" Width="1400"
                     Background="Beige">
                 <ItemsControl Name="container" 
-                    ItemsSource="{Binding Source={x:Static local:CircuitDesignerViewModel.Instance}, Path=Shapes}">
+                    ItemsSource="{Binding Source={x:Static local:CircuitDesignerViewModel.Instance},
+                                                    Path=Shapes}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
                             <Canvas/>

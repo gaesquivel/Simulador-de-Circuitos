@@ -9,6 +9,7 @@ using MathNet.Numerics.LinearAlgebra;
 using ElectricalAnalysis.Components.Controlled;
 using CircuitMVVMBase.MVVM;
 using CircuitMVVMBase;
+using System.Diagnostics;
 
 namespace ElectricalAnalysis.Analysis.Solver
 {
@@ -323,34 +324,32 @@ namespace ElectricalAnalysis.Analysis.Solver
         protected virtual void Calculate(SolveInfo solveinfo, object e = null)
         {
 
-
             // Fixed Voltage Nodes
+            //if (e is double)
+            //    Debug.Assert((double)e < 0.0008f);
+
             FindFixedVoltages(solveinfo, solveinfo.Circuit.Reference, null, e);
-
-
-            //matrix solving region
+            
             if (solveinfo.RowCount > 0)
             {
+                #region matrix solving region
                 int fila = 0, columna = 0;
 
                 var v = Vector<Complex>.Build.Dense(solveinfo.RowCount);
                 var A = Matrix<Complex>.Build.DenseOfArray(new Complex[solveinfo.RowCount, 
                                                         solveinfo.ColumnsCount]);
 
-                #region nodos normales
-
                 foreach (var nodo in solveinfo.NortonNodes)
                 {
+                #region nodos normales
                     fila = solveinfo.RowIndexOf(nodo);
                     CalculateNodeImpedances(solveinfo, fila, A, v, nodo, e);
-                }
-
                 #endregion
-
-                #region supernodos
+                }
 
                 foreach (var snode in solveinfo.SuperNodes)
                 {
+                #region supernodos
                     #region ecuaciones de supernodos
 
                     fila = solveinfo.RowIndexOf(snode);
@@ -371,14 +370,12 @@ namespace ElectricalAnalysis.Analysis.Solver
                     }
 
                     #endregion
-                }
-
                 #endregion
-
-                #region special controlled component
+                }
 
                 foreach (Dipole comp in solveinfo.SpecialComponents)
                 {
+                #region special controlled component
                     //ecuacion del componente
                     fila = solveinfo.RowIndexOf(comp);
                     if (comp is ControlledVoltageGenerator)
@@ -412,11 +409,8 @@ namespace ElectricalAnalysis.Analysis.Solver
                         columna = solveinfo.ColumnIndexOf(nodo);
                         A[fila, columna] = ((ControlledDipole)comp).ControllerEquationValue(nodo, e, true);
                     }
-                }
-
-
                 #endregion
-
+                }
 
                 var x = A.Solve(v);
 
@@ -425,12 +419,16 @@ namespace ElectricalAnalysis.Analysis.Solver
                 {
                     fila = solveinfo.ColumnIndexOf(nodo);
                     nodo.Voltage = x[fila];
+                    //Debug.Assert(double.NaN != nodo.Voltage.Real);
+                    //if (double.NaN == nodo.Voltage.Real)
                 }
                 foreach (var nodo in solveinfo.SpecialComponentNodes)
                 {
                     fila = solveinfo.ColumnIndexOf(nodo);
                     nodo.Voltage = x[fila];
+                   
                 }
+                #endregion
             }
         }
 
@@ -590,19 +588,19 @@ namespace ElectricalAnalysis.Analysis.Solver
                 //la corriente de DC de un capacitor es 0
                 if (IsOpenCircuit(comp))
                 {
-                    comp.current = 0;
+                    comp.Current(0);
                     continue;
                 }
 
                 //la corriente en las resistencias se calcula directamente en ellas: es ley de Ohm:V/R
                 if (IsImpedance(comp) || IsCurrentGenerator(comp))
                 {
-                    NodeSingle nodo = comp.Nodes[0];
-                    Complex i = GetCurrent(comp, nodo, e);
-                    if (container is Branch)
-                    {
-                        ((Branch)container).current = i;
-                    }
+                    //NodeSingle nodo = comp.Nodes[0];
+                    //Complex i = GetCurrent(comp, nodo, e);
+                    //if (container is Branch)
+                    //{
+                    //    ((Branch)container).current = i;
+                    //}
                     continue;
                 }
 
@@ -617,7 +615,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                         if (nodo.Components.Count == 2 && 
                             (IsImpedance(comp2) || IsCurrentGenerator(comp2)))
                         {
-                            comp.current = -GetCurrent(comp2, nodo, e);
+                            comp.Current(-GetCurrent(comp2, nodo, e), nodo);
                        
                             //if (container is Branch)
                             //    ((Branch)container).current = GetCurrent(comp, nodo, e);
@@ -635,7 +633,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                         }
                         Complex i = Complex.Zero;
                         i = CalculateSupernodeCurrent(nodo, e, comp);
-                        comp.current = i;
+                        comp.Current(i, nodo);
                         break;
                     }
                 }

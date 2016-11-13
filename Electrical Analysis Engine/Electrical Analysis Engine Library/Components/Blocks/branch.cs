@@ -244,10 +244,10 @@ namespace ElectricalAnalysis.Components
                 }
                 return _current;
             }
-            internal set
-            {
-                _current = value;
-            }
+            //private set
+            //{
+            //    _current = value;
+            //}
         }
 
 

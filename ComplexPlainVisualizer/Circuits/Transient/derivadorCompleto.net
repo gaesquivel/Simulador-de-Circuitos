@@ -1,0 +1,16 @@
+* Amplificador Operacional (Equivalente) *
+* Derivador
+*.tran	5m	10u
+
+
+V_V1         s	0	DC	0	AC	1
++PULSE	0	10m	1k	0	0	0
+R_Ri		i	i2	1meg  
+*R_Rs		s 	i	10  
+C_Ci		i2	0	100n
+R_Rs1		m	i	100
+C_Cs		s	m	100n  
+E_E1		out	0	0	i2	100K
+R_Rf		out	i 	10K  
+R_RL		0	out 	1k
+

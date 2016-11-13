@@ -38,49 +38,53 @@ namespace ElectricalAnalysis.Components.Controlled
                 return false;
             if (Singularities.Count > 0)
                 return true;
-            Singularities.Add(new Singularity(new Complex(-100, 0)));
-            Singularities.Add(new Singularity(new Complex(-1E4, 0)));
-            Singularities.Add(new Singularity(new Complex(-1E5, 0)));
-            Gain = "100K";
-            return true;
+            //Singularities.Add(new Singularity(new Complex(-100, 0)));
+            //Singularities.Add(new Singularity(new Complex(-1E4, 0)));
+            //Singularities.Add(new Singularity(new Complex(-1E5, 0)));
+            //Gain = "100K";
+            //return true;
             try
             {
+                //E_LAPLACE1  out 0 LAPLACE { V(s)}  { (1) / (-100 + s)}
+
                 //{V(in)} {(N) / (D)}
                 //(N) o (D) = ((A + s)(B + s)...)
                 //(1) / (-100 + s)
                 string tmp = value.Replace(" ", "").ToLower();
                 if (!tmp.StartsWith("{") || !tmp.EndsWith("}"))
                 {
+                    return false;
+                }
+                tmp = value.Replace("{", "");
+                string[] arr = tmp.Split("}".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+                if (arr == null || arr.Length != 2)
+                {
+                    return false;
+                }
+                //V(in)
+                //(N) / (D)
+                //arr[0].Remove(arr[0].Length - 1);
+                //arr[1].Substring(1);
+                string[] num = null;
+                if (arr[1].Contains("/"))
+                    num = arr[1].Split('/');
 
-                    return false;
-                }
-                string[] arr = tmp.Split('}');
-                if (arr == null || arr.Length != 2)
+                if (num.Length > 2 || num.Length <= 0)
                 {
                     return false;
                 }
-                //V(in)}
-                //{(N) / (D)
-                arr[0].Remove(arr[0].Length - 1);
-                arr[1].Substring(1);
-                ;
-                tmp = tmp.Substring(1);
-                tmp = tmp.Remove(tmp.Length - 1);
-                arr = tmp.Split('/');
-                if (arr == null || arr.Length != 2)
-                {
-                    return false;
-                }
-                List<Singularity> poles = new List<Singularity>();
+                double K = 1;
                 List<Singularity> zeros = new List<Singularity>(); 
-                ParseSingularities(arr[0], zeros, true);
-                ParseSingularities(arr[1], poles, false);
+                ParseSingularities(num[0], zeros, ref K, true);
 
-                foreach (var item in poles)
-                    Singularities.Add(item);
+                //List<Singularity> poles = new List<Singularity>();
+                Gain = K.ToString();
+                if (num.Length == 2)
+                    ParseSingularities(num[1], zeros, ref K, false);
+
                 foreach (var item in zeros)
                     Singularities.Add(item);
-
+                //Singularities = zeros;
                 return true;
             }
             catch (Exception ex)
@@ -92,34 +96,56 @@ namespace ElectricalAnalysis.Components.Controlled
 
         public static bool ParseSingularities(string expression, 
                                                 List<Singularity> sings,
-                                                bool isnumerator = false 
+                                                ref double constant,
+                                                bool isnumerator = false
                                                 )
         {
-            //must parse:   (()()()...)
-            expression = expression.ToLower();
+            //must parse:   (()()()...())     or  (...)
+            expression = expression.Replace(" ", "").ToLower();
             if (expression.StartsWith("((") && expression.EndsWith("))"))
                 expression = expression.Substring(1).Remove(expression.Length - 1);
-            //queda ()()()...
+            else if (expression.StartsWith("(") && expression.EndsWith(")"))
+            {
+                expression = expression.Substring(1);
+                expression = expression.Remove(expression.Length - 1);
+            }
+            else
+                NotificationsVM.Instance.Notifications.Add(
+                                                    new Notification("Unknown expression " + expression,
+                                                                        Notification.ErrorType.error));
+
+            //queda ()()()... o s+a
             string[] arr = expression.Split("(".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-            if (arr.Length == 0)
-                return false;
-            //quedan: k+s)
+            if (arr.Length == 1)
+            {
+                double cons = 0;
+                if (double.TryParse(expression, out cons))
+                {
+                    constant = cons;
+                    return true;
+                }
+                //notificationsvm.instance.notifications.add(
+                //                                    new notification("unknown expression " + expression,
+                //                                                        notification.errortype.error));
+                //return false;
+            }
+            //queda cada item como: k+-s o s+-k
             foreach (var item in arr)
             {
-                if (item.EndsWith(")"))
-                    item.Remove(item.Length - 1);
-                else
-                {
-                    NotificationsVM.Instance.Notifications.Add(new Notification("Error on try parse expression: " + item));
-                    return false;
-                }
+                //if (item.EndsWith(")"))
+                //    item.Remove(item.Length - 1);
+                //else
+                //{
+                //    NotificationsVM.Instance.Notifications.Add(new Notification("Error on try parse expression: " + item));
+                //    return false;
+                //}
                 char plus = '+';
+                double num = 0;
                 if (item.Contains("-"))
                     plus = '-';
                 string[] dos = item.Split(plus);
                 if(dos.Length == 2)
                 {
-                    double num = 0;
                     if (dos[0] == "s")
                     {
                         if (!double.TryParse(dos[1], out num))
@@ -129,6 +155,16 @@ namespace ElectricalAnalysis.Components.Controlled
                         if (!double.TryParse(dos[1], out num))
                             return false;
                 }
+                else
+                {
+                    NotificationsVM.Instance.Notifications.Add(new Notification("Error on try parse expression: " + item));
+                    return false;
+                }
+                Singularity.SingularityTypes singtype = Singularity.SingularityTypes.Pole;
+                if (isnumerator)
+                    singtype = Singularity.SingularityTypes.Zero;
+
+                sings.Add(new Singularity(new Complex(num, 0), 1, singtype));
             }
 
 
@@ -187,7 +223,9 @@ namespace ElectricalAnalysis.Components.Controlled
                 else if (InputNodes.Contains(nodo1) && isinput)
                 {
                     Complex g = gain;
-                    Complex W = (Complex)e;
+                    Complex W = Complex.Zero;
+                    if (e != null)
+                        W = (Complex)e;
                     foreach (var sing in Singularities)
                     {
                         if (sing.SingularityType == Singularity.SingularityTypes.Pole)

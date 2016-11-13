@@ -1,4 +1,5 @@
-﻿using System;
+﻿using CircuitDesigner.MVVM.ViewModel;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -26,5 +27,9 @@ namespace CircuitDesigner
             InitializeComponent();
         }
 
+        private void Button_Click(object sender, RoutedEventArgs e)
+        {
+            CircuitDesignerViewModel.Instance.OpenCircuit();
+        }
     }
 }

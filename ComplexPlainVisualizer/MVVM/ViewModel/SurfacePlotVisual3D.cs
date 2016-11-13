@@ -216,9 +216,12 @@ namespace DataVisualizer.MVVM.ViewModel
 
             if (AutoScale)
             {
-                ScaleX =10 / Math.Abs(maxX - minX);
-                ScaleY =10/ Math.Abs(maxY - minY);
-                ScaleZ =5 / Math.Abs(maxZ - minZ);
+                ScaleX = 10 / Math.Abs(maxX - minX);
+                ScaleY = 10 / Math.Abs(maxY - minY);
+                if (maxZ != minZ)
+                    ScaleZ = 5 / Math.Abs(maxZ - minZ);
+                else
+                    ScaleZ = 10;
             }
 
             var surfaceMeshBuilder = new MeshBuilder();
@@ -313,23 +316,26 @@ namespace DataVisualizer.MVVM.ViewModel
 
             #region eje z
 
-
-            double z0 = (int) (minZ/IntervalZ)*IntervalZ;
-            for (double z = z0; z <= maxZ + double.Epsilon; z += IntervalZ)
+            double z0 = 0;
+            if (maxZ != minZ)
             {
-                GeometryModel3D label = TextCreator.CreateTextLabelModel3D(StringUtils.CodeString(z / ScaleZ), Brushes.Black, true, FontSize,
-                                                                           new Point3D(minX - FontSize * 2, maxY, z),
-                                                                           new Vector3D(1, 0, 0), new Vector3D(0, 0, 1));
-                plotModel.Children.Add(label);
-            }
-            {
-                GeometryModel3D label = TextCreator.CreateTextLabelModel3D("|Z| axis", Brushes.Black, true, FontSize,
-                                                                           new Point3D(minX - FontSize * 8, maxY,
-                                                                                       (minZ + maxZ)*0.5),
-                                                                           new Vector3D(0, 0, 1), new Vector3D(1, 0, 0));
-                plotModel.Children.Add(label);
-            }
+                z0 = (int)(minZ / IntervalZ) * IntervalZ;
 
+                for (double z = z0; z <= maxZ + double.Epsilon; z += IntervalZ)
+                {
+                    GeometryModel3D label = TextCreator.CreateTextLabelModel3D(StringUtils.CodeString(z / ScaleZ), Brushes.Black, true, FontSize,
+                                                                               new Point3D(minX - FontSize * 2, maxY, z),
+                                                                               new Vector3D(1, 0, 0), new Vector3D(0, 0, 1));
+                    plotModel.Children.Add(label);
+                }
+                {
+                    GeometryModel3D label = TextCreator.CreateTextLabelModel3D("|Z| axis", Brushes.Black, true, FontSize,
+                                                                               new Point3D(minX - FontSize * 8, maxY,
+                                                                                           (minZ + maxZ) * 0.5),
+                                                                               new Vector3D(0, 0, 1), new Vector3D(1, 0, 0));
+                    plotModel.Children.Add(label);
+                }
+            }
             #endregion
 
             //la base del plano

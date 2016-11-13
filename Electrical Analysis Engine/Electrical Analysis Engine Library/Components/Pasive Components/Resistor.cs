@@ -21,10 +21,10 @@ namespace ElectricalAnalysis.Components
                 //return new Complex(((Nodes[0].Voltage.Real - Nodes[1].Voltage.Real) / Value), 0);
                 return Voltage / Impedance();
             }
-            internal set
-            {
-                _current = value;
-            }
+            //internal set
+            //{
+            //    _current = value;
+            //}
         }
 
         public override Complex Current(NodeSingle referenceNode, Complex? W = null)

@@ -358,29 +358,40 @@ namespace DataVisualizer.MVVM.ViewModel
             IsBusy = true;
             string file = "";
             ComplexPlainAnalysis ac1 = null;
-            if (CurrentCircuit != null)
-                ac1 = CurrentAnalisys() as ComplexPlainAnalysis;
-                //ac1 = (from sol in CurrentCircuit.Setup
-                //        where sol is ComplexPlainAnalysis
-                //        select sol ) as ComplexPlainAnalysis;
-            if (ac1 == null)
-                ac1 = new ComplexPlainAnalysis();
-
             if (CurrentCircuit == null || obj is string)
             {
                 CurrentCircuit = new Circuit();
                 if (CurrentCircuit.Setup[0] is DCAnalysis)
                     CurrentCircuit.Setup.RemoveAt(0);
+            }
+
+            //if (CurrentCircuit != null)
+            ac1 = CurrentAnalisys() as ComplexPlainAnalysis;
+            
+            if (ac1 == null)
+            {
+                ac1 = new ComplexPlainAnalysis();
                 CurrentCircuit.Setup.Add(ac1);
                 if (!MainObjects.Contains(ac1))
                     MainObjects.Add(ac1);
             }
+            //if (CurrentCircuit == null || obj is string)
+            //{
+            //    CurrentCircuit = new Circuit();
+            //    if (CurrentCircuit.Setup[0] is DCAnalysis)
+            //        CurrentCircuit.Setup.RemoveAt(0);
+            //    CurrentCircuit.Setup.Add(ac1);
+            //    if (!MainObjects.Contains(ac1))
+            //        MainObjects.Add(ac1);
+            //}
 
             if (obj is string)
             {
                 file = obj as string;
                 CurrentCircuit.ReadCircuit(file);
             }
+            if (CurrentCircuit.HasErrors)
+                return;
             //if (CurrentCircuit.IsChanged)
             if (!CurrentCircuit.Parse())
             {

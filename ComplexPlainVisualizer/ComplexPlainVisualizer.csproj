@@ -210,10 +210,10 @@
     <None Include="Circuits\DCbias\DCAmplificadorFBmosET1.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
-    <None Include="Circuits\integrador.net">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+    <None Include="Circuits\Transient\derivadorCompleto.net">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
-    <None Include="Circuits\derivador.net">
+    <None Include="Circuits\integrador.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
     <None Include="Circuits\ComplexPlainAndBode\L-RC.net">
@@ -223,8 +223,14 @@
     <None Include="Circuits\ComplexPlainAndBode\RCLpi.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
     </None>
+    <None Include="Circuits\Transient\Derivador.net">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\Transient\Integrador.net">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
     <None Include="Circuits\Transient\RCcharge.net">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Circuits\ComplexPlainAndBode\RCL.net">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
@@ -232,16 +238,22 @@
     <None Include="Circuits\ComplexPlainAndBode\RCLpihi.net" />
     <None Include="Circuits\ComplexPlainAndBode\RLCLpi.net" />
     <None Include="Circuits\Transient\RCL.net">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Circuits\Transient\RCLlow.net">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Circuits\Transient\RLC.net">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Circuits\Transient\RLcharge.net">
-      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\Transient\vsingain.net">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </None>
+    <None Include="Circuits\Transient\vsingain2.net">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
     </None>
     <None Include="Circuits\vsingain.net" />
     <None Include="MVVM\ViewModel\MVVM.cd" />

@@ -34,16 +34,16 @@
         </Grid.RowDefinitions>
 
         <ToolBar Grid.Row="1">
-            <Button Command="{Binding ComplexVM.NewFileCommand}" ToolTip="New Blank .Net Pspice File">
+            <Button Command="{Binding SelectedVM.NewFileCommand}" ToolTip="New Blank .Net Pspice File">
                 <Image Source="Images/document.png" />
             </Button>
-            <Button Command="{Binding ComplexVM.OpenFileCommand}" ToolTip="Open .Net Pspice File">
+            <Button Command="{Binding SelectedVM.OpenFileCommand}" ToolTip="Open .Net Pspice File">
                 <Image Source="Images/folder.png" />
             </Button>
-            <Button Command="{Binding ComplexVM.SaveFileCommand}" ToolTip="Save (.Net Pspice) File">
+            <Button Command="{Binding SelectedVM.SaveFileCommand}" ToolTip="Save (.Net Pspice) File">
                 <Image Source="Images/disk_blue.png" />
             </Button>
-            <Button Command="{Binding ComplexVM.SaveAsFileCommand}" ToolTip="Save As (.Net Pspice) File">
+            <Button Command="{Binding SelectedVM.SaveAsFileCommand}" ToolTip="Save As (.Net Pspice) File">
                 <Image Source="Images/save_as.png" />
             </Button>
         
@@ -83,23 +83,26 @@
                       IsSynchronizedWithCurrentItem="True"/>
 
             <Separator Width="2"/>
-            
-            <Button Command="{Binding BodeVM.StoragePlottCommand}" 
+            <ToolBarPanel Orientation="Horizontal" Visibility="{Binding PlotterToolBarVisible}">
+                <Button Command="{Binding SelectedVM.StoragePlottCommand}" 
                     ToolTip="Storage for some time a linegraph">
-                <Image Source="Images/chart_line_add.png" />
-            </Button>
-            <Button Command="{Binding BodeVM.ShowPlottCommand}" 
+                    <Image Source="Images/chart_line_add.png" />
+                </Button>
+                <Button Command="{Binding SelectedVM.ShowPlottCommand}" 
                     ToolTip="Show a storage linegraph into the plotter">
-                <Image Source="Images/chart_line.png" />
-            </Button>
-            <Button Command="{Binding BodeVM.DeletePlottCommand}" 
-                    ToolTip="Delete a previously storage linegraph">
-                <Image Source="Images/chart_line_edit.png" />
-            </Button>
-            <Button Command="{Binding BodeVM.ClearPlotsCommand}" 
-                    ToolTip="Delete all previously storage linegraphs">
-                <Image Source="Images/chart_line_delete.png" />
-            </Button>
+                    <Image Source="Images/chart_line.png" />
+                </Button>
+                <Button Command="{Binding SelectedVM.DeletePlottCommand}" 
+                        ToolTip="Delete a previously storage linegraph">
+                    <Image Source="Images/chart_line_edit.png" />
+                </Button>
+                <Button Command="{Binding SelectedVM.ClearPlotsCommand}" 
+                        ToolTip="Delete all previously storage linegraphs">
+                    <Image Source="Images/chart_line_delete.png" />
+                </Button>
+            </ToolBarPanel>
+            
+            
 
             <!--<Button Command="{Binding SelectedVM.AnimateCommand}" 
                     ToolTip="Start an new sweept animation">
@@ -250,8 +253,10 @@
                                                  IconSource="Images/edit.png" CanClose="False"
                                                  CanFloat="False">
                                 <TextBox Name="TxtEditor"
-                                         Text="{Binding ComplexVM.CurrentCircuit.CircuitText, Mode=TwoWay}"
-                                    AcceptsReturn="True" AcceptsTab="True"/>
+                                         Text="{Binding ComplexVM.CurrentCircuit.CircuitText, 
+                                                        Mode=TwoWay, 
+                                                        UpdateSourceTrigger=PropertyChanged}"
+                                    AcceptsReturn="True" AcceptsTab="True" FontSize="16"/>
                             </xcad:LayoutDocument>
                             
                             
@@ -277,8 +282,8 @@
                                                      Grid.Row="1">
                                         <d3:LineGraph x:Name="phasegraph" Stroke="Red" 
                                                       StrokeThickness="3" />
-                                        <d3:Header FontFamily="Arial"
-                                                   Content="{Binding ComplexVM.PlottedItem.Name}"/>
+                                        <!--<d3:Header FontFamily="Arial"
+                                                   Content="{Binding ComplexVM.PlottedItem.Name}"/>-->
                                         <!--<d3:VerticalAxisTitle FontFamily="Arial" />-->
                                         <d3:HorizontalAxisTitle FontFamily="Arial"  
                                                                 Content="ω [rad/seg]" />
@@ -399,8 +404,8 @@
                                                         IsExpanded="True">
                                             <ListBox 
                                 		            DisplayMemberPath="Name" 
-                                		            ItemsSource="{Binding BodeVM.PlottedItems}" 
-                                		            SelectedItem="{Binding BodeVM.SelectedPlot, Mode=TwoWay}"
+                                		            ItemsSource="{Binding SelectedVM.PlottedItems}" 
+                                		            SelectedItem="{Binding SelectedVM.SelectedPlot, Mode=TwoWay}"
                                                 />
                                         </Expander>
                                     </Border>

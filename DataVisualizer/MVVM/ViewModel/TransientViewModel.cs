@@ -48,6 +48,61 @@ namespace DataVisualizer.MVVM.ViewModel
             linegraph.DataSource = DataSource;
         }
 
+        #region Plot Storage
+
+        protected override void StoragePlot(object obj)
+        {
+            if (linegraph != null && !PlottedItems.Contains(linegraph))
+            {
+                LineGraph line = new LineGraph();
+                line.Name = "Tran" + PlottedItems.Count.ToString();
+                //line.
+                int n = DataSource.Collection.Count;
+                Tuple<double, double>[] arr = new Tuple<double, double>[n];
+                DataSource.Collection.CopyTo(arr, 0);
+                var col = new ObservableDataSource<Tuple<double, double>>(arr);
+                col.SetXYMapping(z =>
+                {
+                    Point p = new Point(z.Item1, z.Item2);
+                    return p;
+                });
+
+                line.DataSource = col;
+                PlottedItems.Add(line);
+            }
+        }
+
+        protected override void ClearPlots(object obj)
+        {
+            foreach (var item in PlottedItems)
+            {
+                if (Plotter.Children.Contains(item))
+                    Plotter.Children.Remove(item);
+            }
+            PlottedItems.Clear();
+            SelectedPlot = null;
+        }
+
+        protected override void ShowPlot(object obj)
+        {
+            if (PlottedItems.Count > 0 &&
+                SelectedPlot != null &&
+                !Plotter.Children.Contains(SelectedPlot))
+                Plotter.Children.Add(SelectedPlot);
+        }
+
+        protected override void DeletePlot(object obj)
+        {
+            if (PlottedItems.Count > 0 && SelectedPlot != null)
+            {
+                PlottedItems.Remove(SelectedPlot);
+                Plotter.Children.Remove(SelectedPlot);
+                SelectedPlot = null;
+            }
+        }
+
+        #endregion
+
         protected override bool IsAnalisysType(BasicAnalysis analis)
         {
             return analis is TransientAnalysis;

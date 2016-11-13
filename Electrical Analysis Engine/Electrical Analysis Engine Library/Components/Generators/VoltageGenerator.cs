@@ -23,7 +23,7 @@ namespace ElectricalAnalysis.Components
                 return Voltage;
             if (ReferenceNode == Nodes[1])
                 return -Voltage;
-            return Double.NaN;
+            return double.NaN;
         }
 
         public override Complex Voltage
