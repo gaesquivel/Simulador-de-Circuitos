@@ -97,7 +97,13 @@ namespace WPFExtensions.Controls
             DependencyProperty.Register("MousePosition", typeof(Point), typeof(ZoomControl));
 
         private Point _mouseDownPos;
-       
+
+        static ZoomControl instance;
+        public static ZoomControl Instance
+        {
+            get { return instance ?? (instance = new ZoomControl()); }
+        }
+
         // Point mouseposition;
         public Point MousePosition
         {
@@ -130,6 +136,7 @@ namespace WPFExtensions.Controls
 
         public ZoomControl()
         {
+            instance = this;
             PreviewMouseWheel += ZoomControl_MouseWheel;
             PreviewMouseDown += ZoomControl_PreviewMouseDown;
             MouseDown += ZoomControl_MouseDown;
@@ -432,6 +439,8 @@ namespace WPFExtensions.Controls
 
         private void OnMouseDown(MouseButtonEventArgs e, bool isPreview)
         {
+            if (e.RightButton != MouseButtonState.Pressed)
+                return;
             if (ModifierMode != ZoomViewModifierMode.None)
                 return;
 

@@ -17,11 +17,11 @@ namespace CircuitMVVMBase.MVVM
 {
     public abstract class DrawableVMBase: ViewModelBase, IDescribible
     {
-        private static object _selectedobject;
 
 
         protected Timeline animation;
         protected Storyboard myStoryboard;
+        [Browsable(false)]
         public ViewModelBase AnimationTarget { get; set; }
 
         public string ShortDescription { get; set; }
@@ -29,17 +29,9 @@ namespace CircuitMVVMBase.MVVM
         [Browsable(false)]
         public static ObservableCollection<object> MainObjects { get; protected set; }
 
-        [Browsable(false)]
-        public virtual object SelectedObject
-        {
-            get { return _selectedobject; }
-            set
-            {
-                RaisePropertyChanged(value, ref _selectedobject, true);
-            }
-        }
 
         static RecentFileList recents;
+        [Browsable(false)]
         public RecentFileList RecentFiles {
             get { return recents; }
             set {
@@ -308,7 +300,7 @@ namespace CircuitMVVMBase.MVVM
             {
                 OpenFileDialog dlg = new OpenFileDialog();
                 dlg.InitialDirectory = System.IO.Path.GetDirectoryName(
-                    System.Reflection.Assembly.GetEntryAssembly().Location); ;
+                    Assembly.GetEntryAssembly().Location); ;
                 dlg.Filter = "Circuit Net List files (*.net)|*.net|All files (*.*)|*.*";
                 if (dlg.ShowDialog() == true)
                 {
@@ -319,7 +311,7 @@ namespace CircuitMVVMBase.MVVM
             
         }
 
-        protected abstract void Redraw(object obj);
+        public abstract void Redraw(object obj);
 
         public abstract void Simulate(object obj);
 

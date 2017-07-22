@@ -31,15 +31,24 @@ namespace DataVisualizer
             plano.ComplexVM.RecentFiles = RecentFileList;
             plano.BodeVM.phasegraph = phasegraph;
             plano.BodeVM.linegraph = linegraph;
-            plano.BodeVM.ModulePlotter = plotter;
-            plano.BodeVM.PhasePlotter = otherPlotter;
+            plano.BodeVM.ModulePlotter = bodemoduleplotter;
+            plano.BodeVM.PhasePlotter = bodephasePlotter;
 
-            plano.TransientVM.Plotter = tplotter;
-            plano.TransientVM.linegraph = tlinegraph;
+            plano.TransientVM.Plotter = timeplotter;
+            plano.TransientVM.linegraph = timelinegraph;
 
+            plano.FourierVM.SpectrumPlotter = fftplotter;
+            plano.FourierVM.FFTModuleGraph = fftlinegraph;
+            plano.FourierVM.FFTCosineGraph = fftrealgraph;
+            plano.FourierVM.FFTSineGraph = fftimaggraph;
+            plano.FourierVM.WindowPlotter = fftwindow;
+            plano.FourierVM.Windowlinegraph = fftwindowlinegraph;
+
+            plano.InverseFourierVM.SpectrumPlotter = fftplotter;
+            plano.InverseFourierVM.WindowPlotter = fftwindow;
             //DataContext = model;
         }
 
-    
+
     }
 }

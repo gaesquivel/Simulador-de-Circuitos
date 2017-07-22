@@ -45,8 +45,10 @@ namespace ElectricalAnalysis.Components
                 double val = 0;
                 if (StringUtils.DecodeString(value, out val))
                     Value = val;
+                else if (value.StartsWith("{") && value.EndsWith("}"))
+                    Value = 0;
                 else
-                    NotificationsVM.Instance.Notifications.Add(new Notification("Invalid value :" + 
+                    NotificationsVM.Instance.Notifications.Add(new Notification("Invalid value :" +
                         value, Notification.ErrorType.warning));
             }
         }

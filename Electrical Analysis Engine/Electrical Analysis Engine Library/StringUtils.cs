@@ -1,9 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Globalization;
 using System.Text.RegularExpressions;
 
 namespace ElectricalAnalysis
 {
+    interface Parseable
+    {
+        bool Parse(string expression);
+    }
+
 
     public class EngineeringFormatter : IFormatProvider, ICustomFormatter
     {
@@ -163,7 +169,15 @@ namespace ElectricalAnalysis
 
             var m = re.Match(measure);
 
-            value = Convert.ToDouble(m.Groups["value"].Value);
+            //var style = NumberStyles.AllowDecimalPoint | NumberStyles.AllowThousands;
+            //var culture = CultureInfo.CreateSpecificCulture("fr-FR");
+
+
+            //if (!double.TryParse(m.Groups["value"].Value, style, culture, out value))
+            //if (!double.TryParse(m.Groups["value"].Value, out value))
+            if (!double.TryParse(m.Groups["value"].Value.Replace('.', ','), out value))
+                return false;
+            //value = Convert.ToDouble(m.Groups["value"].Value);
             value *= conversionFactors[m.Groups["multiplier"].Value.ToLower()];
 
             return true;

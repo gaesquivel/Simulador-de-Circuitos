@@ -74,8 +74,11 @@ namespace DiagramDesigner
             designerCanvas.SelectionService.ClearSelection();
 
             Rect rubberBand = new Rect(startPoint.Value, endPoint.Value);
-            foreach (Control item in designerCanvas.Children)
+            foreach (var itm in designerCanvas.Children)
             {
+                Control item = itm as Control;
+                if (item == null)
+                    continue;
                 Rect itemRect = VisualTreeHelper.GetDescendantBounds(item);
                 Rect itemBounds = item.TransformToAncestor(designerCanvas).TransformBounds(itemRect);
 

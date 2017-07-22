@@ -310,7 +310,7 @@ namespace DataVisualizer.MVVM.ViewModel
         }
 
 
-        protected override void Redraw(object obj)
+        public override void Redraw(object obj)
         {
             IsBusy = true;
             if (CurrentCircuit != null)
@@ -375,15 +375,7 @@ namespace DataVisualizer.MVVM.ViewModel
                 if (!MainObjects.Contains(ac1))
                     MainObjects.Add(ac1);
             }
-            //if (CurrentCircuit == null || obj is string)
-            //{
-            //    CurrentCircuit = new Circuit();
-            //    if (CurrentCircuit.Setup[0] is DCAnalysis)
-            //        CurrentCircuit.Setup.RemoveAt(0);
-            //    CurrentCircuit.Setup.Add(ac1);
-            //    if (!MainObjects.Contains(ac1))
-            //        MainObjects.Add(ac1);
-            //}
+           
 
             if (obj is string)
             {
@@ -398,7 +390,8 @@ namespace DataVisualizer.MVVM.ViewModel
                 NotificationsVM.Instance.Notifications.Add(new CircuitMVVMBase.Notification("Error in parsing", CircuitMVVMBase.Notification.ErrorType.error));
                 return;
             }
-            IsBusy = CurrentCircuit.Solve(ac1);
+
+            IsBusy = CurrentCircuit.Solve(null);
             double valmin = 0, valmax = 0;
             bool haserror = false;
             if (StringUtils.DecodeString(ac1.SigmaMax, out valmax) &&
@@ -592,11 +585,12 @@ namespace DataVisualizer.MVVM.ViewModel
 
             var K = new double[n, m];
 
-            for (int i = 0; i < n; i++)
-                for (int j = 0; j < m; j++)
-                {
-                    K[i, j] = MathUtil.Scale(minZ, maxZ, data[i, j].Z, n);
-                }
+            if (maxZ - minZ > 0)
+                for (int i = 0; i < n; i++)
+                    for (int j = 0; j < m; j++)
+                    {
+                        K[i, j] = MathUtil.Scale(minZ, maxZ, data[i, j].Z, n);
+                    }
 
             return K;
         }
@@ -677,5 +671,19 @@ namespace DataVisualizer.MVVM.ViewModel
             Viewport3DHelper.Copy(ViewPort);
         }
 
+        public override void ShowPlot(object obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StoragePlot(object obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeletePlot(object obj)
+        {
+            throw new NotImplementedException();
+        }
     }
 }

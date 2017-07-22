@@ -6,9 +6,10 @@ using System.Numerics;
 namespace ElectricalAnalysis.Components.Generators
 {
 
-    public class PulseVoltageGenerator : TransientGenerator
+    public class PulseVoltageGenerator : TransientGenerator, IPulseGenerator
     {
         double period = 0, rise, fall, Ton;
+        double cicles = 0;
         public string RiseTime { get; set; }
         public string FallTime { get; set; }
 
@@ -31,7 +32,6 @@ namespace ElectricalAnalysis.Components.Generators
 
             RiseTime = "0";
             FallTime = "0";
-            //OnTime = "0";
             Value = 0;
         }
 
@@ -43,11 +43,20 @@ namespace ElectricalAnalysis.Components.Generators
                 Parse();
             }
 
-
             double v = offset;
-            if (t % (period) > (Ton))
-                v += amplitude;
-
+            if (cicles > 0 && (t / period > cicles))
+            { }
+            else
+            {
+                double deltat = t % (period);
+                if (deltat < (rise))
+                    v += amplitude * deltat / rise;
+                else if (deltat < (Ton))
+                    v += amplitude;
+                else if (deltat < (rise + Ton + fall))
+                    v += amplitude - amplitude * (deltat - rise - Ton) / fall;
+            }
+            
             if (referenceNode ==  Nodes[0])
                 return v;
             else
@@ -57,12 +66,7 @@ namespace ElectricalAnalysis.Components.Generators
         protected override void Parse()
         {
             base.Parse();
-            //if (!StringUtils.DecodeString(OnTime, out Ton))
-            //{
-            //    NotificationsVM.Instance.Notifications.Add(
-            //        new Notification("Error to parse T On: " + OnTime));
-            //    return;
-            //}
+           
             if (!StringUtils.DecodeString(RiseTime, out rise))
             {
                 NotificationsVM.Instance.Notifications.Add(
@@ -75,9 +79,15 @@ namespace ElectricalAnalysis.Components.Generators
                     new Notification("Error to parse Fall Time: " + FallTime));
                 return;
             }
+            if (!StringUtils.DecodeString(Cicles, out cicles))
+            {
+                NotificationsVM.Instance.Notifications.Add(
+                    new Notification("Error to parse Numbre of Cicles: " + Cicles));
+                return;
+            }
+            //cicles = 
             if (f > 0)
                 period = 1 / f;
-            //if (Ton == 0)
             Ton = period * _ton / 100;
 
             wasparsed = true;

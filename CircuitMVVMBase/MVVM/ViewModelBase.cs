@@ -20,7 +20,19 @@ namespace CircuitMVVMBase.MVVM
         //    }
         //}
 
+        private static object _selectedobject;
+        [Browsable(false)]
+        public virtual object SelectedObject
+        {
+            get { return _selectedobject; }
+            set
+            {
+                RaisePropertyChanged(value, ref _selectedobject, true);
+            }
+        }
+
         bool isbusy;
+        [Browsable(false)]
         public virtual bool IsBusy {
             get { return isbusy; }
             protected set { RaisePropertyChanged(value, ref isbusy); }

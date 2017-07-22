@@ -12,15 +12,15 @@ namespace ElectricalAnalysis_Test
     class Program
     {
         static Circuit cir = new Circuit();
-        //static Circuit cir2 ;
         static ComplexPlainSolver sol1;
 
         static void Main(string[] args)
         {
-            int i = 4;
+            int i = 15;
            
             switch (i)
             {
+                #region ya testeado
                 case 0:
                     #region RLCharge
                     cir.ReadCircuit("circuits/RLcharge.net");
@@ -48,17 +48,19 @@ namespace ElectricalAnalysis_Test
                     break;
                 case 2:
                     #region derivador
-                    cir.ReadCircuit("circuits/derivador.net");
-                    //cir.ReadCircuit("RCL.net");
-                    //cir2 = (Circuit)cir.Clone();
-                    cir.Setup.RemoveAt(0);
-                    ACAnalysis ac = new ACAnalysis();
-                    cir.Setup.Add(ac);
-                    //ACSweepSolver.Optimize(cir2);
-                    cir.Solve();
+                    {
+                        cir.ReadCircuit("circuits/derivador.net");
+                        //cir.ReadCircuit("RCL.net");
+                        //cir2 = (Circuit)cir.Clone();
+                        cir.Setup.RemoveAt(0);
+                        ACAnalysis ac = new ACAnalysis();
+                        cir.Setup.Add(ac);
+                        //ACSweepSolver.Optimize(cir2);
+                        cir.Solve();
 
-                    ACSweepSolver sol = (ACSweepSolver)ac.Solver;
-                    sol.Export("ACSweep.csv");
+                        ACSweepSolver sol = (ACSweepSolver)ac.Solver;
+                        sol.Export("ACSweep.csv");
+                    }
                     #endregion
                     break;
                 case 3:
@@ -130,11 +132,14 @@ namespace ElectricalAnalysis_Test
                     break;
                 case 8:
                     #region gain
-                    cir.ReadCircuit("circuits/vsingain2.net");
-                    DCAnalysis ac8 = (DCAnalysis)cir.Setup[0];
-                    DCSolver solver8 = (DCSolver)ac8.Solver;
-                    cir.Solve();
-                    solver8.Export("e:/Test.csv");
+                    {
+                        cir.ReadCircuit("circuits/vsingain2.net");
+                        DCAnalysis ac8 = (DCAnalysis)cir.Setup[0];
+                        DCSolver solver8 = (DCSolver)ac8.Solver;
+                        cir.Solve();
+                        solver8.Export("e:/Test.csv");
+                    }
+                    
                     #endregion
                     break;
 
@@ -170,6 +175,74 @@ namespace ElectricalAnalysis_Test
                     cir.Solve();
                     solver11.Export("e:/Test.csv");
                     #endregion
+                    break;
+                case 12:
+                    #region parentesis
+                    var expressions = new string[] {
+                                    "((2+3.1)/2)*4.456",
+                                    "1",
+                                    "(2)",
+                                    "2+2",
+                                    "(1+(2+3))",
+                                    "(34)/(2+2)",
+                                    "(1) / (-100 + s)",
+                                    "(1)/(-100+s)",
+                                    "-2*(2+-2)",
+                                    "1+(3/(2+7-(4+3)))",
+                                    "1-",
+                                    "2+2)",
+                                    "(2+2",
+                                    "(1+(2+3)",
+                                };
+
+                    foreach (var item in expressions)
+                    {
+                        Console.WriteLine("Expression: " + item);
+                        Console.WriteLine("    Result: " + (MathUtil.ValidateParenthesys(item) ? "Matched" : "Failed"));
+                    }
+                    #endregion
+                    //string polinomio = "3x^3 + 1"; //, 2x^2 + x, 4x^5 - 3x^3, -1 + 2x^3";
+                    //MathUtil.ValidatePolinomial(polinomio);
+                    break;
+
+                #endregion
+                case 13:
+                    #region parse complejos
+                    string[]complejo = { "3.1456 + 14.24i",
+                        "5.123 - 4.356j",
+                        "156.6i + 23.4",
+                        "155i",
+                        "136",
+                        "i14.56" };
+                    Complex c = Complex.Zero;
+                    double d = 0;
+                    foreach (var item in complejo)
+                    {
+                        MathUtil.FindComplexNumber(item, ref c);
+                        Console.WriteLine("Expression: " + item);
+                        Console.WriteLine("    Result: " + 
+                            c.ToString()/* ? "Matched" : "Failed"*/);
+                    }
+                    #endregion
+                    //MathUtil.FindNumber(complejo, out d);
+                    break;
+                case 14:
+                    #region gain
+                    {
+                        cir.ReadCircuit("circuits/amplaplace.net");
+                        ACAnalysis ac = new ACAnalysis();
+                        cir.Setup.Add(ac);
+                        cir.Solve();
+                    }
+                    #endregion
+                    break;
+                case 15:
+                    {
+                        cir.ReadCircuit("circuits/RLC param.net");
+                        //ParametricAnalisys ac = new ParametricAnalisys();
+                        cir.Setup.RemoveAt(0);
+                        cir.Solve();
+                    }                    
                     break;
                 default:
                     break;

@@ -7,32 +7,39 @@ using Microsoft.Research.DynamicDataDisplay.Charts;
 using Microsoft.Research.DynamicDataDisplay.Charts.Axes.Numeric;
 using Microsoft.Research.DynamicDataDisplay.DataSources;
 using System;
+using System.ComponentModel;
 using System.Threading.Tasks;
 using System.Windows;
 
 namespace DataVisualizer.MVVM.ViewModel
 {
-    public class BodeViewModel: Plotter2DViewModel
+    public class BodeViewModel: CircuitSimulationViewModel
     {
 
         ObservableDataSource<Tuple<double, double>> source1 = null;
         ObservableDataSource<Tuple<double, double>> source2 = null;
 
+        [Browsable(false)]
         public ObservableDataSource<Tuple<double, double>> ModuleData
         {
             get { return source1; }
             protected set { RaisePropertyChanged(value, ref source1); }
         }
 
+        [Browsable(false)]
         public ObservableDataSource<Tuple<double, double>> PhaseData
         {
             get { return source2; }
             protected set { RaisePropertyChanged(value, ref source2); }
         }
 
+        [Browsable(false)]
         public ChartPlotter ModulePlotter { get;  set; }
+        [Browsable(false)]
         public ChartPlotter PhasePlotter { get; set; }
+        [Browsable(false)]
         public LineGraph linegraph { get;  set; }
+        [Browsable(false)]
         public LineGraph phasegraph { get; set; }
 
         public BodeViewModel()
@@ -101,9 +108,19 @@ namespace DataVisualizer.MVVM.ViewModel
 
         }
 
-        protected override void StoragePlot(object obj)
+        public override void StoragePlot(object obj)
         {
-            if (linegraph != null && !PlottedItems.Contains(linegraph))
+
+            if (linegraph != null)
+                foreach (var item in PlottedItems)
+                {
+                    //si ya esta no lo almaceno
+                    if (linegraph == item.Item2)
+                    {
+                        return;
+                    }
+                }
+            //if (linegraph != null && !PlottedItems.Contains(linegraph))
             {
                 LineGraph line = new LineGraph();
                 line.Name = "Mod" + PlottedItems.Count.ToString();
@@ -119,22 +136,23 @@ namespace DataVisualizer.MVVM.ViewModel
                 });
 
                 line.DataSource = col;
-                PlottedItems.Add(line);
+                PlottedItems.Add(new Tuple<Plotter2D, LineGraph>(ModulePlotter, line));
             }
         }
 
-        protected override void ClearPlots(object obj)
+        public override void ClearPlots(object obj)
         {
             foreach (var item in PlottedItems)
             {
-                if (ModulePlotter.Children.Contains(item))
-                    ModulePlotter.Children.Remove(item);
+                LineGraph line = item.Item2;
+                if (ModulePlotter.Children.Contains(line))
+                    ModulePlotter.Children.Remove(line);
             }
             PlottedItems.Clear();
             SelectedPlot = null;
         }
 
-        protected override void ShowPlot(object obj)
+        public override void ShowPlot(object obj)
         {
             if (PlottedItems.Count > 0 &&
                 SelectedPlot != null &&
@@ -142,11 +160,19 @@ namespace DataVisualizer.MVVM.ViewModel
                     ModulePlotter.Children.Add(SelectedPlot);
         }
 
-        protected override void DeletePlot(object obj)
+        public override void DeletePlot(object obj)
         {
             if (PlottedItems.Count > 0 && SelectedPlot != null)
             {
-                PlottedItems.Remove(SelectedPlot);
+                foreach (var item in PlottedItems)
+                {
+                    if (SelectedPlot == item.Item2)
+                    {
+                        PlottedItems.Remove(item);
+                        break;
+                    }
+                }
+                //PlottedItems.Remove(SelectedPlot);
                 ModulePlotter.Children.Remove(SelectedPlot);
                 SelectedPlot = null;
             }
@@ -157,7 +183,7 @@ namespace DataVisualizer.MVVM.ViewModel
             return analis is ACAnalysis;
         }
 
-        protected override void Redraw(object obj)
+        public override void Redraw(object obj)
         {
             //ACSweepSolver sol5 = (ACSweepSolver)CurrentCircuit.Setup[0].Solver;
             ACAnalysis analis = CurrentAnalisys() as ACAnalysis;

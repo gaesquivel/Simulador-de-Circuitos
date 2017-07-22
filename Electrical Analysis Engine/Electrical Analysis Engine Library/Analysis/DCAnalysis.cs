@@ -1,4 +1,6 @@
-﻿using ElectricalAnalysis.Analysis.Solver;
+﻿using System;
+using ElectricalAnalysis.Analysis.Solver;
+using ElectricalAnalysis.Components;
 
 namespace ElectricalAnalysis
 {
@@ -16,6 +18,11 @@ namespace ElectricalAnalysis
         public override object Clone()
         {
             return new DCAnalysis();
+        }
+
+        public override bool Parse(Circuit owner, string details)
+        {
+            throw new NotImplementedException();
         }
 
     }

@@ -58,12 +58,20 @@
     <Compile Include="ComponentDesigner.xaml.cs">
       <DependentUpon>ComponentDesigner.xaml</DependentUpon>
     </Compile>
+    <Compile Include="DrawerCanvas.cs" />
+    <Compile Include="MainWindow.xaml.cs">
+      <DependentUpon>MainWindow.xaml</DependentUpon>
+    </Compile>
     <Compile Include="MVVM\Converters\ScaleToPercentConverter.cs" />
     <Page Include="ComponentDesigner.xaml">
       <SubType>Designer</SubType>
       <Generator>MSBuild:Compile</Generator>
     </Page>
-    <Page Include="MainWindow1.xaml">
+    <Page Include="MainWindow.xaml">
+      <Generator>MSBuild:Compile</Generator>
+      <SubType>Designer</SubType>
+    </Page>
+    <Page Include="WPFCircuitDesigner.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </Page>
@@ -72,8 +80,11 @@
       <SubType>Code</SubType>
     </Compile>
     <Compile Include="MVVM\Converters\ColorToBrushConverter.cs" />
-    <Compile Include="MainWindow1.xaml.cs">
-      <DependentUpon>MainWindow1.xaml</DependentUpon>
+    <Compile Include="Poligons\CanvasPoint.cs" />
+    <Compile Include="Poligons\CustomLine.cs" />
+    <Compile Include="Poligons\CustomPoligon.cs" />
+    <Compile Include="WPFCircuitDesigner.xaml.cs">
+      <DependentUpon>WPFCircuitDesigner.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
   </ItemGroup>
@@ -113,6 +124,10 @@
     <None Include="App.config" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Circuit Simulation Integrated Interface\Simcircuit.csproj">
+      <Project>{b437df5f-20e0-4082-a92e-5c1d9c31a8e9}</Project>
+      <Name>Simcircuit</Name>
+    </ProjectReference>
     <ProjectReference Include="..\CircuitMVVMBase\CircuitMVVMBase.csproj">
       <Project>{744be2c7-a979-460c-ae3e-1ecf7df9ab3c}</Project>
       <Name>CircuitMVVMBase</Name>
@@ -121,6 +136,12 @@
       <Project>{a7915102-8326-4862-96f0-4eb80ed087b4}</Project>
       <Name>WPFExtensions</Name>
     </ProjectReference>
+  </ItemGroup>
+  <ItemGroup>
+    <Resource Include="Images\bullet_ball_blue.png" />
+    <Resource Include="Images\bullet_square_blue.png" />
+    <Resource Include="Images\folder.png" />
+    <Resource Include="Images\pencil.png" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 

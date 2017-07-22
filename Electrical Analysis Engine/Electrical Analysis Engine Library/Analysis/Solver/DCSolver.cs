@@ -10,10 +10,11 @@ using ElectricalAnalysis.Components.Controlled;
 using CircuitMVVMBase.MVVM;
 using CircuitMVVMBase;
 using System.Diagnostics;
+using ElectricalAnalysis.Analysis.Data;
 
 namespace ElectricalAnalysis.Analysis.Solver
 {
-    public class DCSolver : /*ViewModelBase,*/ CircuitSolver
+    public class DCSolver : BasicSolver, CircuitSolver
     {
         public enum ExportFormats
         {
@@ -228,7 +229,7 @@ namespace ElectricalAnalysis.Analysis.Solver
             return compo is VoltageGenerator || compo is Inductor;
         }
 
-        public virtual bool Solve(Circuit cir, BasicAnalysis ana)
+        public override bool Solve(Circuit cir, BasicAnalysis ana)
         {
             cir.State = Circuit.CircuitState.Solving;
 
@@ -297,7 +298,8 @@ namespace ElectricalAnalysis.Analysis.Solver
         }
 
         /// <summary>
-        /// escanea los componentes de un contenedor y almacena los nombres y corrientes de cada uno
+        /// escanea los componentes de un contenedor y almacena los nombres 
+        /// y corrientes de cada uno
         /// </summary>
         /// <param name="results"></param>
         /// <param name="componames"></param>
@@ -310,7 +312,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                     ScanComponentBlockCurrents(results, componames, (ComponentContainer)compo);
                 else
                 {
-                    results.Add(compo.current.ToString());
+                    results.Add(((Dipole)compo).current.ToString());
                     componames.Add(compo.Name);
                 }
             }
@@ -418,6 +420,11 @@ namespace ElectricalAnalysis.Analysis.Solver
                 foreach (var nodo in solveinfo.Nodes)
                 {
                     fila = solveinfo.ColumnIndexOf(nodo);
+                    if (double.IsNaN(x[fila].Magnitude))
+                        NotificationsVM.Instance.Notifications.Add(
+                        new Notification("Invalid value voltage at node " + nodo.Name 
+                                        + " and parameter " + e.ToString(),
+                                        Notification.ErrorType.error));
                     nodo.Voltage = x[fila];
                     //Debug.Assert(double.NaN != nodo.Voltage.Real);
                     //if (double.NaN == nodo.Voltage.Real)
@@ -637,17 +644,17 @@ namespace ElectricalAnalysis.Analysis.Solver
                         break;
                     }
                 }
-                else if (comp is Branch)
-                {
-                    CalculateCurrents((Branch)comp, e);
-                    continue;
-                }
+                //else if (comp is Branch)
+                //{
+                //    CalculateCurrents((Branch)comp, e);
+                //    continue;
+                //}
 
-                else if (comp is ParallelBlock)
-                {
-                    CalculateCurrents((ParallelBlock)comp, e);
-                    continue;
-                }
+                //else if (comp is ParallelBlock)
+                //{
+                //    CalculateCurrents((ParallelBlock)comp, e);
+                //    continue;
+                //}
 
                 out1:;
             }

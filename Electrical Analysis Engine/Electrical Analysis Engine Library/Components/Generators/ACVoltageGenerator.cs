@@ -15,7 +15,7 @@ namespace ElectricalAnalysis.Components
             }
         }
 
-         public ACVoltageGenerator(ComponentContainer owner, string name, string value = null):base(owner)
+        public ACVoltageGenerator(ComponentContainer owner, string name, string value = null):base(owner)
         {
             Initialize(name, value);
             ACVoltage = new Complex(1, 0);
@@ -25,7 +25,6 @@ namespace ElectricalAnalysis.Components
             : base(owner)
         {
             ACVoltage = Complex.FromPolarCoordinates(ACMagnitude, ACPhase);
-            //ACVoltage = new Complex(ACMagnitude, 0);
         }
 
         public override Complex voltage(NodeSingle referenceNode, Complex? W = null)
@@ -40,7 +39,6 @@ namespace ElectricalAnalysis.Components
                 if (referenceNode == Nodes[0])
                     return ACVoltage;
                 return ACVoltage;
-            
             }
         }
 

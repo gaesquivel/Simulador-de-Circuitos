@@ -97,7 +97,9 @@ namespace DataVisualizer.MVVM.ViewModel
         public double[,] ColorValues
         {
             get { return (double[,]) GetValue(ColorValuesProperty); }
-            set { SetValue(ColorValuesProperty, value); }
+            set {
+                SetValue(ColorValuesProperty, value);
+            }
         }
 
         /// <summary>
@@ -203,15 +205,21 @@ namespace DataVisualizer.MVVM.ViewModel
             }
             else
             {
+                
                 for (int i = 0; i < rows; i++)
                     for (int j = 0; j < columns; j++)
                     {
+                        //u esta escalado
                         double u = (Points[i, j].Z - minZ) / (maxZ - minZ);
-                        //double v = 
+                    //double v = 
                         if (ColorValues != null)
-                            u = (ColorValues[i, j] - minColorValue) / (maxColorValue - minColorValue);
+                            if (maxZ - minZ > 0)
+                                u = (ColorValues[i, j] - minColorValue) / (maxColorValue - minColorValue);
+                            else
+                                u = 1;
                         texcoords[i, j] = new Point(u, u);
                     }
+                
             }
 
             if (AutoScale)

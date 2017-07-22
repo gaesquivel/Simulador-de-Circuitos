@@ -54,9 +54,11 @@
     <Reference Include="WindowsBase" />
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Collections\NotifyObservableCollection.cs" />
     <Compile Include="Commands\AsyncDelegateCommand.cs" />
     <Compile Include="Commands\RelayCommand.cs" />
     <Compile Include="Converters\BoolToVisibilityConverter.cs" />
+    <Compile Include="Converters\EnumBindingSourceExtension.cs" />
     <Compile Include="Converters\LargeStringConverter.cs" />
     <Compile Include="ErrorBase.cs" />
     <Compile Include="Converters\ErrorToImageConverter.cs" />
@@ -77,6 +79,7 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <None Include="ClassDiagram1.cd" />
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>

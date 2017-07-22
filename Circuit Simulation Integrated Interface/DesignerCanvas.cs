@@ -15,6 +15,17 @@ namespace DiagramDesigner
     {
         private Point? rubberbandSelectionStartPoint = null;
 
+        public static readonly DependencyProperty MousePositionProperty =
+        DependencyProperty.Register("MousePosition", typeof(Point), typeof(DesignerCanvas));
+
+        //private Point _mouseDownPos;
+        // Point mouseposition;
+        public Point MousePosition
+        {
+            get { return (Point)GetValue(MousePositionProperty); }
+            set { SetValue(MousePositionProperty, value); }
+        }
+
         private SelectionService selectionService;
         internal SelectionService SelectionService
         {
@@ -44,10 +55,13 @@ namespace DiagramDesigner
             }
         }
 
+        
+
         protected override void OnMouseMove(MouseEventArgs e)
         {
             base.OnMouseMove(e);
 
+            MousePosition = e.GetPosition(this);
             // if mouse button is not pressed we have no drag operation, ...
             if (e.LeftButton != MouseButtonState.Pressed)
                 this.rubberbandSelectionStartPoint = null;

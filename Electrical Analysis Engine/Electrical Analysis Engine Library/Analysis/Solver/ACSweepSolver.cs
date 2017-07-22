@@ -9,6 +9,7 @@ using MathNet.Numerics.LinearAlgebra;
 using CircuitMVVMBase.MVVM;
 using CircuitMVVMBase;
 using ElectricalAnalysis.Components.Controlled;
+using ElectricalAnalysis.Analysis.Data;
 
 namespace ElectricalAnalysis.Analysis.Solver
 {
@@ -20,21 +21,21 @@ namespace ElectricalAnalysis.Analysis.Solver
         /// After run Solver, return a list of pairs of values:
         ///         W                NodeName    NodeVoltage
         /// </summary>
-        public virtual Dictionary<double, Dictionary<string, Complex>> Voltages { get; protected set; }
+        public virtual FrequencyData Voltages { get; protected set; }
      
         /// <summary>
         /// After run Solvermethod, return a list a pairs of values:
         ///         W              CompoName   CompoCurrent
         /// </summary>
-        public virtual Dictionary<double, Dictionary<string, Complex>> Currents { get; protected set; }
+        public virtual FrequencyData Currents { get; protected set; }
 
 
         public override bool Solve(Circuit cir, BasicAnalysis ana)
         {
             cir.State = Circuit.CircuitState.Solving;
 
-            Voltages = new Dictionary<double, Dictionary<string, Complex>>();
-            Currents = new Dictionary<double, Dictionary<string, Complex>>();
+            Voltages = new FrequencyData();
+            Currents = new FrequencyData();
 
             SolveInfo solveinfo = PreAnalizeToSolve(cir);
 

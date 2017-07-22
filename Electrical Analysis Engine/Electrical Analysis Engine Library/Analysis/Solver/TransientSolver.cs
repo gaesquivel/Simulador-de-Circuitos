@@ -1,5 +1,6 @@
 ﻿using CircuitMVVMBase;
 using CircuitMVVMBase.MVVM;
+using ElectricalAnalysis.Analysis.Data;
 using ElectricalAnalysis.Components;
 using System;
 using System.Collections.Generic;
@@ -14,13 +15,13 @@ namespace ElectricalAnalysis.Analysis.Solver
         /// After solve, store a pair of values:
         ///             time             node voltage
         /// </summary>
-        public Dictionary<double, Dictionary<string, double>> Voltages { get; protected set; }
+        public new TransientData Voltages { get; protected set; }
 
         /// <summary>
         /// After solve, store a pair of values:
         ///             time            Component Current 
         /// </summary>
-        public Dictionary<double, Dictionary<string, double>> Currents { get; protected set; }
+        public new TransientData Currents { get; protected set; }
 
 
         public override bool Solve(Circuit cir, BasicAnalysis ana)
@@ -29,8 +30,8 @@ namespace ElectricalAnalysis.Analysis.Solver
 
             SolveInfo solveinfo = PreAnalizeToSolve(cir);
             List<NodeSingle> nodos = new List<NodeSingle>();
-            Voltages = new Dictionary<double, Dictionary<string, double>>();
-            Currents = new Dictionary<double, Dictionary<string, double>>();
+            Voltages = new TransientData();
+            Currents = new TransientData();
 
             TransientAnalysis analis = ana as TransientAnalysis;
             double t, tf, deltat;

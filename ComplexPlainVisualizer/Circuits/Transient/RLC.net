@@ -1,8 +1,0 @@
-*.Tran 200u 1u
-
-
-
-V_V1		s	0	DC	10	AC	10	45
-R_R1		s	m	10
-L_L1		m	out	100u
-C_C1		out	0	100n

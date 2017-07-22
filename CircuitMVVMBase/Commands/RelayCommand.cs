@@ -10,6 +10,9 @@ namespace CircuitMVVMBase.Commands
         protected Func<object, Task> _asyncExecute;
         Predicate<object> _canExecute;
 
+        /// <summary>
+        /// Funcrion to evaluate if Command can or don't execute
+        /// </summary>
         public Predicate<object> CanExecuteTarget
         {
             get { return _canExecute; }

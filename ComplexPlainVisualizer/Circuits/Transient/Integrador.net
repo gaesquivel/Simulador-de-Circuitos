@@ -5,9 +5,12 @@
 
 *V_V1         n1 n2 DC 0 AC 1 SIN off amp f 0 0 0
 V_Vs         s	0	DC	1m	AC	1
-+PULSE	1m	1	1k	0	0	0
++PULSE	0	1m	1k
 R_Rs	s	in	1K
 R_Rin	in	0	1meg
-E_E1	out	0	in	0	10000
+E_E1	out2	0	0	in	100000
+R_Ro	out2	out	75
 C_Cf	out	in	100n
-R_RL	out	0	1k
+*R_Rf2	m	in	1
+*R_Rf	out	in	100K
+R_RL	out	0	10k

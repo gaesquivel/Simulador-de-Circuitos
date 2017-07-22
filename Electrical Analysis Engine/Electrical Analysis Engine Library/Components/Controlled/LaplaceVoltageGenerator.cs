@@ -5,13 +5,15 @@ using System;
 using System.Collections.Generic;
 using System.Collections.ObjectModel;
 using System.Numerics;
+using System.Text.RegularExpressions;
 
 namespace ElectricalAnalysis.Components.Controlled
 {
-    public class LaplaceVoltageGenerator: VoltageControlledGenerator
+    public class LaplaceVoltageGenerator: VoltageControlledGenerator //, Parseable
     {
 
         ObservableCollection<Singularity> singularities;
+
         /// <summary>
         /// Collection of Poles and Zeroes
         /// </summary>
@@ -32,59 +34,104 @@ namespace ElectricalAnalysis.Components.Controlled
             }
         }
 
-        private bool Parse(string value)
+        private bool Parse(string expression)
         {
-            if (string.IsNullOrWhiteSpace(value))
+            if (string.IsNullOrWhiteSpace(expression))
                 return false;
-            if (Singularities.Count > 0)
-                return true;
-            //Singularities.Add(new Singularity(new Complex(-100, 0)));
-            //Singularities.Add(new Singularity(new Complex(-1E4, 0)));
-            //Singularities.Add(new Singularity(new Complex(-1E5, 0)));
-            //Gain = "100K";
-            //return true;
+            
             try
             {
-                //E_LAPLACE1  out 0 LAPLACE { V(s)}  { (1) / (-100 + s)}
+                //E_LAPLACE1  out 0 LAPLACE { V(in+) }  { (1) / (-100 + s)}
 
-                //{V(in)} {(N) / (D)}
+                //{in1 in2} {(N) / (D)}
                 //(N) o (D) = ((A + s)(B + s)...)
                 //(1) / (-100 + s)
-                string tmp = value.Replace(" ", "").ToLower();
-                if (!tmp.StartsWith("{") || !tmp.EndsWith("}"))
-                {
+                string inputs = "", aux = "";
+                if (!ParseLaplaceExpression(expression, ref inputs, ref aux))
                     return false;
-                }
-                tmp = value.Replace("{", "");
-                string[] arr = tmp.Split("}".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
-                if (arr == null || arr.Length != 2)
-                {
+
+                if (string.IsNullOrWhiteSpace(inputs))
                     return false;
-                }
-                //V(in)
-                //(N) / (D)
-                //arr[0].Remove(arr[0].Length - 1);
-                //arr[1].Substring(1);
-                string[] num = null;
-                if (arr[1].Contains("/"))
-                    num = arr[1].Split('/');
 
-                if (num.Length > 2 || num.Length <= 0)
+                if (inputs.StartsWith("{") && inputs.EndsWith("}"))
+                    inputs = inputs.Remove(inputs.Length - 1).Substring(1);
+
+                InputNodes.Clear();
+                Node node1 =  null, node2 = null;
+                string[] arr = inputs.Split(" \t".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
+
+                foreach (var item in OwnerCircuit.Nodes.Values)
                 {
-                    return false;
+                    if (item.Name == arr[0])
+                    {
+                        node1 = item;
+                    }
+                    else if (arr.Length == 2 && item.Name == arr[1])
+                    {
+                        node2 = item;
+                    }
                 }
-                double K = 1;
-                List<Singularity> zeros = new List<Singularity>(); 
-                ParseSingularities(num[0], zeros, ref K, true);
 
-                //List<Singularity> poles = new List<Singularity>();
-                Gain = K.ToString();
-                if (num.Length == 2)
-                    ParseSingularities(num[1], zeros, ref K, false);
 
-                foreach (var item in zeros)
-                    Singularities.Add(item);
-                //Singularities = zeros;
+                //node1 = CreateOrFindNode("in+");
+                if (node1 == null && node2 == null)
+                    return false;
+                if (node1 == null)
+                {
+                    node1 = OwnerCircuit.Reference;
+                }
+                if (node2 == null)
+                {
+                    node2 = OwnerCircuit.Reference;
+                }
+
+                InputNodes.Add((NodeSingle)node1);
+                InputNodes.Add((NodeSingle)node2);
+              
+
+                string num = "", den = "";
+                if (!MathUtil.FindFraction(aux, ref num, ref den))
+                    return false;
+
+                if (!MathUtil.ValidateParenthesys(num))
+                    return false;
+                if (!MathUtil.ValidateParenthesys(den))
+                    return false;
+
+                List<string> sings = new List<string>();
+                if (!MathUtil.FindSingularities(num, ref sings))
+                {
+                    //del tipo 
+                    //Complex c = Complex.Zero;
+                    double c = 0;
+                    if (num.StartsWith("(") && num.EndsWith(")"))
+                        num = num.Remove(num.Length-1).Substring(1);
+                    if (!MathUtil.FindNumber(num, ref c))
+                        return false;
+                    Gain = c.ToString();
+                }
+                //tengo los zeros
+                Complex valor = Complex.Zero;
+                foreach (var zero in sings)
+                {
+                    if (!MathUtil.FindSingularityValue(zero, ref valor))
+                        return false;
+                    Singularities.Add(new Singularity(valor, 1, 
+                                        Singularity.SingularityTypes.Zero));
+                }
+
+                sings.Clear();
+                if (!MathUtil.FindSingularities(den, ref sings))
+                    return false;
+
+                foreach (var polo in sings)
+                {
+                    if (!MathUtil.FindSingularityValue(polo, ref valor))
+                        return false;
+                    Singularities.Add(new Singularity(valor, 1,
+                                        Singularity.SingularityTypes.Pole));
+                }
+                
                 return true;
             }
             catch (Exception ex)
@@ -94,6 +141,31 @@ namespace ElectricalAnalysis.Components.Controlled
             return false;
         }
 
+        /// <summary>
+        /// try to parse an sub expression like from voltage generator like:
+        /// E_LAPLACE1  out 0 LAPLACE { V(in+) }  { (1) / (-100 + s)}
+        /// </summary>
+        /// <param name="expression">An expression like: { in1  in2 }  { (1) / (-100 + s)}</param>
+        /// <param name="inputs">returns:   in1  in2</param>
+        /// <param name="laplaceexpression">returns:   (1) / (-100 + s)</param>
+        /// <returns>true if could be parsed, else returns false</returns>
+        private bool ParseLaplaceExpression(string expression, 
+                                            ref string inputs,
+                                            ref string laplaceexpression)
+        {
+            string regexPattern = @"\{(?<input>.+)\}\s*\{(?<valor>.+)\}";
+            Regex regex = new Regex(regexPattern);
+            Match match = regex.Match(expression);
+            if (match.Groups.Count > 0)
+            {
+                inputs = match.Groups["input"].Value;
+                laplaceexpression = match.Groups["valor"].Value;
+                return true;
+            }
+            return false;
+        }
+
+        [Obsolete]
         public static bool ParseSingularities(string expression, 
                                                 List<Singularity> sings,
                                                 ref double constant,
@@ -111,8 +183,8 @@ namespace ElectricalAnalysis.Components.Controlled
             }
             else
                 NotificationsVM.Instance.Notifications.Add(
-                                                    new Notification("Unknown expression " + expression,
-                                                                        Notification.ErrorType.error));
+                                    new Notification("Unknown expression " + expression,
+                                                        Notification.ErrorType.error));
 
             //queda ()()()... o s+a
             string[] arr = expression.Split("(".ToCharArray(), StringSplitOptions.RemoveEmptyEntries);
@@ -225,7 +297,12 @@ namespace ElectricalAnalysis.Components.Controlled
                     Complex g = gain;
                     Complex W = Complex.Zero;
                     if (e != null)
-                        W = (Complex)e;
+                        if (e is double)
+                            //W = new Complex(0, (double)e);
+                            throw new NotImplementedException("Transient for Laplace block remains unresolved!");
+                            //habria que ccalcular la antitransformada
+                        else
+                            W = (Complex)e;
                     foreach (var sing in Singularities)
                     {
                         if (sing.SingularityType == Singularity.SingularityTypes.Pole)

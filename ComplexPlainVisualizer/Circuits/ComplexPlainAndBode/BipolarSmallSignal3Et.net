@@ -1,6 +1,7 @@
 * Amplificador Bipolar 2 Stages small signal Common Emitter*
-
-
+*.AC	dec		101		1K	100meg
+*.ACPLAIN	91	5G
+**.ACPLAIN	91	100meg
 
 V_V1         s 0 DC 0 AC 1
 +SIN 1 1 1k 0 0 0

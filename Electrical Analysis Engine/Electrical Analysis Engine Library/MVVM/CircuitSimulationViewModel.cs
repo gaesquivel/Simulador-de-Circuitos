@@ -3,12 +3,10 @@ using ElectricalAnalysis.Components;
 using System.ComponentModel;
 using Microsoft.Win32;
 using ElectricalAnalysis.Analysis.Solver;
-using CircuitMVVMBase.Commands;
-using System.Threading.Tasks;
 
 namespace CircuitMVVMBase.MVVM.ViewModel
 {
-    public abstract class CircuitSimulationViewModel:DrawableVMBase
+    public abstract class CircuitSimulationViewModel:Plotter2DViewModel
     {
         static Circuit cir;
         Item plotted;

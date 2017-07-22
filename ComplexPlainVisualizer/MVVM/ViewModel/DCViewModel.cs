@@ -19,7 +19,7 @@ namespace ComplexPlainVisualizer.MVVM.ViewModel
 
         }
 
-        protected override void Redraw(object obj)
+        public override void Redraw(object obj)
         {
             DCAnalysis analis = CurrentAnalisys() as DCAnalysis;
             DCSolver sol5 = analis.Solver as DCSolver;
@@ -84,6 +84,21 @@ namespace ComplexPlainVisualizer.MVVM.ViewModel
 
             Redraw(false);
             //IsBusy = false;
+        }
+
+        public override void ShowPlot(object obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void StoragePlot(object obj)
+        {
+            throw new NotImplementedException();
+        }
+
+        public override void DeletePlot(object obj)
+        {
+            throw new NotImplementedException();
         }
     }
 }

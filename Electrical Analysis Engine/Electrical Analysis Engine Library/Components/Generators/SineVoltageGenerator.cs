@@ -6,7 +6,7 @@ using System.Numerics;
 namespace ElectricalAnalysis.Components.Generators
 {
 
-    public class SineVoltageGenerator : TransientGenerator
+    public class SineVoltageGenerator : TransientGenerator, ISineGenerator
     {
         double  w, thau, phase;
       
@@ -32,7 +32,7 @@ namespace ElectricalAnalysis.Components.Generators
                 Parse();
             }
 
-            double v = offset + amplitude * Math.Sin(w * t + phase / (2 * Math.PI));
+            double v = offset + amplitude * Math.Sin(w * t + phase * Math.PI / 180);
             if (referenceNode ==  Nodes[0])
                 return v;
             else

@@ -1,16 +1,22 @@
-* Amplificador Operacional (Equivalente) *
-* Derivador
-*.tran	5m	10u
+* Amplificador simple tension *
+* tran <Tstep> <Tstop> [Tstart [dTmax]] [modifiers]
+*.tran 0 10m 0 10u
 
 
-V_V1         s	0	DC	0	AC	1
-+PULSE	0	10m	1k	0	0	0
-R_Ri		i	i2	1meg  
-*R_Rs		s 	i	10  
-C_Ci		i2	0	100n
-R_Rs1		m	i	100
-C_Cs		s	m	100n  
-E_E1		out	0	0	i2	100K
-R_Rf		out	i 	10K  
-R_RL		0	out 	1k
-
+*V_V1         n1 n2 DC 0 AC 1 SIN off amp f 0 0 0
+V_Vs         s	0	DC	1m	AC	1
++PULSE	0	1m	100
+*ganancia a lazo abierto
+*R_Rs1	s	in	100
+*derivador real
+R_Rs	s	m	100
+C_Cs	m	in	100n
+*polo del operacional
+R_Rin	in	in2	1meg
+C_Cin	in2	0	100n
+*Inversor
+E_E1	out	0	0	in2	100000
+*R_Ro	out2	out	75
+*R_Rf2	m	in	1
+R_Rf	out	in	10K
+R_RL	out	0	1k

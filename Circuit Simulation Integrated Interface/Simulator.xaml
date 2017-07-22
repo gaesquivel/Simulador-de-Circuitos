@@ -26,34 +26,13 @@
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="90" />
-            <RowDefinition Height="40" />
             <RowDefinition Height="*" />
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <ContentControl Content="{StaticResource MyToolbar}" Grid.Row="0"/>
 
-        <ToolBar Grid.Row="1">
-            <Button ToolTip="Open .Net Pspice File">
-                <Image Source="Images/folder.png" />
-            </Button>
-
-            <Button ToolTip="Run Simulation">
-                <Image Source="Images/cpu_run.png" />
-            </Button>
-            <Button ToolTip="Refres Results">
-                <Image Source="Images/Refresh.png" />
-            </Button>
-            <Button ToolTip="Draw Selected Item" >
-                <Image Source="Images/line-chart.png" />
-            </Button>
-            <Button ToolTip="Export To CSV Excel File" >
-                <Image Source="Images/export_excel.png" />
-            </Button>
-            <Button ToolTip="Analysis Setup" >
-                <Image Source="Images/edit.png" />
-            </Button>
-        </ToolBar>
-        <xcad:DockingManager Grid.Row="2"
+        
+        <xcad:DockingManager Grid.Row="1"
                            AllowMixedOrientation="True"
                            BorderBrush="Black"
                            BorderThickness="1"

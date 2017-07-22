@@ -1,31 +1,78 @@
 ﻿<?xml version="1.0" encoding="utf-8"?>
 <ClassDiagram MajorVersion="1" MinorVersion="1">
   <Class Name="DataVisualizer.MVVM.ViewModel.ComplexPlainViewModel" Collapsed="true">
-    <Position X="3.25" Y="4.25" Width="1.5" />
+    <Position X="1.25" Y="6" Width="1.5" />
+    <InheritanceLine Type="CircuitMVVMBase.MVVM.ViewModel.CircuitSimulationViewModel" ManuallyRouted="true">
+      <Path>
+        <Point X="6.75" Y="5.441" />
+        <Point X="6.75" Y="5.651" />
+        <Point X="2" Y="5.651" />
+        <Point X="2" Y="6" />
+      </Path>
+    </InheritanceLine>
     <TypeIdentifier>
-      <HashCode>AAABAIaABAQACkAAAAQRQhYAACIFBBJAmARCAMgAoAA=</HashCode>
+      <HashCode>AAEBAIaABAwACkAAAAQRQhYAACIFBBJAmERCAMgAoAA=</HashCode>
       <FileName>MVVM\ViewModel\ComplexPlainViewModel.cs</FileName>
     </TypeIdentifier>
   </Class>
   <Class Name="CircuitMVVMBase.MVVM.ViewModel.CircuitSimulationViewModel" Collapsed="true">
-    <Position X="5.25" Y="1.5" Width="1.5" />
+    <Position X="6" Y="4.75" Width="1.5" />
     <TypeIdentifier />
   </Class>
   <Class Name="CircuitMVVMBase.MVVM.DrawableVMBase" Collapsed="true">
-    <Position X="5.25" Y="0.5" Width="1.5" />
+    <Position X="6" Y="2.25" Width="1.5" />
     <TypeIdentifier />
     <Lollipop Position="0.2" />
   </Class>
   <Class Name="DataVisualizer.MVVM.ViewModel.TransientViewModel" Collapsed="true">
-    <Position X="5.75" Y="4.25" Width="1.5" />
-    <TypeIdentifier />
-  </Class>
-  <Class Name="DataVisualizer.MVVM.ViewModel.Plotter2DViewModel" Collapsed="true">
-    <Position X="6.75" Y="2.75" Width="1.5" />
+    <Position X="5.5" Y="7.25" Width="1.5" />
     <TypeIdentifier />
   </Class>
   <Class Name="DataVisualizer.MVVM.ViewModel.BodeViewModel" Collapsed="true">
-    <Position X="8" Y="4.25" Width="1.5" />
+    <Position X="7.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="ComplexPlainVisualizer.MVVM.ViewModel.DCViewModel" Collapsed="true">
+    <Position X="3.25" Y="6" Width="1.5" />
+    <InheritanceLine Type="CircuitMVVMBase.MVVM.ViewModel.CircuitSimulationViewModel" ManuallyRouted="true">
+      <Path>
+        <Point X="6.75" Y="5.441" />
+        <Point X="6.75" Y="5.672" />
+        <Point X="4" Y="5.672" />
+        <Point X="4" Y="6" />
+      </Path>
+    </InheritanceLine>
+    <TypeIdentifier>
+      <HashCode>AAEAAAAAAAgAAAAAAAABAAAAAAAAAAAAAEBAAAAAAAA=</HashCode>
+      <FileName>MVVM\ViewModel\DCViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="ComplexPlainVisualizer.MVVM.ViewModel.MasterViewModel" Collapsed="true">
+    <Position X="9" Y="2.25" Width="1.5" />
+    <TypeIdentifier>
+      <HashCode>BAAQAAAAAAAAAAAAAAAQAACAAAAAAAAABAgAQARAQAA=</HashCode>
+      <FileName>MVVM\ViewModel\MasterViewModel.cs</FileName>
+    </TypeIdentifier>
+  </Class>
+  <Class Name="CircuitMVVMBase.MVVM.ViewModelBase" Collapsed="true">
+    <Position X="7.75" Y="0.5" Width="1.5" />
+    <TypeIdentifier />
+    <Lollipop Position="0.2" />
+  </Class>
+  <Class Name="CircuitMVVMBase.MVVM.ViewModel.Plotter2DViewModel" Collapsed="true">
+    <Position X="6" Y="3.5" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataVisualizer.MVVM.ViewModel.FourierViewModel" Collapsed="true">
+    <Position X="9.25" Y="7.25" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataVisualizer.MVVM.ViewModel.TransformViewModelBase" Collapsed="true">
+    <Position X="9.25" Y="6" Width="1.5" />
+    <TypeIdentifier />
+  </Class>
+  <Class Name="DataVisualizer.MVVM.ViewModel.InverseFourierViewModel" Collapsed="true">
+    <Position X="11.5" Y="7.25" Width="1.5" />
     <TypeIdentifier />
   </Class>
   <Font Name="Segoe UI" Size="9" />

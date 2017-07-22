@@ -1,5 +1,6 @@
 ﻿using CircuitMVVMBase;
 using ElectricalAnalysis.Analysis.Solver;
+using ElectricalAnalysis.Components;
 using System;
 
 namespace ElectricalAnalysis
@@ -14,7 +15,7 @@ namespace ElectricalAnalysis
         //.tf V(<node>[, <ref>]) <source> OR I(<voltage source>) <source>
         //.op
 
-
+        public abstract bool Parse(Circuit owner,string details);
 
         public virtual string ShortDescription { get; set; }
         public CircuitSolver Solver { get; protected set; }

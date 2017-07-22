@@ -5,6 +5,9 @@ using System.Numerics;
 
 namespace ElectricalAnalysis.Components
 {
+    /// <summary>
+    /// Represents a component with at least two terminals
+    /// </summary>
     public abstract class Dipole: Item
     {
 

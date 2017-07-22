@@ -1,19 +1,15 @@
-﻿<Window x:Class="CircuitDesigner.MainWindow"
+﻿<Window x:Class="CircuitDesigner.WPFCircuitDesigner"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:CircuitDesigner.MVVM.ViewModel"
         xmlns:Controls="clr-namespace:WPFExtensions.Controls;assembly=WPFExtensions"
-        xmlns:extbehaviour="clr-namespace:WPFExtensions.AttachedBehaviours;assembly=WPFExtensions"
-       
+        xmlns:drw="clr-namespace:DiagramDesigner.Controls;assembly=Simcircuit"
         mc:Ignorable="d"
         Title="MainWindow" Height="350" Width="525">
-
-    <Window.Resources>
-
-
-    </Window.Resources>
+    
+    
     <Grid  >
         <Grid.RowDefinitions>
             <RowDefinition Height="30"/>
@@ -24,21 +20,19 @@
             <Button Width="60" Click="Button_Click">
                 "Reload"
             </Button>
+            <Button>
+                <Image Source="Images/bullet_ball_blue.png"/>
+            </Button>
+            <Button Command="{Binding DrawLineCommand}">
+                <Image Source="Images/pencil.png"/>
+            </Button>
+            <Button>
+                <Image Source="Images/bullet_square_blue.png"/>
+            </Button>
         </ToolBar>
-        
+
         <Controls:ZoomControl Name="zoom" ModifierMode="Pan" Grid.Row="1">
-            <Controls:ZoomControl.Resources>
-                <Style TargetType="{x:Type Rectangle}">
-                    <Setter Property="extbehaviour:DragBehaviour.IsDragEnabled"
-                                    Value="True" />
-                    <Setter Property="extbehaviour:DragBehaviour.X"
-                                    Value="{Binding RelativeSource={RelativeSource Self},
-                                            Path=(Canvas.Left)}" />
-                    <Setter Property="extbehaviour:DragBehaviour.Y"
-                                    Value="{Binding RelativeSource={RelativeSource Self},
-                                            Path=(Canvas.Top)}" />
-                </Style>
-            </Controls:ZoomControl.Resources>
+            
             <Grid Height="1000" Width="1400"
                     Background="Beige">
                 <ItemsControl Name="container" 
@@ -46,7 +40,7 @@
                                                     Path=Shapes}">
                     <ItemsControl.ItemsPanel>
                         <ItemsPanelTemplate>
-                            <Canvas/>
+                            <Canvas Name="theCanvas"/>
                         </ItemsPanelTemplate>
                     </ItemsControl.ItemsPanel>
                     <!--<ItemsControl.ItemContainerStyle>
@@ -59,6 +53,7 @@
                 </ItemsControl>
             </Grid>
         </Controls:ZoomControl>
+
 
         <StatusBar Grid.Row="2">
             <StatusBarItem>

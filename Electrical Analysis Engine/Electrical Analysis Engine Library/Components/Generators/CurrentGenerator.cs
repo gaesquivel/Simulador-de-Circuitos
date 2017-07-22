@@ -18,16 +18,7 @@ namespace ElectricalAnalysis.Components
             {
                 return new Complex(Value, 0);
             }
-            //internal set
-            //{
-            //    _current = value;
-            //}
         }
-
-        //public override Complex NortonCurrent(Node referenceNode, Complex? W = null)
-        //{
-        //    return Current(referenceNode, W);
-        //}
 
         public CurrentGenerator(ComponentContainer owner)
             : base(owner)
