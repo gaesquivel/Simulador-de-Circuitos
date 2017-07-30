@@ -9,21 +9,19 @@ using System.Threading.Tasks;
 
 namespace ElectricalAnalysis.Analysis.Solver
 {
-    public class TransientSolver : DCSolver
+    public class TransientSolver:DCSolver
     {
         /// <summary>
         /// After solve, store a pair of values:
         ///             time             node voltage
         /// </summary>
         public new TransientData Voltages { get; protected set; }
-        //public Dictionary<double, Dictionary<string, double>> Voltages { get; protected set; }
 
         /// <summary>
         /// After solve, store a pair of values:
         ///             time            Component Current 
         /// </summary>
         public new TransientData Currents { get; protected set; }
-        //public Dictionary<double, Dictionary<string, double>> Currents { get; protected set; }
 
 
         public override bool Solve(Circuit cir, BasicAnalysis ana)
@@ -32,12 +30,12 @@ namespace ElectricalAnalysis.Analysis.Solver
 
             SolveInfo solveinfo = PreAnalizeToSolve(cir);
             List<NodeSingle> nodos = new List<NodeSingle>();
-            Voltages = new TransientData();// Dictionary<double, Dictionary<string, double>>();
-            Currents = new TransientData();//Dictionary<double, Dictionary<string, double>>();
+            Voltages = new TransientData();
+            Currents = new TransientData();
 
             TransientAnalysis analis = ana as TransientAnalysis;
             double t, tf, deltat;
-
+            
             #region time initialization
 
             if (!StringUtils.DecodeString(analis.Step, out deltat))
@@ -72,7 +70,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                     if (double.IsNaN(nodo.Voltage.Real))
                     {
                         NotificationsVM.Instance.Notifications.Add(
-                            new Notification("An invalid value was calculated at simulation at time " + t.ToString(),
+                            new Notification("An invalid value was calculated at simulation at time " + t.ToString(), 
                                                 Notification.ErrorType.error));
                         cir.State = Circuit.CircuitState.Solved;
                         return false;
@@ -207,7 +205,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                     return true;
                 case ExportFormats.Bitmap:
                     throw new NotImplementedException();
-                //break;
+                    //break;
                 default:
                     break;
             }

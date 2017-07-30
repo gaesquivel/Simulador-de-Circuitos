@@ -1,7 +1,8 @@
-using CircuitMVVMBase;
+﻿using CircuitMVVMBase;
 using CircuitMVVMBase.MVVM;
 using CircuitMVVMBase.MVVM.ViewModel;
 using ElectricalAnalysis;
+using ElectricalAnalysis.Analysis.Data;
 using ElectricalAnalysis.Analysis.Solver;
 using ElectricalAnalysis.Components;
 using Microsoft.Research.DynamicDataDisplay;
@@ -9,32 +10,41 @@ using Microsoft.Research.DynamicDataDisplay.Charts;
 using Microsoft.Research.DynamicDataDisplay.Charts.Axes.Numeric;
 using Microsoft.Research.DynamicDataDisplay.DataSources;
 using System;
+using System.ComponentModel;
+using System.Numerics;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 
 namespace DataVisualizer.MVVM.ViewModel
 {
-    public class BodeViewModel : CircuitSimulationViewModel
+    public class BodeViewModel: CircuitSimulationViewModel
     {
 
         ObservableDataSource<Tuple<double, double>> source1 = null;
         ObservableDataSource<Tuple<double, double>> source2 = null;
 
+        [Browsable(false)]
         public ObservableDataSource<Tuple<double, double>> ModuleDataSource
         {
             get { return source1; }
             protected set { RaisePropertyChanged(value, ref source1); }
         }
 
+        [Browsable(false)]
         public ObservableDataSource<Tuple<double, double>> PhaseDataSource
         {
             get { return source2; }
             protected set { RaisePropertyChanged(value, ref source2); }
         }
 
-        public ChartPlotter ModulePlotter { get; set; }
+        [Browsable(false)]
+        public ChartPlotter ModulePlotter { get;  set; }
+        [Browsable(false)]
         public ChartPlotter PhasePlotter { get; set; }
-        public LineGraph linegraph { get; set; }
+        [Browsable(false)]
+        public LineGraph linegraph { get;  set; }
+        [Browsable(false)]
         public LineGraph phasegraph { get; set; }
 
         public BodeViewModel()
@@ -55,10 +65,10 @@ namespace DataVisualizer.MVVM.ViewModel
                 return p;
             });
             MainObjects.Add(this);
-            Initialize();
+            InitializePlotters();
         }
 
-        private void Initialize()
+        private void InitializePlotters()
         {
             if (ModulePlotter == null)
                 return;
@@ -68,21 +78,15 @@ namespace DataVisualizer.MVVM.ViewModel
             ModulePlotter.MainHorizontalAxis = new HorizontalAxis
             {
                 TicksProvider = new LogarithmNumericTicksProvider(10),
-                LabelProvider = new UnroundingLabelProvider()
-                {
-                    CustomFormatter = info =>
-    StringUtils.CodeString(info.Tick)
-                }
+                LabelProvider = new UnroundingLabelProvider() { CustomFormatter = info => 
+                                                StringUtils.CodeString(info.Tick) }
             };
 
             ModulePlotter.MainVerticalAxis = new VerticalAxis
             {
                 TicksProvider = new LogarithmNumericTicksProvider(10),
-                LabelProvider = new UnroundingLabelProvider()
-                {
-                    CustomFormatter = info =>
-    StringUtils.CodeString(info.Tick)
-                }
+                LabelProvider = new UnroundingLabelProvider() { CustomFormatter = info => 
+                                                StringUtils.CodeString(info.Tick) }
             };
 
 
@@ -90,25 +94,18 @@ namespace DataVisualizer.MVVM.ViewModel
             PhasePlotter.MainHorizontalAxis = new HorizontalAxis
             {
                 TicksProvider = new LogarithmNumericTicksProvider(10),
-                LabelProvider = new UnroundingLabelProvider()
-                {
-                    CustomFormatter = info =>
-    StringUtils.CodeString(info.Tick)
-                }
+                LabelProvider = new UnroundingLabelProvider() { CustomFormatter = info => 
+                                                StringUtils.CodeString(info.Tick) }
             };
             PhasePlotter.MainVerticalAxis = new VerticalAxis
             {
                 TicksProvider = new CustomBaseNumericTicksProvider(15),
-                //            LabelProvider = new UnroundingLabelProvider()
-                //            {
-                //                CustomFormatter = info =>
-                //StringUtils.CodeString(info.Tick)
-                //            }
+    //            LabelProvider = new UnroundingLabelProvider()
+    //            {
+    //                CustomFormatter = info =>
+    //StringUtils.CodeString(info.Tick)
+    //            }
             };
-
-
-            linegraph.DataSource = source1;
-            phasegraph.DataSource = source2;
 
         }
 
@@ -143,6 +140,7 @@ namespace DataVisualizer.MVVM.ViewModel
                 if (ModulePlotter.Children.Contains(line))
                     ModulePlotter.Children.Remove(line);
             }
+            PhasePlotter.Children.Clear();
             PlottedItems.Clear();
             SelectedPlot = null;
         }
@@ -152,7 +150,7 @@ namespace DataVisualizer.MVVM.ViewModel
             if (PlottedItems.Count > 0 &&
                 SelectedPlot != null &&
                 !ModulePlotter.Children.Contains(SelectedPlot))
-                ModulePlotter.Children.Add(SelectedPlot);
+                    ModulePlotter.Children.Add(SelectedPlot);
         }
 
         public override void DeletePlot(object obj)
@@ -180,11 +178,28 @@ namespace DataVisualizer.MVVM.ViewModel
 
         public override void Redraw(object obj)
         {
-            //ACSweepSolver sol5 = (ACSweepSolver)CurrentCircuit.Setup[0].Solver;
+            if (obj is Tuple<BasicAnalysis, Complex, DataBase>)
+            {
+                //para analisis parametrico
+                string name = "out";
+
+                if (SelectedObject is Node)
+                {
+                    name = ((Node)SelectedObject).Name;
+                }
+                var voltages = ((Tuple<BasicAnalysis, Complex, DataBase>)obj).Item3 as FrequencyData;
+                var param = ((Tuple<BasicAnalysis, Complex, DataBase>)obj).Item2;
+                ShowVoltage(voltages, name, true);
+                Legend.SetDescription(linegraph, name + " " + param.Real.ToString());
+                linegraph.ToolTip = name + " - " + param.Real.ToString();
+                Legend.SetDescription(phasegraph, name + " " + param.Real.ToString());
+                phasegraph.ToolTip = name + " - " + param.Real.ToString();
+                return;
+            }
+
+            //analisis convencional
             ACAnalysis analis = CurrentAnalisys() as ACAnalysis;
             ACSweepSolver sol5 = analis.Solver as ACSweepSolver;
-            //(ACSweepSolver) from sol in CurrentCircuit.Setup
-            //                 where sol is ACAnalysis select sol.Solver;
             source1.Collection.Clear();
             source2.Collection.Clear();
 
@@ -199,7 +214,7 @@ namespace DataVisualizer.MVVM.ViewModel
             else if (CurrentCircuit != null)
             {
                 if (CurrentCircuit.Nodes.ContainsKey("out"))
-                    AddVoltage(sol5, "out");
+                   AddVoltage(sol5, "out");
             }
         }
 
@@ -213,7 +228,7 @@ namespace DataVisualizer.MVVM.ViewModel
                 //ac1 = (ACAnalysis)from sol in CurrentCircuit.Setup
                 //                  where sol is ACAnalysis
                 //                  select sol;
-
+              
             }
             ac1 = CurrentAnalisys() as ACAnalysis;
             if (ac1 == null)
@@ -237,10 +252,63 @@ namespace DataVisualizer.MVVM.ViewModel
 
             if (linegraph.DataSource == null)
             {
-                Initialize();
+                InitializePlotters();
             }
         }
 
+
+        //int alfa = 255;
+        byte blue = 0;
+        //public static double DecrementAlfa(double Original)
+        //{
+
+        //}
+        int run = 0;
+        protected bool ShowVoltage(FrequencyData voltages, string name, bool add = false)
+        {
+            bool wasfinded = false;
+            if (add)
+            {
+                #region data creation 
+                ModuleDataSource = new ObservableDataSource<Tuple<double, double>>();
+                PhaseDataSource = new ObservableDataSource<Tuple<double, double>>();
+                foreach (var data in voltages)
+                {
+                    foreach (var item in data.Value)
+                    {
+                        if (item.Key == name)
+                        {
+                            wasfinded = true;
+                            Tuple<double, double> p = new Tuple<double, double>(data.Key, item.Value.Magnitude);
+                            ModuleDataSource.Collection.Add(p);
+                            p = new Tuple<double, double>(data.Key, 180 * item.Value.Phase / Math.PI);
+                            PhaseDataSource.Collection.Add(p);
+                        }
+                    }
+                }
+                #endregion
+                linegraph = new LineGraph(ModuleDataSource);
+                linegraph.Name = "Module_" + name + "_" + (run++).ToString();
+                linegraph.Tag = linegraph.Name;
+                linegraph.Stroke = new SolidColorBrush(Color.FromRgb(0, blue += 50, 255)); //BrushHelper.MakeTransparent(Brushes.Blue, alfa-=30);
+                linegraph.StrokeThickness = 3;
+
+                phasegraph = new LineGraph(PhaseDataSource);
+                phasegraph.Name = "Phase_" + name + "_" + run.ToString();
+                phasegraph.Tag = phasegraph.Name;
+                phasegraph.Stroke = new SolidColorBrush(Color.FromRgb(0, blue, 255)); //BrushHelper.MakeTransparent(Brushes.Blue, alfa-=30);
+                phasegraph.StrokeThickness = 3;
+
+                InitializePlotters();
+                StoragePlot(linegraph);
+
+                ModulePlotter.Children.Add(linegraph);
+                PhasePlotter.Children.Add(phasegraph);
+            }
+           
+
+            return wasfinded;
+        }
 
 
         private void AddVoltage(ACSweepSolver sol5, string NodeName)

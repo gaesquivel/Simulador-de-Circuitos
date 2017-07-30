@@ -2,6 +2,7 @@
 using CircuitMVVMBase.MVVM;
 using CircuitMVVMBase.MVVM.ViewModel;
 using DataVisualizer.MVVM.ViewModel;
+using ElectricalAnalysis;
 using ElectricalAnalysis.Analysis;
 using ElectricalAnalysis.Analysis.Solver;
 using ElectricalAnalysis.Components;
@@ -123,14 +124,33 @@ namespace ComplexPlainVisualizer.MVVM.ViewModel
                     return;
                 }
 
+                bool firstt = true, firstb = true;
+                ViewModelBase last = null;
                 foreach (var item in ((ParametricSolver)panali.Solver).Voltages)
                 {
                     if (item.Item1 is TransientAnalysis)
                     {
+                        if (firstt)
+                        {
+                            TransientVM.ClearPlots(null);
+                            firstt = false;
+                        }
                         TransientVM.Redraw(item);
+                        last = TransientVM;
+                    }
+                    else if (item.Item1 is ACAnalysis)
+                    {
+                        if (firstb)
+                        {
+                            BodeVM.ClearPlots(null);
+                            firstb = false;
+                        }
+                        BodeVM.Redraw(item);
+                        last = BodeVM;
                     }
                 }
 
+                SelectedVM = last;
 
             }
 

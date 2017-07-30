@@ -34,8 +34,9 @@
     <Reference Include="DynamicDataDisplay">
       <HintPath>..\..\DataVisualizer\bin\Debug\DynamicDataDisplay.dll</HintPath>
     </Reference>
-    <Reference Include="MathNet.Numerics, Version=3.19.0.0, Culture=neutral, processorArchitecture=MSIL">
-      <HintPath>..\..\Circuit Simulation Integrated Interface\packages\MathNet.Numerics.3.19.0\lib\net40\MathNet.Numerics.dll</HintPath>
+    <Reference Include="MathNet.Numerics, Version=3.20.0.0, Culture=neutral, processorArchitecture=MSIL">
+      <HintPath>..\..\Circuit Simulation Integrated Interface\packages\MathNet.Numerics.3.20.0\lib\net40\MathNet.Numerics.dll</HintPath>
+      <Private>True</Private>
     </Reference>
     <Reference Include="PresentationCore" />
     <Reference Include="PresentationFramework" />

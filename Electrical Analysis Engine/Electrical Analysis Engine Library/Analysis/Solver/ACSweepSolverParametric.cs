@@ -13,7 +13,7 @@ using ElectricalAnalysis.Analysis.Data;
 
 namespace ElectricalAnalysis.Analysis.Solver
 {
-    public class ACSweepSolver : DCSolver
+    public class ACSweepSolver: DCSolver
     {
 
 
@@ -22,22 +22,20 @@ namespace ElectricalAnalysis.Analysis.Solver
         ///         W                NodeName    NodeVoltage
         /// </summary>
         public new FrequencyData Voltages { get; protected set; }
-        //public virtual Dictionary<double, Dictionary<string, Complex>> Voltages { get; protected set; }
-
+     
         /// <summary>
         /// After run Solvermethod, return a list a pairs of values:
         ///         W              CompoName   CompoCurrent
         /// </summary>
         public new FrequencyData Currents { get; protected set; }
-        //public virtual Dictionary<double, Dictionary<string, Complex>> Currents { get; protected set; }
 
 
         public override bool Solve(Circuit cir, BasicAnalysis ana)
         {
             cir.State = Circuit.CircuitState.Solving;
 
-            Voltages = new FrequencyData();//Dictionary<double, Dictionary<string, Complex>>();
-            Currents = new FrequencyData();//Dictionary<double, Dictionary<string, Complex>>();
+            Voltages = new FrequencyData();
+            Currents = new FrequencyData();
 
             SolveInfo solveinfo = PreAnalizeToSolve(cir);
 
@@ -46,7 +44,7 @@ namespace ElectricalAnalysis.Analysis.Solver
 
             #region W initialization
 
-            if (!StringUtils.DecodeString(analis.StartFrequency, out wi))
+            if (!StringUtils.DecodeString(analis.StartFrequency,out wi))
             {
                 NotificationsVM.Instance.Notifications.Add(new Notification("Error reading Wi", Notification.ErrorType.error));
                 return false;
@@ -138,7 +136,7 @@ namespace ElectricalAnalysis.Analysis.Solver
 
         protected override bool IsPartOfSuperNode(Dipole compo)
         {
-            return compo is VoltageGenerator && !(compo is Components.Controlled.ControlledDipole);
+            return compo is VoltageGenerator && ! (compo is Components.Controlled.ControlledDipole);
         }
 
 
@@ -155,7 +153,7 @@ namespace ElectricalAnalysis.Analysis.Solver
         {
             if (comp is Capacitor || comp is Inductor || comp is Resistor)
                 return true;
-            return false;
+            return false; 
         }
 
         protected override bool IsVoltageGenerator(Dipole comp)
@@ -169,7 +167,7 @@ namespace ElectricalAnalysis.Analysis.Solver
             //W     N1  N2 .... Nn
             //10    5   15      2
             //12    6   14      1
-
+           
             using (var writer = new CsvFileWriter(FileName))
             {
                 writer.Delimiter = ';';
@@ -184,7 +182,7 @@ namespace ElectricalAnalysis.Analysis.Solver
                 writer.WriteRow(results);
                 results.Clear();
 
-
+                
                 foreach (var item in Voltages)
                 {
                     results.Add(item.Key.ToString());

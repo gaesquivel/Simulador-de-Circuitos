@@ -3,61 +3,63 @@ using CircuitMVVMBase.MVVM;
 using CircuitMVVMBase.MVVM.ViewModel;
 using ElectricalAnalysis;
 using ElectricalAnalysis.Analysis;
+using ElectricalAnalysis.Analysis.Data;
 using ElectricalAnalysis.Analysis.Solver;
 using ElectricalAnalysis.Components;
 using Microsoft.Research.DynamicDataDisplay;
 using Microsoft.Research.DynamicDataDisplay.Charts;
 using Microsoft.Research.DynamicDataDisplay.DataSources;
 using System;
+using System.Collections.Generic;
+using System.ComponentModel;
+using System.Numerics;
 using System.Threading.Tasks;
 using System.Windows;
+using System.Windows.Media;
 
 namespace DataVisualizer.MVVM.ViewModel
 {
-    public class TransientViewModel : CircuitSimulationViewModel
+    public class TransientViewModel: CircuitSimulationViewModel
     {
 
-        public ObservableDataSource<Tuple<double, double>> DataSource { get; protected set; }
+        [Browsable(false)]
+        public ObservableDataSource<Tuple<double, double>> DataSource { get; set; } = null;
+        [Browsable(false)]
         public ChartPlotter Plotter { get; set; }
+        [Browsable(false)]
         public LineGraph linegraph { get; set; }
 
         public TransientViewModel()
         {
-            DataSource = new ObservableDataSource<Tuple<double, double>>();
+            //DataSource = new ObservableDataSource<Tuple<double, double>>();
             Name = "Transient";
-            Initialize();
-        }
-
-        private void Initialize()
-        {
             // Create first source
             DataSource = new ObservableDataSource<Tuple<double, double>>();
             if (Plotter == null)
                 return;
 
-            DataSource.SetXYMapping(z => {
-                Point p = new Point(z.Item1, z.Item2);
-                return p;
-            });
-            HorizontalAxis axis = (HorizontalAxis)Plotter.MainHorizontalAxis;
+            //Initialize();
+        }
+
+        private void Initialize()
+        {
+
+                       HorizontalAxis axis = (HorizontalAxis)Plotter.MainHorizontalAxis;
             axis.LabelProvider.SetCustomFormatter(info => StringUtils.CodeString(info.Tick));
 
             VerticalAxis axis2 = (VerticalAxis)Plotter.MainVerticalAxis;
             axis2.LabelProvider.SetCustomFormatter(info => StringUtils.CodeString(info.Tick));
 
-
-
-            linegraph.DataSource = DataSource;
+            //linegraph.DataSource = datasource;
         }
 
         #region Plot Storage
-
 
         public override void StoragePlot(object obj)
         {
             LineGraph line = obj as LineGraph;
 
-            if (line == null)
+            if (line ==  null)
             {
                 NotificationsVM.Instance.Notifications.Add(
                     new Notification("A Linegraph was expected!", Notification.ErrorType.error));
@@ -113,8 +115,15 @@ namespace DataVisualizer.MVVM.ViewModel
                 SelectedPlot = null;
             }
         }
-
         #endregion
+
+        protected override void OnShowTrack()
+        {
+            if(ShowTrack && !Plotter.Children.Contains(mouseTrack))
+                Plotter.Children.Add(mouseTrack);
+            else if (Plotter.Children.Contains(mouseTrack))
+                Plotter.Children.Remove(mouseTrack);
+        }
 
         protected override bool IsAnalisysType(BasicAnalysis analis)
         {
@@ -123,22 +132,47 @@ namespace DataVisualizer.MVVM.ViewModel
 
         public override void Redraw(object obj)
         {
+            if (obj is Tuple<BasicAnalysis, Complex, DataBase>)
+            {
+                //para analisis parametrico
+                string name = "out";
+
+                if (SelectedObject is Node)
+                {
+                    name = ((Node)SelectedObject).Name;
+                }
+                var voltages = ((Tuple<BasicAnalysis, Complex, DataBase>)obj).Item3 as TransientData;
+                var param = ((Tuple<BasicAnalysis, Complex, DataBase>)obj).Item2;
+                //PlottedItems.Clear();
+                ShowVoltage(voltages, name, true);
+                //StoragePlot(null);
+                Legend.SetDescription(linegraph, name + " " + param.Real.ToString());
+                linegraph.ToolTip = name + " - " + param.Real.ToString();
+                return;
+            }
+
+            //analisis convencional
             TransientAnalysis analis = CurrentAnalisys() as TransientAnalysis;
             TransientSolver sol5 = analis.Solver as TransientSolver;
             DataSource.Collection.Clear();
 
             if (SelectedObject is Node)
             {
-                AddVoltage(sol5, ((Node)SelectedObject).Name);
+                string name = ((Node)SelectedObject).Name;
+                if (ShowVoltage(sol5.Voltages, name))
+                    PlottedItem = sol5.CurrentCircuit.Nodes[name] as Item;
             }
             else if (SelectedObject is Dipole)
             {
-                AddCurrent(sol5, ((Dipole)SelectedObject).Name);
+                ShowCurrent(sol5, ((Dipole)SelectedObject).Name);
             }
             else if (CurrentCircuit != null)
             {
                 if (CurrentCircuit.Nodes.ContainsKey("out"))
-                    AddVoltage(sol5, "out");
+                {
+                    ShowVoltage(sol5.Voltages, "out");
+                    PlottedItem = sol5.CurrentCircuit.Nodes["out"] as Item;
+                }
             }
         }
 
@@ -193,10 +227,31 @@ namespace DataVisualizer.MVVM.ViewModel
         }
 
 
-        private void AddVoltage(TransientSolver sol5, string name)
+        //int alfa = 255;
+        byte blue = 0;
+        //public static double DecrementAlfa(double Original)
+        //{
+
+        //}
+        int run = 0;
+        protected bool ShowVoltage(TransientData voltages, string name, bool add = false)
         {
             bool wasfinded = false;
-            foreach (var data in sol5.Voltages)
+            if (add)
+            {
+                DataSource = new ObservableDataSource<Tuple<double, double>>();
+                linegraph = new LineGraph(DataSource);
+                linegraph.Name = name + "_" + (run++).ToString();
+                linegraph.Tag = linegraph.Name;
+                linegraph.Stroke = new SolidColorBrush(Color.FromRgb(0, blue+=50, 255)); //BrushHelper.MakeTransparent(Brushes.Blue, alfa-=30);
+                linegraph.StrokeThickness = 3;
+                Initialize();
+                StoragePlot(linegraph);
+
+                Plotter.Children.Add(linegraph);
+                //PlottedItems.Add(new Tuple<Plotter2D, LineGraph>(Plotter, linegraph));
+            }
+            foreach (var data in voltages)
             {
                 foreach (var item in data.Value)
                 {
@@ -208,15 +263,14 @@ namespace DataVisualizer.MVVM.ViewModel
                     }
                 }
             }
-            if (wasfinded)
-                PlottedItem = sol5.CurrentCircuit.Nodes[name] as Item;
-
+           
+            return wasfinded;
         }
 
-        private void AddCurrent(TransientSolver sol5, string name)
+        protected void ShowCurrent(TransientSolver solver, string name)
         {
             bool wasfinded = false;
-            foreach (var data in sol5.Currents)
+            foreach (var data in solver.Currents)
             {
                 foreach (var item in data.Value)
                 {
@@ -230,7 +284,7 @@ namespace DataVisualizer.MVVM.ViewModel
 
             }
             if (wasfinded)
-                foreach (var item in sol5.CurrentCircuit.Components)
+                foreach (var item in solver.CurrentCircuit.Components)
                 {
                     if (item.Name == name)
                     {

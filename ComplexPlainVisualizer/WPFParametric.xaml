@@ -275,8 +275,6 @@
                                     </Grid.RowDefinitions>
                                     <Border BorderThickness="0" CornerRadius="5" Padding="1" BorderBrush="Red" Margin="0,5">
                                         <d3:ChartPlotter Name="bodemoduleplotter" Margin="10" >
-                                            <d3:LineGraph x:Name="linegraph"  Stroke="Blue" 
-                                                          StrokeThickness="3" />
                                             <!--<d3:VerticalAxisTitle  FontFamily="Arial" Content="{Binding ElementName=lbComponents, Path=SelectedItem.Name}"/>-->
                                             <d3:HorizontalAxisTitle FontFamily="Arial" 
                                                                     Content="ω [rad/seg]"/>
@@ -292,8 +290,6 @@
                                         <Expander Header="Expander3" Height="Auto" IsExpanded="True" Width="Auto" Margin="2" BorderThickness="1">
 
                                             <d3:ChartPlotter Name="bodephasePlotter" Margin="10" >
-                                                <d3:LineGraph x:Name="phasegraph" Stroke="Red" 
-                                                          StrokeThickness="3" />
                                                 <!--<d3:Header FontFamily="Arial"
                                                        Content="{Binding ComplexVM.PlottedItem.Name}"/>-->
                                                 <!--<d3:VerticalAxisTitle FontFamily="Arial" />-->
@@ -316,8 +312,6 @@
                                                  CanClose="False" CanFloat="False" >
 
                                 <d3:ChartPlotter Name="timeplotter" >
-                                    <d3:LineGraph x:Name="timelinegraph" Stroke="Blue" StrokeThickness="3" Margin="0,1,0,-1"/>
-
                                     <d3:VerticalAxisTitle FontFamily="Arial" />
                                     <d3:HorizontalAxisTitle FontFamily="Arial" Content="t [seg]"/>
                                 </d3:ChartPlotter>

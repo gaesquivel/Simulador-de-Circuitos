@@ -28,13 +28,13 @@ namespace ComplexPlainVisualizer
 
             plano.RecentFiles = RecentFileList;
 
-            plano.BodeVM.phasegraph = phasegraph;
-            plano.BodeVM.linegraph = linegraph;
+            //plano.BodeVM.phasegraph = phasegraph;
+            //plano.BodeVM.linegraph = linegraph;
             plano.BodeVM.ModulePlotter = bodemoduleplotter;
             plano.BodeVM.PhasePlotter = bodephasePlotter;
 
             plano.TransientVM.Plotter = timeplotter;
-            plano.TransientVM.linegraph = timelinegraph;
+            //plano.TransientVM.linegraph = timelinegraph;
 
             plano.FourierVM.SpectrumPlotter = fftplotter;
             plano.FourierVM.FFTModuleGraph = fftlinegraph;
