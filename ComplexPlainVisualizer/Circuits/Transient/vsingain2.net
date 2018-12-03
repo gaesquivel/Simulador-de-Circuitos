@@ -1,0 +1,12 @@
+* Amplificador simple tension con polo en la entrada *
+* tran <Tstep> <Tstop> [Tstart [dTmax]] [modifiers]
+*.tran 0 2m 0 10u
+
+*V_V1         n1 n2 DC 0 AC 1 SIN off amp f 0 0 0
+V_Vs         s 0 DC 1m AC 1
++SIN 1m 1 1k 0 0 0
+R_Rs         s	in	1k  
+C_Ci         in	0	10n  
+R_Rin		 in	0	1meg
+E_E1         out 0 in 0 10
+R_RL         0	out  1k

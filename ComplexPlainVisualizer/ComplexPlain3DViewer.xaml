@@ -1,13 +1,14 @@
-﻿<Window x:Class="ComplexPlainVisualizer.ComplexPlain3DViewer"
+﻿<Window x:Class="DataVisualizer.ComplexPlain3DViewer"
         xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"
         xmlns:s="clr-namespace:System;assembly=mscorlib"
         xmlns:h="clr-namespace:HelixToolkit.Wpf;assembly=HelixToolkit.Wpf" 
-        xmlns:local="clr-namespace:ComplexPlainVisualizer" 
+        xmlns:local="clr-namespace:DataVisualizer.MVVM.ViewModel" 
+        xmlns:wpg="clr-namespace:System.Windows.Controls"
         
-        Title="ComplexPlain3DViewer" Height="500" Width="800" Icon="Images/planoCIco.png">
+        Title="Complex Plain 3D Viewer" Height="500" Width="800" Icon="Images/planoCsmall.png">
     <Grid>
         <Grid.RowDefinitions>
             <RowDefinition Height="40" />
@@ -15,11 +16,12 @@
             <RowDefinition Height="30" />
         </Grid.RowDefinitions>
         <Grid.Resources>
-            <local:ComplexPlainViewModel x:Key="viewer"/>
+            <local:ComplexPlainViewModel1 x:Key="viewer"/>
         </Grid.Resources>
+        
+        
         <ToolBar>
-            <Button Click="ButtonAbrir_Click" 
-                    ToolTip="Open .Net Pspice File">
+            <Button Click="ButtonAbrir_Click" ToolTip="Open .Net Pspice File">
                 <Image Source="Images/folder.png" />
             </Button>
             <!--<Button Click="Button_Click_2">
@@ -29,21 +31,31 @@
                 <Image Source="Images/cpu_run.png" />
             </Button>
             <Button ToolTip="Draw Selected Item" Click="ButtonRedraw">
-                <Image Source="Images/line-chart.png" />
+                <Image Source="Images/refresh.png" />
             </Button>
 
- 
+            <Separator Width="1"/>
+
             <Button ToolTip="Analysis Setup" Click="Button_AnalysisSetup">
                 <Image Source="Images/edit.png" />
             </Button>
             <Button ToolTip="Export To CSV Excel File" Click="BtnExport">
                 <Image Source="Images/export_excel.png" />
             </Button>
-            <Button Click="ButtonExportPhase">
+            <Button Click="ButtonExportPhase" ToolTip="Export Phase Image">
                 <Image Source="Images/planocomplejo.jpg" />
             </Button>
-            <Button Click="ButtonColorize" ToolTip="Colorize the plain with custom color">
+            <Button Click="ButtonColorize" ToolTip="Colorize the plain with custom color showing phase">
                 <Image Source="Images/chart.png" />
+            </Button>
+
+            <Separator Width="2"/>
+
+            <Button Click="ButtonShowBode" ToolTip="Show Bode Window">
+                <Image Source="Images/line-chart.png" />
+            </Button>
+            <Button Click="ButtonShowTransient" ToolTip="Show Transient Analysis Window">
+                <Image Source="Images/oszillograph.png" />
             </Button>
         </ToolBar>
 
@@ -67,17 +79,21 @@
                     <xcad:LayoutAnchorablePane DockWidth="200">
                         <xcad:LayoutAnchorable ContentId="properties" Title="Properties" CanHide="False" CanClose="False"
                                             AutoHideWidth="240" IconSource="Images/preferences.png">
-                            <xctk:PropertyGrid Name="propgrid" NameColumnWidth="110"
-                        SelectedObject="{Binding ElementName=lbComponents, Path=SelectedItem}"/>
+                            <wpg:WpfPropertyGrid x:Name="propgrid" />
+
                         </xcad:LayoutAnchorable>
                     </xcad:LayoutAnchorablePane>
+                    
                     <xcad:LayoutDocumentPaneGroup >
                         <xcad:LayoutDocumentPane>
-                            <xcad:LayoutDocument ContentId="document1" Title="Complex Plain Simulation" IconSource="Images/document.png"
+                            <xcad:LayoutDocument ContentId="document1" 
+                                                 Title="Complex Plain" 
+                                                 IconSource="Images/PlanoCsmall.png"
                                                  CanClose="False" CanFloat="False" >
                               
                                 
-                                <h:HelixViewport3D ZoomExtentsWhenLoaded="True" ShowCoordinateSystem="True" MouseDoubleClick="PlainDoubleClick">
+                                <h:HelixViewport3D ZoomExtentsWhenLoaded="True" ShowCoordinateSystem="True"
+                                                   MouseDoubleClick="PlainDoubleClick">
                                     <h:HelixViewport3D.Camera>
                                         <!-- HelixViewport3D.ZoomExtentsWhenLoaded will figure out the position of the Camera -->
                                         <PerspectiveCamera LookDirection="5,10,-10" UpDirection="0,0,1"/>
@@ -87,7 +103,8 @@
                                     <ModelVisual3D Content="{Binding Lights}" />
 
                                     <!-- The plot visual (surface, axes and labels) -->
-                                    <local:SurfacePlotVisual3D x:Name="surface" Points="{Binding Data}" ColorValues="{Binding ColorValues}" 
+                                    <local:SurfacePlotVisual3D x:Name="surface" Points="{Binding Data}" 
+                                                               ColorValues="{Binding ColorValues}" 
                                                                SurfaceBrush="{Binding SurfaceBrush}"   />
 
                                 </h:HelixViewport3D>
@@ -95,13 +112,21 @@
                                 
                             </xcad:LayoutDocument>
 
-                            <xcad:LayoutDocument ContentId="document2" Title="Plain Snap Shot" IconSource="Images/document.png">
+                            <xcad:LayoutDocument ContentId="document2" Title="Plain Snap Shot" 
+                                                 IconSource="Images/planocomplejosmall.jpg">
                                 <Image Name="image" />
                             </xcad:LayoutDocument>
                             
-                            
+                            <xcad:LayoutDocument ContentId="document3" Title="Plain Snap Shot" 
+                                                 IconSource="Images/edit.png">
+                                <TextBox Name="TxtEditor"
+                                    AcceptsReturn="True" AcceptsTab="True"/>
+                            </xcad:LayoutDocument>
                         </xcad:LayoutDocumentPane>
+                        
                     </xcad:LayoutDocumentPaneGroup >
+                    
+                    
                     <xcad:LayoutAnchorablePaneGroup DockWidth="100">
                         <xcad:LayoutAnchorablePane>
                             <xcad:LayoutAnchorable ContentId="alarms" Title="Components" IconSource="Images/cpu_view.png"  >

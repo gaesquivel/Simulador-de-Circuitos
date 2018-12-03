@@ -1,0 +1,134 @@
+﻿<Window x:Class="DataVisualizer.FourierViewer"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:d3="http://research.microsoft.com/DynamicDataDisplay/1.0"
+        xmlns:local="clr-namespace:DataVisualizer"
+        xmlns:loc3="clr-namespace:DataVisualizer.MVVM.ViewModel"
+        xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"   
+        
+        mc:Ignorable="d"
+        Title="FourierViewer" Height="300" Width="600">
+    <Window.DataContext>
+        <loc3:FourierViewModel x:Name="four" />
+    </Window.DataContext>
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="40" />
+            <RowDefinition Height="*" />
+            <RowDefinition Height="30" />
+        </Grid.RowDefinitions>
+        <ToolBar>
+            <!--<Button ToolTip="Open .Net Pspice File">
+                <Image Source="Images/folder.png" />
+            </Button>-->
+            <Button ToolTip="Parse and Draw mathematical expression" Command="{Binding ShowPlottCommand, Mode=OneWay}">
+                <Image Source="Images/cpu_run.png" />
+            </Button>
+            <!--<Button ToolTip="Refresh Results">
+                <Image Source="Images/Refresh.png" />
+            </Button>-->
+            <Button ToolTip="Calculate and Draw FFT"  Command="{Binding SimulateCommand, Mode=OneWay}">
+                <Image Source="Images/line-chart.png" />
+            </Button>
+
+            <Separator />
+            <!--<Button ToolTip="Analysis Setup" >
+                <Image Source="Images/edit.png" />
+            </Button>-->
+
+            <!--<Button Click="Button_Bode" ToolTip="Show Bode Example">
+                <Image Source="Images/chart.png" />
+            </Button>-->
+            <!--<Button ToolTip="Export To CSV Excel File" >
+                <Image Source="Images/export_excel.png" />
+            </Button>-->
+            <!--<Button Click="Button_Zoom" ToolTip="Zoom Out">
+                <Image Source="Images/Zoom_out.png" />
+            </Button>-->
+        </ToolBar>
+        <xcad:DockingManager Grid.Row="1"
+                           AllowMixedOrientation="True"
+                           BorderBrush="Black"
+                           BorderThickness="1"
+                           >
+            <xcad:DockingManager.DocumentHeaderTemplate>
+                <DataTemplate>
+                    <StackPanel Orientation="Horizontal">
+                        <Image Source="{Binding IconSource}" Margin="0,0,4,0"/>
+                        <TextBlock Text="{Binding Title}" />
+                    </StackPanel>
+                </DataTemplate>
+            </xcad:DockingManager.DocumentHeaderTemplate>
+            <xcad:LayoutRoot x:Name="_layoutRoot">
+                <xcad:LayoutPanel Orientation="Horizontal">
+                    <xcad:LayoutAnchorablePane DockWidth="200">
+                        <xcad:LayoutAnchorable ContentId="properties" Title="Properties" CanHide="False" CanClose="False"
+                                            AutoHideWidth="240" IconSource="Images/preferences.png">
+                            <TextBox Text="{Binding TemporalExpression}" />
+
+                        </xcad:LayoutAnchorable>
+                    </xcad:LayoutAnchorablePane>
+                    <xcad:LayoutDocumentPaneGroup >
+                        <xcad:LayoutDocumentPane>
+
+
+                            <xcad:LayoutDocument ContentId="document1" Title="Transient" 
+                                                 IconSource="Images/oszillograph.png"
+                                                 CanClose="False" CanFloat="False" >
+
+
+                                <!--<d3:ChartPlotter Name="plotter" >
+                                    <d3:LineGraph x:Name="linegraph" Stroke="Blue" StrokeThickness="3" Margin="0,1,0,-1"/>
+                                    <d3:VerticalAxisTitle  FontFamily="Arial" Content="{Binding ElementName=txtPlotted, Path=Text}"/>
+                                    <d3:HorizontalAxisTitle FontFamily="Arial" Content="t [seg]"/>
+                                </d3:ChartPlotter>-->
+                                <local:BarPlotter x:Name="plotter">
+                                    
+                                    
+
+                                </local:BarPlotter>
+                            </xcad:LayoutDocument>
+
+                            <!--<xcad:LayoutDocument ContentId="document2" Title="Values" IconSource="Images/table.png">
+                                <DataGrid ItemsSource="{Binding}"/>
+                            </xcad:LayoutDocument>-->
+
+                        </xcad:LayoutDocumentPane>
+                    </xcad:LayoutDocumentPaneGroup >
+                    <xcad:LayoutAnchorablePaneGroup DockWidth="100">
+                        <xcad:LayoutAnchorablePane>
+                            <xcad:LayoutAnchorable ContentId="alarms" Title="Components" IconSource="Images/cpu_view.png" CanClose="False"  >
+
+                                <StackPanel Orientation="Vertical">
+                                    <Label Content="Components"/>
+                                    <ListBox Name="lbComponents" DisplayMemberPath="Name" ></ListBox>
+                                    <Label Content="nodes"/>
+                                    <ListBox Name="lbNodes" DisplayMemberPath="Name" ></ListBox>
+                                    <Label Content="Lines"/>
+                                    <ListBox Name="lbGraph" DisplayMemberPath="Name" ></ListBox>
+                                </StackPanel>
+
+
+                            </xcad:LayoutAnchorable>
+                        </xcad:LayoutAnchorablePane>
+                    </xcad:LayoutAnchorablePaneGroup>
+                </xcad:LayoutPanel>
+
+
+            </xcad:LayoutRoot>
+        </xcad:DockingManager>
+
+        <StatusBar Grid.Row="2">
+            <Border Background="GhostWhite" BorderBrush="DodgerBlue" BorderThickness="2,1,2,1">
+                <TextBlock Name="txtCircuitName" Text="Circuits/RCLhi.net" ToolTip="Last simulated circuit"/>
+            </Border>
+            <Border Background="GhostWhite" BorderBrush="DodgerBlue" BorderThickness="2,1,2,1">
+                <TextBlock Name="txtPlotted" Text="out" ToolTip="last plotted magnitude"/>
+            </Border>
+
+        </StatusBar>
+    </Grid>
+</Window>

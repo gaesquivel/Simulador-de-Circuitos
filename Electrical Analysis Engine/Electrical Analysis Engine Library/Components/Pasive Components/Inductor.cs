@@ -1,8 +1,5 @@
-﻿using MathNet.Numerics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System;
+using System.Numerics;
 
 namespace ElectricalAnalysis.Components
 {
@@ -29,58 +26,58 @@ namespace ElectricalAnalysis.Components
         }
 
 
-        public override double Current(Node referenceNode, double t)
+        public override double Current(NodeSingle referenceNode, double t)
         {
-            double deltat = t - OwnerCircuit.CircuitTime;
+            double deltat = t - previoustime;
             if (deltat < 0)
             {
                 throw new NotImplementedException();
             }
             //si ya se calculo la corriente devuelvo la calculada
-            if (previoustime > 0 && previoustime == t)
+            if (deltat == 0)
             {
                 if (referenceNode == Nodes[0])
                     return _current.Real;
                 else if (referenceNode == Nodes[1])
                     return -_current.Real;
-                else
-                    throw new NotImplementedException();
+                //else
+                //    throw new NotImplementedException();
             }
             previoustime = t;
             //recalculo la corriente
-            double deltai = voltage(referenceNode, t) * deltat / Value;
-            double i = _current.Real - deltai;
-            if (referenceNode == Nodes[0])
-                _current = new Complex32((float)-i, 0);
-            else if (referenceNode == Nodes[1])
-                _current = new Complex32((float)i, 0);
-            else if (Owner is Branch)
-            {
-                Node nodo = ((Branch)Owner).FindComponentNode(referenceNode, this);
-                if (nodo == null)
-                    throw new NotImplementedException();
-                if (nodo == Nodes[0])
-                    _current = new Complex32((float)-i, 0);
-                else if (nodo == Nodes[1])
-                    _current = new Complex32((float)i, 0);
-            }
-            else
-                throw new NotImplementedException();
+            double v = voltage(referenceNode, t);
+            double deltai = v * deltat / Value;
+            double i = _current.Real + deltai;
+            //se toma de referencia la tension!!
+            //la corriente ya involucra entonces el nodo de referencia
+
+            //if (referenceNode == Nodes[0])
+            //    //_current = new Complex(-i, 0);
+            //    i = 1 * i;
+            //else
+            //if (referenceNode == Nodes[1])
+                //_current = new Complex(i, 0);
+            //    i = -i;
+            //else
+            //    throw new NotImplementedException();
+
+            _current = new Complex(i, 0);
+
             return _current.Real;
         }
 
-        public override Complex32 Current(Node referenceNode, Complex32? W = null)
+        public override Complex Current(NodeSingle referenceNode, Complex? W = null)
         {
             return voltage(referenceNode) / Impedance(W);
         } 
 
-        public override Complex32 Impedance(Complex32 ?W)
+        public override Complex Impedance(Complex ?W)
         {
             if (W == null)
-                return Complex32.Zero;
+                return Complex.Zero;
             //jW*L
             //S*L
-            Complex32 L = new Complex32((float) Value, 0);
+            Complex L = new Complex( Value, 0);
             return W.Value * L;
         }
 

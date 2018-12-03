@@ -1,0 +1,11 @@
+* Schematics Netlist *
+
+
+
+V_V1         s	0	DC	0	AC	1
++SIN	1	1	1k	0	0	0
+*R_Ri		0	i	1meg  
+R_Rs		s	i	10K  
+E_E1		out	0	0	i	100K
+C_Cf		out	i	100n  
+R_RL		0	out	1k

@@ -6,6 +6,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
         mc:Ignorable="d" x:Class="DiagramDesigner.Window1"
+        xmlns:Controls="clr-namespace:WPFExtensions.Controls;assembly=WPFExtensions"
         WindowStartupLocation="CenterScreen"
         Title="Sim circuit engine"
         Height="476.866" Width="1000">
@@ -45,13 +46,13 @@
 				VerticalAlignment="Stretch" HorizontalAlignment="Right"/>
             <!-- Designer -->
             <GroupBox Header="Diagram" Grid.Column="1" Margin="3,0,0,0">
-                <ScrollViewer HorizontalScrollBarVisibility="Auto"
-					VerticalScrollBarVisibility="Auto">
+                <Controls:ZoomControl Name="zoom" ModifierMode="Pan" Grid.Row="1">
                     <s:DesignerCanvas Focusable="true" x:Name="MyDesigner"
 						Background="{StaticResource WindowBackgroundBrush}"
 						Margin="10" FocusVisualStyle="{x:Null}"
 						ContextMenu="{StaticResource DesignerCanvasContextMenu}"/>
-                </ScrollViewer>
+                </Controls:ZoomControl>
+               
             </GroupBox>
         </Grid>
     </Grid>

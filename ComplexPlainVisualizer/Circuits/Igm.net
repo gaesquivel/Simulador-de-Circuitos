@@ -1,0 +1,11 @@
+* Amplificador de TransConductancia *
+
+
+
+V_V1         s 0 DC 0 AC 1
++SIN 1 1 1k 0 0 0
+R_Ri         in 0  1meg  
+R_Rs         s  in 1K  
+R_RL         out 0 1k  
+G_G1         out 0 in 0 1m
+C_Cc		out	in	100p

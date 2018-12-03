@@ -1,35 +1,29 @@
-﻿using MathNet.Numerics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Numerics;
 
 namespace ElectricalAnalysis.Components
 {
     public class CurrentGenerator : ElectricComponent, Generator
     {
-        public override Complex32 current
+        protected override string DefaultName
         {
             get
             {
-                return new Complex32((float)Value, 0);
-            }
-            internal set
-            {
-                _current = value;
+                return "I";
             }
         }
 
-        //public override Complex32 NortonCurrent(Node referenceNode, Complex32? W = null)
-        //{
-        //    return Current(referenceNode, W);
-        //}
+        public override Complex current
+        {
+            get
+            {
+                return new Complex(Value, 0);
+            }
+        }
 
         public CurrentGenerator(ComponentContainer owner)
             : base(owner)
         {
-            Initialize("I" + ID.ToString());
+            //Initialize("I" + ID.ToString());
             Expresion = "I";
             Value = 1E-3;
         }
@@ -40,9 +34,9 @@ namespace ElectricalAnalysis.Components
             Initialize(name, value);
         }
 
-        public override Complex32 Impedance(Complex32 ?W)
+        public override Complex Impedance(Complex ?W)
         {
-            return Complex32.PositiveInfinity;
+            return double.PositiveInfinity;
         }
         
     }

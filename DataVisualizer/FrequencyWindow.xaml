@@ -3,6 +3,7 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d3="http://research.microsoft.com/DynamicDataDisplay/1.0"
         xmlns:xctk="http://schemas.xceed.com/wpf/xaml/toolkit"
+        xmlns:wpg="clr-namespace:System.Windows.Controls"
         xmlns:xcad="http://schemas.xceed.com/wpf/xaml/avalondock"                
         xmlns:local="clr-namespace:DataVisualizer"
         Title="2D Bode Viewer" Height="550" Width="800">
@@ -23,7 +24,7 @@
             <Button Click="ButtonUpdate" ToolTip="Run Simulation">
                 <Image Source="Images/cpu_run.png" />
             </Button>
-            <Button Click="ButtonRefresh" ToolTip="Refres Results">
+            <Button Click="ButtonRefresh" ToolTip="Refresh Results">
                 <Image Source="Images/Refresh.png" />
             </Button>
             <Button ToolTip="Draw Selected Item" Click="ButtonAddLine">
@@ -54,10 +55,11 @@
                 <xcad:LayoutPanel Orientation="Horizontal">
                     <xcad:LayoutAnchorablePane DockWidth="200">
                         <xcad:LayoutAnchorable ContentId="properties" Title="Properties" CanHide="False" CanClose="False"
-                                            AutoHideWidth="240" IconSource="Images/preferences.png">
-                            <xctk:PropertyGrid Name="propgrid" NameColumnWidth="110"
-                        SelectedObject="{Binding  ElementName=win, Path=SelectedObject}"/>
+                                            AutoHideWidth="240" IconSource="Images/preferences.png" >
+                            <wpg:WpfPropertyGrid x:Name="propgrid" />
+
                         </xcad:LayoutAnchorable>
+                        
                     </xcad:LayoutAnchorablePane>
                     <xcad:LayoutDocumentPaneGroup >
                         <xcad:LayoutDocumentPane>
@@ -92,11 +94,15 @@
                                
                                 <StackPanel Orientation="Vertical">
                                     <Label Content="Components"/>
-                                    <ListBox Name="lbComponents" DisplayMemberPath="Name" SelectionChanged="lbComponents_SelectionChanged"></ListBox>
+                                    <ListBox Name="lbComponents" 
+                                             DisplayMemberPath="Name" 
+                                             SelectionChanged="lbComponents_SelectionChanged"></ListBox>
                                     <Label Content="nodes"/>
-                                    <ListBox Name="lbNodes" DisplayMemberPath="Name" SelectionChanged="lbComponents_SelectionChanged"></ListBox>
+                                    <ListBox Name="lbNodes" DisplayMemberPath="Name" 
+                                             SelectionChanged="lbComponents_SelectionChanged"></ListBox>
                                     <Label Content="Lines"/>
-                                    <ListBox Name="lbGraph" DisplayMemberPath="Name" SelectionChanged="lbComponents_SelectionChanged"></ListBox>
+                                    <ListBox Name="lbGraph" DisplayMemberPath="Name" 
+                                             SelectionChanged="lbComponents_SelectionChanged"></ListBox>
                                 </StackPanel>
 
                             </xcad:LayoutAnchorable>
@@ -110,7 +116,7 @@
 
         <StatusBar Grid.Row="2">
             <StatusBarItem>
-                <TextBlock  Name="TxtStatus" Text="Circuits/RCLpi.net" ToolTip="Name of simulated circuit"/>
+                <TextBlock  Name="TxtStatus" Text="Circuits/RCL.net" ToolTip="Name of simulated circuit"/>
             </StatusBarItem>
             <Separator Width="1"/>
             <StatusBarItem>

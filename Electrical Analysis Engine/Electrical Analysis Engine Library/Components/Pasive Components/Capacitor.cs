@@ -1,69 +1,56 @@
 ﻿using MathNet.Numerics;
 using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+using System.Numerics;
 
 namespace ElectricalAnalysis.Components
 {
     public class Capacitor: ElectricComponent, PasiveComponent
     {
         /// <summary>
-        /// tension instantanea del capacitor
+        /// cargas almacenadas en el capacitor
         /// </summary>
-        double _voltage = 0;
+        double charge = 0;
+
         double previoustime;
 
-        public override Complex32 current
+        public override double voltage(NodeSingle referenceNode, double t)
         {
-            get
-            {
-                return _current; ;
-            }
-            internal set
-            {
-                _current = value;
-            }
-        }
-
-        public override double voltage(Node referenceNode, double t)
-        {
-            double deltat = t - OwnerCircuit.CircuitTime;
+            double deltat = t - previoustime;
             if (deltat < 0)
             {
                 throw new Exception();
             }
             //si ya se calculo la corriente devuelvo la calculada
-            if (previoustime > 0 && previoustime == t)
+            if (deltat == 0)
             {
                 if (referenceNode == Nodes[0])
-                    return _voltage;
+                    return -charge / Value;
                 else if (referenceNode == Nodes[1])
-                    return -_voltage;
+                    return charge / Value;
                 else
                     throw new NotImplementedException();
             }
             previoustime = t;
             //recalculo la corriente
             double i = 0;
-            if (Owner is Branch)
-            {
-                i = ((Branch)Owner).Current(referenceNode, t);
-            }
-            else
-                i = Current(referenceNode, t);
-            double vant = 0;
-            if (referenceNode == Nodes[0])
-                vant = -_voltage;
-            else if (referenceNode == Nodes[1])
-                vant = _voltage;
-            
-            double v = vant + i * deltat / Value;
-            _voltage = v;
-            return v;
+           
+            i = Current(referenceNode, t);
+            //double vant = charge / Value;
+            //if (referenceNode == Nodes[0])
+            //    vant = -vant;
+            double q = i * deltat;
+            charge += q;
+            double v = charge / Value;
+
+            //if (referenceNode == Nodes[0])
+                return v;
+            //else if (referenceNode == Nodes[1])
+            //    return -v;
+            //else
+            //    throw new InvalidOperationException();
         }
 
-        public override Complex32 Current(Node referenceNode, Complex32? W = null)
+        public override Complex Current(NodeSingle referenceNode, Complex? W = null)
         {
             return voltage(referenceNode) / Impedance(W);
         }
@@ -83,18 +70,18 @@ namespace ElectricalAnalysis.Components
 
         }
 
-        public override Complex32 Impedance(Complex32? W = null)
+        public override Complex Impedance(Complex? W = null)
         {
             if (W == null || W.Value.IsZero())
-                return Complex32.PositiveInfinity;
+                return Double.PositiveInfinity;
             // 1/jWC
             // 1/SC
-            return (W.Value * new Complex32((float)Value,0)).Reciprocal();
+            return (W.Value * new Complex(Value,0)).Reciprocal();
         }
 
         public override void Reset()
         {
-            _voltage = 0;
+            charge = 0;
             previoustime = 0;
             base.Reset();
         }

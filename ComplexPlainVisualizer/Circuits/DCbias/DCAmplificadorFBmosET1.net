@@ -1,0 +1,16 @@
+* amplificador de 3 etapas con capacitor de compenzacion y realimentacion *
+* simulacion de la primer etapa transitorio
+
+
+V_V1        s	0	DC	10	AC	1
++SIN 1 1 1k 0 0 0
+R_Rs		s		in+	1K
+R_Rb		in+		0	100K
+R_Ri		in+		0	10meg
+*R_Rf1		in-		0	100K
+*C_Cgs1		in+		in-	1000p
+G_G1		out	0	in+	0	10m
+*C_Cdg1		out	in+	500p
+*C_Cds1		out	0	500p
+R_Ri2		out		0	10K
+

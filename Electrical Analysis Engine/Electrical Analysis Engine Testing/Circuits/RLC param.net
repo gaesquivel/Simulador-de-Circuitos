@@ -1,0 +1,13 @@
+* RLC resonant circuit
+*.Tran	200u	500n
+*.AC	dec		101		1K	10meg
+*.ACPLAIN	91	500K
+
+*.param R1 list 5 10 50
+
+* offset amplitude Frequency Ton Delay Trise Tfall Cicles
+V_Vs	s	0	DC	1m	AC	1
++PULSE	1m	1	10k	1
+R_R1		s	m	10 
+L_L1		m	out	100u
+C_C1		out	0	100n

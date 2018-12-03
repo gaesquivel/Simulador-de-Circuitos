@@ -1,0 +1,17 @@
+* Schematics Netlist *
+
+
+
+V_V1         b 0 10V
+R_R1         b e  1k  
+R_R6         e d  2k  
+R_R4         e d  2k  
+V_V3         d f 5V
+* R_R7         f a  1k  *falta que ignore R7
+R_R3         0 a  1k  
+V_V5         a f 5V
+V_V2         c 0 5V
+R_R2         a c  2k  
+R_R8         a h  1k  
+V_V6         g e 5V
+V_V7         g h 10V

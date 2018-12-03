@@ -1,39 +1,35 @@
-﻿using MathNet.Numerics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
+﻿using System.Numerics;
 
 namespace ElectricalAnalysis.Components
 {
     public class Resistor : ElectricComponent, PasiveComponent
     {
 
-        public override double Current(Node referenceNode, double CurrentTime)
+        public override double Current(NodeSingle referenceNode, double CurrentTime)
         {
-            Complex32 i = Voltage / Impedance();
+            Complex i = Voltage / Impedance();
             if (referenceNode == Nodes[0])
                 return i.Real;
             else
                 return -i.Real;
         }
 
-        public override Complex32 current
+        public override Complex current
         {
             get
             {
-                //return new Complex32((float)((Nodes[0].Voltage.Real - Nodes[1].Voltage.Real) / Value), 0);
+                //return new Complex(((Nodes[0].Voltage.Real - Nodes[1].Voltage.Real) / Value), 0);
                 return Voltage / Impedance();
             }
-            internal set
-            {
-                _current = value;
-            }
+            //internal set
+            //{
+            //    _current = value;
+            //}
         }
 
-        public override Complex32 Current(Node referenceNode, Complex32? W = null)
+        public override Complex Current(NodeSingle referenceNode, Complex? W = null)
         {
-            Complex32 i = Voltage / Impedance(W);
+            Complex i = Voltage / Impedance(W);
             if (referenceNode == Nodes[0])
                 return i;
             else
@@ -55,13 +51,13 @@ namespace ElectricalAnalysis.Components
 
         }
 
-        public override Complex32 Impedance(Complex32 ?W = null)
+        public override Complex Impedance(Complex ?W = null)
         {
-            return new Complex32((float)Value, 0);
+            return new Complex(Value, 0);
         }
 
 
-        public override Complex32 voltage(Node ReferenceNode, Complex32? W = null)
+        public override Complex voltage(NodeSingle ReferenceNode, Complex? W = null)
         {
             return 0;
         }

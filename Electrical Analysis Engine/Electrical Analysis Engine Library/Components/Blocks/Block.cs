@@ -1,8 +1,4 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System.Collections.Generic;
 
 namespace ElectricalAnalysis.Components
 {
@@ -10,17 +6,18 @@ namespace ElectricalAnalysis.Components
     /// <summary>
     /// Represent a generic block of conected components
     /// </summary>
-    public class Block: Dipole, ComponentContainer
+    public abstract class Block: Dipole, ComponentContainer
     {
         public List<Dipole> Components { get; protected set; }
         //public List<Node> ExternalNodes { get; protected set; }
 
-        public Block(ComponentContainer owner)
-            : base(owner)
+
+        public Block(ComponentContainer owner) : base(owner)
         {
             Components = new List<Dipole>();
-            //ExternalNodes = new List<Node>();
         }
+
+        
 
         public override void Reset()
         {

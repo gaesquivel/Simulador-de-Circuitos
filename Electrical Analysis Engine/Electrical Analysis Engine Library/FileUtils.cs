@@ -1,13 +1,10 @@
-﻿using MathNet.Numerics;
-using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Diagnostics;
 using System.IO;
-using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-using System.Drawing.Imaging;
 using System.Drawing;
+using System.Numerics;
 
 namespace ElectricalAnalysis
 {
@@ -21,13 +18,13 @@ namespace ElectricalAnalysis
             return true;
         }
 
-        public static Bitmap DrawImage(Func<int, int, Complex32> f, int Width = 300, int Height = 300)
+        public static Bitmap DrawImage(Func<int, int, Complex> f, int Width = 300, int Height = 300)
         {
             //double re_min = -3.0;
             //double re_max = +3.0;
             //double im_min = -3.0;
             //double im_max = +3.0;
-
+            
             // get the function to evaluate
             // = functions[functionList.SelectedIndex].Function;
 
@@ -42,10 +39,10 @@ namespace ElectricalAnalysis
                    // double im = im_max - y * (im_max - im_min) / Height;
 
                     // form a complex number based on the pixel value
-                   // Complex32 z = new Complex32((float)re, (float)im);
+                   // Complex z = new Complex(re, im);
 
                     // compute the value of the current complex function for that complex number
-                    Complex32 fz = f(x, y);
+                    Complex fz = f(x, y);
 
                     // don't try to plot non-numeric values (e.g. at poles)
                     if (Double.IsInfinity(fz.Real) || Double.IsNaN(fz.Real) || Double.IsInfinity(fz.Imaginary) || Double.IsNaN(fz.Imaginary)) continue;
@@ -73,7 +70,7 @@ namespace ElectricalAnalysis
         }
 
         
-        public static Bitmap DrawImage(Func<Complex32, Complex32> f, int Width = 300, int Height = 300)
+        public static Bitmap DrawImage(Func<Complex, Complex> f, int Width = 300, int Height = 300)
         {
             double re_min = -3.0;
             double re_max = +3.0;
@@ -94,10 +91,10 @@ namespace ElectricalAnalysis
                     double im = im_max - y * (im_max - im_min) / Height;
 
                     // form a complex number based on the pixel value
-                    Complex32 z = new Complex32((float)re, (float)im);
+                    Complex z = new Complex(re, im);
 
                     // compute the value of the current complex function for that complex number
-                    Complex32 fz = f(z);
+                    Complex fz = f(z);
 
                     // don't try to plot non-numeric values (e.g. at poles)
                     if (Double.IsInfinity(fz.Real) || Double.IsNaN(fz.Real) || Double.IsInfinity(fz.Imaginary) || Double.IsNaN(fz.Imaginary)) continue;

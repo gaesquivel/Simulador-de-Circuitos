@@ -1,45 +1,52 @@
-﻿using MathNet.Numerics;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using System;
+using System.Numerics;
 
 namespace ElectricalAnalysis.Components
 {
+    /// <summary>
+    /// Represents some kind of Voltage generator
+    /// </summary>
     public class VoltageGenerator : ElectricComponent, Generator
     {
 
-        public override Complex32 voltage(Node ReferenceNode, Complex32 ?W)
+        protected override string DefaultName
+        {
+            get
+            {
+                return "V";
+            }
+        }
+
+        public override Complex voltage(NodeSingle ReferenceNode, Complex ?W)
         {
             if (ReferenceNode == Nodes[0])
                 return Voltage;
             if (ReferenceNode == Nodes[1])
                 return -Voltage;
-            return Complex32.NaN;
+            return double.NaN;
         }
 
-        public override Complex32 Voltage
+        public override Complex Voltage
         {
             get
             {
-                return new Complex32((float)Value,0);
+                return new Complex(Value,0);
             }
           
         }
 
-        //public override Complex32 TheveninVoltage(Node referenceNode, Complex32? W = null)
+        //public override Complex TheveninVoltage(Node referenceNode, Complex? W = null)
         //{
         //    if (referenceNode == Nodes[0])
-        //        return new Complex32((float) Value, 0);
-        //    return new Complex32((float)-Value, 0);
+        //        return new Complex( Value, 0);
+        //    return new Complex(-Value, 0);
         //}
 
 
         public VoltageGenerator(ComponentContainer owner)
             : base(owner)
         {
-            Initialize("V" + ID.ToString());
+            //Initialize("V" + ID.ToString());
             Expresion = "V";
             Value = 10;
         }

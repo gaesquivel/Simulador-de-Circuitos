@@ -1,0 +1,12 @@
+* Amplificador Bipolar small signal Common Emitter*
+
+
+
+V_V1         s 0 DC 0 AC 1
++SIN 1 1 1k 0 0 0
+R_Rs        s	in 1K  
+R_Ri        in	0  8k  
+C_Ce		in	0	14p
+G_G1        out 0 in 0 40m
+C_Cc		out	in	2p
+R_Rd		out	0 4k  

@@ -1,0 +1,20 @@
+* amplificador de 3 etapas con capacitor de compenzacion y realimentacion *
+
+
+
+V_V1        s 0 DC 0 AC 1
++SIN 1 1 1k 0 0 0
+R_Rs		s		in+	1K
+R_Ri		in+		in-	20K
+R_Rf1		in-		0	1K
+C_Ce1		in+		in-	14p
+G_G1		out1	0	in	0	30m
+C_Cc1		out1	in+	1p
+R_Ri2		out1	0	10K
+C_Ce2		out1	0	14p
+G_G2		out2	0	out1	0	30m
+C_Cc2		out1	out2	1n
+R_Ri3		out2	0	10K
+E_E3		out		0	out2	0	1
+R_RL		out		0	1k  
+R_Rf2		out		in-	10K

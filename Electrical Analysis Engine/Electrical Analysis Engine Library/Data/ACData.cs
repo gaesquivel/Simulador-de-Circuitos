@@ -1,10 +1,6 @@
-﻿using MathNet.Numerics;
-using MathNet.Numerics.LinearAlgebra;
-using System;
+﻿using MathNet.Numerics.LinearAlgebra;
 using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+using System.Numerics;
 
 namespace ElectricalAnalysis.Data
 {
@@ -13,12 +9,12 @@ namespace ElectricalAnalysis.Data
         /// <summary>
         /// W, junto a una matriz con los valores de las tensiones de los nodos
         /// </summary>
-        public Dictionary<double, Matrix<Complex32>> Results { get; protected set; }
+        public Dictionary<double, Matrix<Complex>> Results { get; protected set; }
 
         public ACSweepData()
             : base()
         {
-            Results = new Dictionary<double, Matrix<Complex32>>();
+            Results = new Dictionary<double, Matrix<Complex>>();
         }
 
     }

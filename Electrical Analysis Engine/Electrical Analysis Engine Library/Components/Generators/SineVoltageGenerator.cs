@@ -1,56 +1,63 @@
-﻿using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using System.Threading.Tasks;
+﻿using CircuitMVVMBase;
+using CircuitMVVMBase.MVVM;
+using System;
+using System.Numerics;
 
 namespace ElectricalAnalysis.Components.Generators
 {
-  
-    public class SineVoltageGenerator : ACVoltageGenerator
+
+    public class SineVoltageGenerator : TransientGenerator, ISineGenerator
     {
-        double amplitude, w, thau, offset, phase;
-        bool wasparsed;
-
-
-        public string Delay { get; set; }
-        public string Amplitude { get; set; }
-        public string Offset { get; set; }
-        public string Frequency { get; set; }
+        double  w, thau, phase;
+      
         public string Phase { get; set; }
         public string Thau { get; set; }
 
         public SineVoltageGenerator(ComponentContainer owner, string name)
-            : base(owner)
+            : base(owner, name)
         {
             Initialize(name);
-            Amplitude = "10";
-            Frequency = "1K";
+           
             Phase = "0";
             Thau = "0";
-            Delay = "10u";
-            Offset = "0";
+            
+            Value = 0;
         }
 
-        public override double voltage(Node referenceNode, double t)
+
+        public override double voltage(NodeSingle referenceNode, double t)
         {
             if (!wasparsed )
             {
-                amplitude = StringUtils.DecodeString(Amplitude);
-                w = 2 * Math.PI * StringUtils.DecodeString(Frequency);
-                thau = StringUtils.DecodeString(Thau);
-                wasparsed = true;
-                offset = StringUtils.DecodeString(Offset);
-                phase = StringUtils.DecodeString(Phase);
+                Parse();
             }
-            
-            double v = offset + amplitude * Math.Sin(w * t + phase / (2 * Math.PI));
+
+            double v = offset + amplitude * Math.Sin(w * t + phase * Math.PI / 180);
             if (referenceNode ==  Nodes[0])
                 return v;
             else
                 return -v;
         }
 
+        protected override void Parse()
+        {
+            base.Parse();
+            if (!StringUtils.DecodeString(Thau, out thau))
+            {
+                NotificationsVM.Instance.Notifications.Add(
+                    new Notification("Error to parse Thau: " + Thau));
+                return;
+            }
+           
+            if (!StringUtils.DecodeString(Phase, out phase))
+            {
+                NotificationsVM.Instance.Notifications.Add(
+                    new Notification("Error to parse Phase: " + Phase));
+                return;
+            }
+            w = f * 2 * Math.PI;
+            wasparsed = true;
+        }
 
         public override void Reset()
         {

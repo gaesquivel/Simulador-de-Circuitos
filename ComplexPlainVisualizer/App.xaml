@@ -1,8 +1,11 @@
-﻿<Application x:Class="ComplexPlainVisualizer.App"
+﻿<Application x:Class="DataVisualizer.App"
              xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
              xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
-             StartupUri="ComplexPlain3DViewer.xaml">
+             StartupUri="MainWindow.xaml">
     <Application.Resources>
-         
+
+        <!--ComplexPlain3DViewer MainWindow WPFParametric
+--> 
+    
     </Application.Resources>
 </Application>
